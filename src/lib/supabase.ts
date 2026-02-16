@@ -4,12 +4,23 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 // 1) Read keys from Vite env
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const isPlaceholder = (v?: string) => {
+  const s = String(v || "").trim();
+  if (!s) return true;
+  return (
+    s.includes("PASTE_YOUR_ANON_KEY_HERE") ||
+    s.includes("PASTE_YOUR_SUPABASE_URL_HERE") ||
+    s === "invalid-anon-key" ||
+    s === "https://invalid.supabase.co"
+  );
+};
+const hasValidConfig = !isPlaceholder(supabaseUrl) && !isPlaceholder(supabaseAnonKey);
 
 // 2) Hard safety: never create a client with empty strings (causes white screens / crashes)
 export const supabase: SupabaseClient = (() => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!hasValidConfig) {
     console.error(
-      "⚠️ SUPABASE ERROR: Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Check your .env (local) or Vercel Environment Variables."
+      "⚠️ SUPABASE ERROR: Missing/placeholder VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Check your .env/.env.local or deployment environment variables."
     );
 
     // Return a harmless dummy client so the app stays alive (queries will fail gracefully)

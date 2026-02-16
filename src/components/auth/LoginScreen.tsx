@@ -122,24 +122,15 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   };
 
   const ensureOnlineSession = async (u: string, password: string) => {
-    const existingSession = (await supabase.auth.getSession()).data.session;
-    if (existingSession?.access_token) {
-      const existingProfile = await resolveProfileForAuthenticatedUser({ username: u, full_name: u });
-      if ((existingProfile as any)?.active === false) {
-        throw new Error("Account disabled");
-      }
-      if (import.meta.env.DEV) {
-        console.debug("[Auth] Reusing existing online session", {
-          userId: existingSession.user?.id ?? null,
-          username: (existingProfile as any)?.username ?? u,
-        });
-      }
-      await seedLocalUserFromPassword(existingProfile as any, password);
-      return existingProfile as any;
-    }
-
     const verify = await callVerifyPassword(u, password);
     if (verify.ok) {
+      // Never trust a previously cached session for credential checks.
+      // If another account is currently signed in, clear it before minting a new session.
+      const existingSession = (await supabase.auth.getSession()).data.session;
+      if (existingSession?.user?.id && existingSession.user.id !== verify.user.id) {
+        await supabase.auth.signOut().catch(() => void 0);
+      }
+
       const { data: otpData, error: otpErr } = await supabase.auth.verifyOtp({
         token_hash: verify.token_hash,
         type: verify.type,
@@ -157,6 +148,9 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       });
       if ((profile as any)?.active === false) {
         throw new Error("Account disabled");
+      }
+      if (sanitizeUsername((profile as any)?.username || "") !== sanitizeUsername(u)) {
+        throw new Error("Authenticated user does not match entered username. Please sign in again.");
       }
 
       if (import.meta.env.DEV) {
