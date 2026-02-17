@@ -535,6 +535,7 @@ alter table if exists public.profiles enable row level security;
 
 drop policy if exists profiles_select_self on public.profiles;
 drop policy if exists profiles_select_admin_all on public.profiles;
+drop policy if exists profiles_select_manage_business on public.profiles;
 drop policy if exists profiles_admin_insert on public.profiles;
 drop policy if exists profiles_admin_update on public.profiles;
 drop policy if exists profiles_admin_delete on public.profiles;

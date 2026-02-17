@@ -12,6 +12,7 @@ import {
   ChevronDown,
   Moon,
   Sun,
+  MessageSquarePlus,
 } from "lucide-react";
 import { usePOS } from "@/contexts/POSContext";
 import { supabase } from "@/lib/supabase";
@@ -28,6 +29,8 @@ import {
 import { NotificationPanel } from "@/components/ui/NotificationPanel";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
+import { flushFeedbackQueue, getQueuedFeedbackCount } from "@/lib/feedbackQueue";
 
 type PlatformAdminSessionBackup = {
   access_token: string;
@@ -46,6 +49,7 @@ type ImpersonationInfo = {
 const IMPERSONATION_BACKUP_KEY = "platform_admin_session_backup_v1";
 const IMPERSONATION_INFO_KEY = "platform_admin_impersonation_v1";
 const REACT_QUERY_PERSIST_KEY = "REACT_QUERY_OFFLINE_CACHE";
+const DEMO_EXPIRES_KEY = "binancexi_demo_expires_at";
 
 function safeJSONParse<T>(raw: string | null): T | null {
   if (!raw) return null;
@@ -68,6 +72,7 @@ export const TopBar = () => {
   const { currentUser, syncStatus, setCurrentUser, pendingSyncCount } = usePOS();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const impersonationInfo = safeJSONParse<ImpersonationInfo>(
     typeof window !== "undefined" ? safeGetItem(IMPERSONATION_INFO_KEY) : null
@@ -84,6 +89,51 @@ export const TopBar = () => {
       (currentUser as any)?.role !== "platform_admin"
   );
   const [returning, setReturning] = useState(false);
+
+  const demoExpiresAt = useMemo(() => {
+    const isDemo = String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1";
+    if (!isDemo) return null;
+    return safeGetItem(DEMO_EXPIRES_KEY);
+  }, []);
+
+  const demoBanner = useMemo(() => {
+    if (!demoExpiresAt) return null;
+    const ts = Date.parse(demoExpiresAt);
+    if (!Number.isFinite(ts)) return null;
+    const msLeft = ts - Date.now();
+    return { ts, msLeft };
+  }, [demoExpiresAt]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    if (!navigator.onLine) return;
+    if (getQueuedFeedbackCount() <= 0) return;
+
+    // Silent best-effort flush (avoid spamming toasts).
+    flushFeedbackQueue({
+      currentUser: {
+        id: String((currentUser as any)?.id || ""),
+        business_id: String((currentUser as any)?.business_id || ""),
+      },
+      max: 10,
+    }).catch(() => void 0);
+  }, [(currentUser as any)?.id, (currentUser as any)?.business_id]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const onOnline = () => {
+      if (getQueuedFeedbackCount() <= 0) return;
+      flushFeedbackQueue({
+        currentUser: {
+          id: String((currentUser as any)?.id || ""),
+          business_id: String((currentUser as any)?.business_id || ""),
+        },
+        max: 10,
+      }).catch(() => void 0);
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [(currentUser as any)?.id, (currentUser as any)?.business_id]);
 
   // ✅ keep theme in sync with the DOM (no random default)
   const [isDark, setIsDark] = useState(() =>
@@ -257,7 +307,7 @@ export const TopBar = () => {
       className={cn(
         // ✅ sticky so it stays clean while scrolling
         "sticky top-0 z-40",
-        isImpersonating ? "h-[92px] md:h-[104px]" : "h-14 md:h-16",
+        isImpersonating || demoBanner ? "h-[92px] md:h-[104px]" : "h-14 md:h-16",
         "border-b border-border/70",
         "bg-background/72 backdrop-blur-xl supports-[backdrop-filter]:bg-background/58"
       )}
@@ -280,7 +330,25 @@ export const TopBar = () => {
         </div>
       )}
 
-      <div className={cn("px-3 md:px-4 flex items-center justify-between gap-3", isImpersonating ? "h-14 md:h-16" : "h-full")}>
+      {!isImpersonating && demoBanner && (
+        <div className="px-3 md:px-4 pt-2">
+          <div className="rounded-xl border border-sky-500/25 bg-sky-500/10 px-3 py-2 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-xs font-semibold text-sky-200 truncate">Live Demo</div>
+              <div className="text-[11px] text-muted-foreground truncate">
+                {demoBanner.msLeft > 0
+                  ? `Expires in ${Math.max(0, Math.ceil(demoBanner.msLeft / (60 * 60 * 1000)))}h`
+                  : "Expired"}
+              </div>
+            </div>
+            <Button size="sm" variant="outline" onClick={handleLogout}>
+              End Demo
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className={cn("px-3 md:px-4 flex items-center justify-between gap-3", isImpersonating || demoBanner ? "h-14 md:h-16" : "h-full")}>
         {/* LEFT: Status */}
         <div className="flex items-center gap-3 min-w-0">
           <motion.div
@@ -391,6 +459,13 @@ export const TopBar = () => {
 
               <DropdownMenuSeparator />
 
+              <DropdownMenuItem onClick={() => setFeedbackOpen(true)} className="cursor-pointer">
+                <MessageSquarePlus className="w-4 h-4 mr-2" />
+                Send Feedback
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 onClick={handleLogout}
                 className="text-destructive cursor-pointer focus:text-destructive"
@@ -402,6 +477,8 @@ export const TopBar = () => {
           </DropdownMenu>
         </div>
       </div>
+
+      <FeedbackDialog open={feedbackOpen} onOpenChange={setFeedbackOpen} />
     </header>
   );
 };

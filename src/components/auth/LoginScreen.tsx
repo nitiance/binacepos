@@ -5,6 +5,7 @@ import { Lock, ShieldCheck, Wifi, WifiOff, Eye, EyeOff, User } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePOS } from "@/contexts/POSContext";
 import { supabase } from "@/lib/supabase";
 import {
@@ -35,6 +36,9 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   const [showSecret, setShowSecret] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [demoEmail, setDemoEmail] = useState("");
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const secretRef = useRef<HTMLInputElement>(null);
@@ -266,6 +270,82 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       onLogin();
     } catch (err: any) {
       toast.error(err?.message || "Fingerprint cancelled / failed");
+    }
+  };
+
+  const startDemoSession = async () => {
+    if (demoLoading || loading) return;
+    if (!navigator.onLine) {
+      toast.error("Live demo requires an internet connection");
+      return;
+    }
+
+    setDemoLoading(true);
+    try {
+      const email = String(demoEmail || "").trim() || null;
+      const { data, error: fnErr } = await supabase.functions.invoke("create_demo_session", {
+        body: email ? { email } : {},
+      });
+      if (fnErr) throw fnErr;
+      if ((data as any)?.error) throw new Error((data as any).error);
+
+      const demoUsername = sanitizeUsername(String((data as any)?.username || ""));
+      const demoPassword = String((data as any)?.password || "");
+      const expires_at = String((data as any)?.expires_at || "").trim();
+
+      if (!demoUsername || demoUsername.length < 3) throw new Error("Demo provisioning returned invalid username");
+      if (!demoPassword || demoPassword.length < 6) throw new Error("Demo provisioning returned invalid password");
+
+      try {
+        if (expires_at) localStorage.setItem("binancexi_demo_expires_at", expires_at);
+      } catch {
+        // ignore
+      }
+
+      // Set inputs for transparency (user can see what happened if needed).
+      setUsername(demoUsername);
+      setSecret(demoPassword);
+
+      // Online sign-in using the existing username/password pipeline.
+      const cloudUser = await ensureOnlineSession(demoUsername, demoPassword);
+
+      try {
+        await enforceDeviceLicense(cloudUser as any);
+      } catch (licErr: any) {
+        try {
+          await deleteLocalUser(demoUsername);
+        } catch {
+          // ignore
+        }
+        try {
+          await supabase.auth.signOut();
+        } catch {
+          // ignore
+        }
+        throw licErr;
+      }
+
+      setCurrentUser({
+        id: cloudUser.id,
+        full_name: cloudUser.full_name || cloudUser.username,
+        name: cloudUser.full_name || cloudUser.username,
+        username: cloudUser.username,
+        role: (cloudUser.role as any) || "cashier",
+        permissions: cloudUser.permissions || {},
+        business_id: (cloudUser as any).business_id ?? null,
+        active: true,
+      } as any);
+
+      sessionStorage.setItem("binancexi_session_active", "1");
+      localStorage.setItem("binancexi_last_username", cloudUser.username);
+
+      toast.success("Welcome to the live demo");
+      setDemoOpen(false);
+      onLogin();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to start live demo");
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -533,6 +613,17 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
               Use Fingerprint
             </Button>
 
+            {String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1" && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full h-12 rounded-xl"
+                onClick={() => setDemoOpen(true)}
+              >
+                Try Live Demo
+              </Button>
+            )}
+
             <div className="text-xs text-muted-foreground text-center">
               Offline-first sign-in uses your local password. If online, a cloud session is also created for syncing.
             </div>
@@ -541,6 +632,34 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       </div>
 
       <BinanceWatermark className="fixed right-3 bottom-3 z-30" />
+
+      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Live Demo</DialogTitle>
+            <DialogDescription>
+              We will create a temporary demo business and sign you in automatically. Demo expires after a short time.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label>Email (optional)</Label>
+            <Input value={demoEmail} onChange={(e) => setDemoEmail(e.target.value)} placeholder="you@example.com" />
+            <div className="text-[11px] text-muted-foreground">
+              Optional: helps us understand usage. Leave blank if you want.
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDemoOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={startDemoSession} disabled={demoLoading}>
+              {demoLoading ? "Starting..." : "Start Demo"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
