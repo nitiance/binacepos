@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { buildVerifyUrl, getConfiguredPublicAppUrl, normalizeBaseUrl } from "@/lib/verifyUrl";
 import { PrintableReceipt } from "@/components/pos/PrintableReceipt";
 import type { CartItem, Product, Discount } from "@/types/pos";
 import { Capacitor } from "@capacitor/core";
@@ -61,26 +62,6 @@ function writeOfflineQueue(queue: any[]) {
   } catch {
     // ignore
   }
-}
-
-// --------------------
-// URL helper (HashRouter safe)
-// --------------------
-function buildVerifyUrl(baseUrl: string, receiptId: string) {
-  let b = (baseUrl || "").trim();
-  if (!b) b = window.location.origin;
-
-  b = b.replace(/\/+$/, "");
-
-  if (b.includes("#")) {
-    if (!b.endsWith("#")) {
-      b = b.split("#")[0].replace(/\/+$/, "") + "/#";
-    }
-  } else {
-    b = b + "/#";
-  }
-
-  return `${b}/verify/${receiptId}`;
 }
 
 type StoreSettings = {
@@ -167,6 +148,8 @@ export const ReceiptsPage = () => {
   const queryClient = useQueryClient();
   const platform = Capacitor.getPlatform();
   const isAndroid = platform === "android";
+  const configuredPublicAppUrl = getConfiguredPublicAppUrl();
+  const isVerifyBaseManaged = !!configuredPublicAppUrl;
   // 🔥 AUTO-RUN THERMAL QUEUE
 useEffect(() => {
   tryPrintThermalQueue();
@@ -257,7 +240,7 @@ const [printerPort, setPrinterPort] = useState(
         tax_id: "",
         footer_message: "Thank you for your business!",
         show_qr_code: true,
-        qr_code_data: window.location.origin,
+        qr_code_data: configuredPublicAppUrl || window.location.origin,
       };
 
       return (data as StoreSettings) || defaults;
@@ -277,9 +260,17 @@ const [printerPort, setPrinterPort] = useState(
     mutationFn: async (newSettings: StoreSettings) => {
       if (!navigator.onLine) throw new Error("You are offline. Connect to save settings.");
 
+      const rawBase = (newSettings.qr_code_data || "").trim();
+      const normalizedBase = normalizeBaseUrl(rawBase);
+      if (!isVerifyBaseManaged && rawBase && !normalizedBase) {
+        throw new Error("Invalid Verification Base URL. Example: https://binacepos.vercel.app");
+      }
+
       const payload = {
         id: settings?.id,
         ...newSettings,
+        // Global override when VITE_PUBLIC_APP_URL is set; otherwise normalize user input.
+        qr_code_data: isVerifyBaseManaged ? configuredPublicAppUrl : normalizedBase || rawBase,
         updated_at: new Date().toISOString(),
       };
 
@@ -338,9 +329,12 @@ const testThermalPrint = async () => {
 
   // preview verify link (HashRouter safe)
   const previewVerifyUrl = useMemo(() => {
-    const base = formData.qr_code_data || window.location.origin;
-    return buildVerifyUrl(base, previewReceiptId);
+    return buildVerifyUrl(formData.qr_code_data, previewReceiptId);
   }, [formData.qr_code_data, previewReceiptId]);
+
+  const qrBaseRaw = (formData.qr_code_data || "").trim();
+  const qrBaseNormalized = normalizeBaseUrl(qrBaseRaw);
+  const qrBaseInvalid = !isVerifyBaseManaged && !!qrBaseRaw && !qrBaseNormalized;
 
   // --------------------
   // 3) Receipts list (online)
@@ -782,12 +776,24 @@ const testThermalPrint = async () => {
                   <div className="mt-4 space-y-2">
                     <Label className="text-slate-300">Verification Base URL</Label>
                     <Input
-                      value={formData.qr_code_data || ""}
-                      onChange={(e) => setFormData({ ...formData, qr_code_data: e.target.value })}
+                      value={isVerifyBaseManaged ? configuredPublicAppUrl || "" : formData.qr_code_data || ""}
+                      onChange={(e) => {
+                        if (isVerifyBaseManaged) return;
+                        setFormData({ ...formData, qr_code_data: e.target.value });
+                      }}
                       className="bg-slate-950 border-slate-800 text-white font-mono text-xs"
-                      placeholder={window.location.origin}
-                      disabled={!isAdmin}
+                      placeholder={configuredPublicAppUrl || window.location.origin}
+                      disabled={!isAdmin || isVerifyBaseManaged}
                     />
+                    {isVerifyBaseManaged ? (
+                      <div className="text-[11px] text-slate-400">
+                        Platform-managed by deployment config (<span className="font-mono">VITE_PUBLIC_APP_URL</span>).
+                      </div>
+                    ) : qrBaseInvalid ? (
+                      <div className="text-[11px] text-red-300">
+                        Invalid URL. Example: <span className="font-mono">https://binacepos.vercel.app</span>
+                      </div>
+                    ) : null}
 
                     <div className="mt-3 flex items-center gap-2">
                       <Button type="button" variant="outline" className="border-slate-700 text-slate-300 hover:text-white" onClick={() => copyText(previewVerifyUrl)}>
@@ -871,7 +877,7 @@ const testThermalPrint = async () => {
                       const rid = sale?.meta?.receiptId || "unknown";
                       const rnum = sale?.meta?.receiptNumber || "TM-??????";
                       const t = sale?.meta?.timestamp ? new Date(sale.meta.timestamp) : null;
-                      const verifyUrl = buildVerifyUrl(formData.qr_code_data || window.location.origin, rid);
+                      const verifyUrl = buildVerifyUrl(formData.qr_code_data, rid);
 
                       return (
                         <div
@@ -937,7 +943,7 @@ const testThermalPrint = async () => {
                 ) : (
                   <div className="space-y-2">
                     {onlineReceipts.map((row) => {
-                      const verifyUrl = buildVerifyUrl(formData.qr_code_data || window.location.origin, row.receipt_id);
+                      const verifyUrl = buildVerifyUrl(formData.qr_code_data, row.receipt_id);
                       const status = String(row.status || "completed").toLowerCase();
                       const isVoided = status === "voided";
 

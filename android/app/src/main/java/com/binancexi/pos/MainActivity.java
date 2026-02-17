@@ -1,4 +1,4 @@
-package com.themasters.pos;
+package com.binancexi.pos;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

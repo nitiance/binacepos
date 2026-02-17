@@ -54,6 +54,7 @@ import { usePOS } from "@/contexts/POSContext";
 import { hashPassword } from "@/lib/auth/passwordKdf";
 import { getLocalUser, renameLocalUser, upsertLocalUser } from "@/lib/auth/localUserStore";
 import { supabase } from "@/lib/supabase";
+import { getConfiguredPublicAppUrl, normalizeBaseUrl } from "@/lib/verifyUrl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -175,6 +176,8 @@ function syncSettingsToLocalStorage(s: StoreSettings) {
 export const SettingsPage = () => {
   const { currentUser, setCurrentUser } = usePOS();
   const queryClient = useQueryClient();
+  const configuredPublicAppUrl = getConfiguredPublicAppUrl();
+  const isVerifyBaseManaged = !!configuredPublicAppUrl;
 
   const isAdmin = currentUser?.role === "admin";
   const canAccessSettings =
@@ -233,7 +236,7 @@ export const SettingsPage = () => {
         tax_rate: num(localStorage.getItem(TAX_RATE_KEY), 0),
         tax_included: localStorage.getItem(TAX_INCLUDED_KEY) === "1",
         show_qr_code: true,
-        qr_code_data: window.location.origin,
+        qr_code_data: configuredPublicAppUrl || window.location.origin,
 
         low_stock_threshold: num(localStorage.getItem(LOW_STOCK_THRESHOLD_KEY), 3),
       };
@@ -263,13 +266,25 @@ export const SettingsPage = () => {
     if (settings) setFormData(settings);
   }, [settings]);
 
+  const qrBaseRaw = String(formData.qr_code_data ?? "").trim();
+  const qrBaseNormalized = normalizeBaseUrl(qrBaseRaw);
+  const qrBaseInvalid = !isVerifyBaseManaged && !!qrBaseRaw && !qrBaseNormalized;
+
   const saveSettingsMutation = useMutation({
     mutationFn: async (newSettings: StoreSettings) => {
       if (!isAdmin) throw new Error("Admins only");
 
+      const rawBase = String(newSettings.qr_code_data ?? "").trim();
+      const normalizedBase = normalizeBaseUrl(rawBase);
+      if (!isVerifyBaseManaged && rawBase && !normalizedBase) {
+        throw new Error("Invalid QR Code Base URL. Example: https://binacepos.vercel.app");
+      }
+
       const payload: StoreSettings = {
         id: settings?.id,
         ...newSettings,
+        // Global override when VITE_PUBLIC_APP_URL is set; otherwise normalize user input.
+        qr_code_data: isVerifyBaseManaged ? configuredPublicAppUrl : normalizedBase || rawBase || null,
         currency: String(newSettings.currency || "USD"),
         tax_rate: normalizeTaxRate(newSettings.tax_rate ?? 0),
         tax_included: !!newSettings.tax_included,
@@ -1043,14 +1058,26 @@ export const SettingsPage = () => {
                     </div>
 
                     <Field label="QR Code Base URL" full>
-                      <Input
-                        value={formData.qr_code_data || ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, qr_code_data: e.target.value })
-                        }
-                        disabled={!isAdmin}
-                        placeholder={window.location.origin}
-                      />
+                      <div className="space-y-1">
+                        <Input
+                          value={isVerifyBaseManaged ? configuredPublicAppUrl || "" : (formData.qr_code_data || "")}
+                          onChange={(e) => {
+                            if (isVerifyBaseManaged) return;
+                            setFormData({ ...formData, qr_code_data: e.target.value });
+                          }}
+                          disabled={!isAdmin || isVerifyBaseManaged}
+                          placeholder={configuredPublicAppUrl || window.location.origin}
+                        />
+                        {isVerifyBaseManaged ? (
+                          <div className="text-[11px] text-muted-foreground">
+                            Platform-managed by deployment config (<span className="font-mono">VITE_PUBLIC_APP_URL</span>).
+                          </div>
+                        ) : qrBaseInvalid ? (
+                          <div className="text-[11px] text-red-500">
+                            Invalid URL. Example: <span className="font-mono">https://binacepos.vercel.app</span>
+                          </div>
+                        ) : null}
+                      </div>
                     </Field>
                   </div>
                 </CardContent>

@@ -62,11 +62,7 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
     staleTime: 1000 * 60 * 60,
   });
 
-  const origin =
-    typeof window !== "undefined" && window.location?.origin ? window.location.origin : "https://binancexi-pos.app";
-
-  const baseUrl = (settings as any)?.qr_code_data || origin;
-  const qrUrl = buildVerifyUrl(baseUrl, receiptId);
+  const qrUrl = buildVerifyUrl((settings as any)?.qr_code_data, receiptId);
 
   const now = useMemo(() => new Date(), [receiptId]);
 
