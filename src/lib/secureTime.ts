@@ -63,12 +63,15 @@ class SecureTimeService {
       });
     }
 
-    // 3) Last resort: public time API (often blocked/unreliable)
-    sources.push({
-      url: "https://worldtimeapi.org/api/timezone/Etc/UTC",
-      method: "GET",
-      parseTime: (data) => new Date(data?.utc_datetime).getTime(),
-    });
+    // 3) Optional: external public time API (often blocked/unreliable). Disabled by default.
+    const externalEnabled = String((import.meta as any)?.env?.VITE_ENABLE_EXTERNAL_TIME || "").trim() === "1";
+    if (externalEnabled) {
+      sources.push({
+        url: "https://worldtimeapi.org/api/timezone/Etc/UTC",
+        method: "GET",
+        parseTime: (data) => new Date(data?.utc_datetime).getTime(),
+      });
+    }
 
     return sources;
   })();
@@ -130,13 +133,10 @@ class SecureTimeService {
 
   private warnOnce(msg: string, extra?: any) {
     const now = Date.now();
-    if ((import.meta as any)?.env?.DEV) {
-      console.warn(msg, extra ?? "");
-      return;
-    }
     if (now - this.lastWarnAt < this.WARN_INTERVAL) return;
     this.lastWarnAt = now;
-    console.warn(msg);
+    if ((import.meta as any)?.env?.DEV) console.warn(msg, extra ?? "");
+    else console.warn(msg);
   }
 
   private async syncTime(): Promise<void> {

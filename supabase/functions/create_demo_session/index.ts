@@ -93,6 +93,31 @@ function getOriginHost(req: Request) {
   return host ? host.toLowerCase() : null;
 }
 
+async function verifyTurnstile(args: { token: string; ip?: string | null }) {
+  const secret = String(Deno.env.get("TURNSTILE_SECRET_KEY") || "").trim();
+  if (!secret) return { enabled: false as const, ok: true as const };
+
+  const token = String(args.token || "").trim();
+  if (!token) return { enabled: true as const, ok: false as const, reason: "Captcha required" };
+
+  const params = new URLSearchParams();
+  params.set("secret", secret);
+  params.set("response", token);
+  if (args.ip) params.set("remoteip", String(args.ip));
+
+  const resp = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: params.toString(),
+  });
+
+  const data = (await resp.json().catch(() => null)) as any;
+  if (!resp.ok) return { enabled: true as const, ok: false as const, reason: "Captcha verification failed" };
+  if (!data?.success) return { enabled: true as const, ok: false as const, reason: "Captcha verification failed" };
+
+  return { enabled: true as const, ok: true as const };
+}
+
 async function cleanupExpiredDemoTenants(admin: ReturnType<typeof supabaseAdminClient>) {
   const nowIso = new Date().toISOString();
 
@@ -163,16 +188,26 @@ async function cleanupExpiredDemoTenants(admin: ReturnType<typeof supabaseAdminC
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
-
   const allowedHosts = parseAllowedHosts(Deno.env.get("DEMO_ALLOWED_ORIGINS") || null);
+  const origin = req.headers.get("origin");
+  const cors =
+    origin && origin.trim()
+      ? ({ ...corsHeaders, "Access-Control-Allow-Origin": origin.trim(), Vary: "Origin" } as Record<string, string>)
+      : (corsHeaders as Record<string, string>);
+
   if (allowedHosts) {
     const originHost = getOriginHost(req);
     if (!originHost || !allowedHosts.has(originHost)) {
-      return json(403, { error: "Forbidden" });
+      if (req.method === "OPTIONS") return new Response(null, { status: 403 });
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
     }
   }
+
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (req.method !== "POST") return json(405, { error: "Method not allowed" }, cors);
 
   const env = getSupabaseEnv();
   const admin = supabaseAdminClient(env);
@@ -187,14 +222,26 @@ serve(async (req) => {
     const ipRaw = getClientIp(req);
     const ip = ipRaw || "unknown";
 
+    // Optional: Turnstile captcha to keep demo available on shared networks.
+    const captchaRes = await verifyTurnstile({ token: (body as any)?.turnstile_token, ip: ipRaw });
+    if (captchaRes.enabled && !captchaRes.ok) {
+      return json(400, { error: captchaRes.reason || "Captcha verification failed. Try again." }, cors);
+    }
+
     const salt = String(Deno.env.get("DEMO_IP_HASH_SALT") || "").trim();
-    if (!salt) return json(500, { error: "Server misconfigured (missing DEMO_IP_HASH_SALT)" });
+    if (!salt) return json(500, { error: "Server misconfigured (missing DEMO_IP_HASH_SALT)" }, cors);
 
     const ip_hash = await sha256Hex(`${salt}|${ip}`);
 
     const windowMinutes = clampInt(intEnv("DEMO_RATE_LIMIT_WINDOW_MINUTES", 60), 1, 24 * 60);
     const maxPerWindow = clampInt(intEnv("DEMO_RATE_LIMIT_MAX", 3), 1, 50);
-    const effectiveMax = ipRaw ? maxPerWindow : Math.min(maxPerWindow, 1);
+    const maxPerWindowCaptcha = clampInt(intEnv("DEMO_RATE_LIMIT_MAX_TURNSTILE", 10), 1, 200);
+    const allowBoost = captchaRes.enabled && captchaRes.ok;
+    const effectiveMax = ipRaw
+      ? allowBoost
+        ? Math.max(maxPerWindow, maxPerWindowCaptcha)
+        : maxPerWindow
+      : Math.min(maxPerWindow, 1);
 
     const sinceIso = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString();
 
@@ -204,9 +251,9 @@ serve(async (req) => {
       .eq("ip_hash", ip_hash)
       .gte("created_at", sinceIso);
 
-    if (rateErr) return json(500, { error: "Rate limit check failed" });
+    if (rateErr) return json(500, { error: "Rate limit check failed" }, cors);
     if ((count || 0) >= effectiveMax) {
-      return json(429, { error: "Too many demo sessions from this network. Try again later." });
+      return json(429, { error: "Too many demo sessions from this network. Try again later." }, cors);
     }
 
     // Opportunistic cleanup (bounded, best-effort).
@@ -225,7 +272,7 @@ serve(async (req) => {
       .select("id")
       .single();
 
-    if (bizErr || !biz?.id) return json(500, { error: "Failed to create demo business" });
+    if (bizErr || !biz?.id) return json(500, { error: "Failed to create demo business" }, cors);
     createdBusinessId = String((biz as any).id);
 
     // Ensure billing is active until demo expiry; max devices high to avoid friction.
@@ -241,7 +288,7 @@ serve(async (req) => {
       { onConflict: "business_id" }
     );
 
-    if (billErr) return json(500, { error: "Failed to initialize demo billing" });
+    if (billErr) return json(500, { error: "Failed to initialize demo billing" }, cors);
 
     // Create demo admin user (retry a few times for uniqueness)
     const full_name = "Demo Admin";
@@ -266,17 +313,17 @@ serve(async (req) => {
         const msg = String(createErr.message || "").toLowerCase();
         // If random collision happens, just retry.
         if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) continue;
-        return json(500, { error: "Failed to create demo user", details: createErr.message });
+        return json(500, { error: "Failed to create demo user", details: createErr.message }, cors);
       }
 
-      if (!created.user?.id) return json(500, { error: "Failed to create demo user" });
+      if (!created.user?.id) return json(500, { error: "Failed to create demo user" }, cors);
 
       username = candidate;
       createdUserId = String(created.user.id);
       break;
     }
 
-    if (!createdUserId || !username) return json(500, { error: "Failed to provision demo user" });
+    if (!createdUserId || !username) return json(500, { error: "Failed to provision demo user" }, cors);
 
     const { error: profileErr } = await admin.from("profiles").upsert(
       {
@@ -292,7 +339,7 @@ serve(async (req) => {
       { onConflict: "id" }
     );
 
-    if (profileErr) return json(500, { error: "Failed to create demo profile" });
+    if (profileErr) return json(500, { error: "Failed to create demo profile" }, cors);
 
     const passHash = await hashPassword(password);
     const { error: passErr } = await admin.from("profile_secrets").upsert(
@@ -304,7 +351,7 @@ serve(async (req) => {
       { onConflict: "id" }
     );
 
-    if (passErr) return json(500, { error: "Password storage failed" });
+    if (passErr) return json(500, { error: "Password storage failed" }, cors);
 
     // Seed store settings
     await admin.from("store_settings").upsert(
@@ -459,6 +506,28 @@ serve(async (req) => {
         stock_quantity: 3, // deliberately low to trigger low-stock UI
       },
       {
+        name: "AA Batteries (4 pack)",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-BAT-AA4",
+        barcode: "4891234560000",
+        shortcut_code: "505",
+        price: 2.0,
+        cost_price: 1.1,
+        stock_quantity: 0, // out-of-stock to exercise UI states
+      },
+      {
+        name: "Phone Case (Generic)",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-CASE-001",
+        barcode: "4891234561111",
+        shortcut_code: "506",
+        price: 4.0,
+        cost_price: 2.0,
+        stock_quantity: 2, // low
+      },
+      {
         name: "SIM Registration",
         category: "Services",
         type: "service",
@@ -513,7 +582,7 @@ serve(async (req) => {
     });
 
     const { error: prodErr } = await admin.from("products").insert(seeded as any);
-    if (prodErr) return json(500, { error: "Failed to seed products" });
+    if (prodErr) return json(500, { error: "Failed to seed products" }, cors);
 
     // Seed a bit of sales history so reports aren't empty.
     const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
@@ -527,7 +596,7 @@ serve(async (req) => {
 
     const now = Date.now();
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 25; i++) {
       const orderId = crypto.randomUUID();
 
       const daysAgo = i < 4 ? 0 : Math.floor(Math.random() * 7); // ensure some are today
@@ -593,10 +662,10 @@ serve(async (req) => {
     }
 
     const { error: orderErr } = await admin.from("orders").insert(orders as any);
-    if (orderErr) return json(500, { error: "Failed to seed orders" });
+    if (orderErr) return json(500, { error: "Failed to seed orders" }, cors);
 
     const { error: itemsErr } = await admin.from("order_items").insert(orderItems as any);
-    if (itemsErr) return json(500, { error: "Failed to seed order items" });
+    if (itemsErr) return json(500, { error: "Failed to seed order items" }, cors);
 
     // Seed a few expenses so the Expenses/Profit pages aren't empty.
     try {
@@ -712,12 +781,12 @@ serve(async (req) => {
         user_agent: req.headers.get("user-agent") || null,
       } as any
     );
-    if (sessErr) return json(500, { error: "Failed to record demo session" });
+    if (sessErr) return json(500, { error: "Failed to record demo session" }, cors);
 
     return json(
       200,
       { ok: true, username, password, expires_at },
-      { "Cache-Control": "no-store" }
+      { ...cors, "Cache-Control": "no-store" }
     );
   } catch (e: any) {
     // Best-effort cleanup for partial provisioning.
@@ -745,6 +814,6 @@ serve(async (req) => {
       // ignore
     }
 
-    return json(500, { error: "Unhandled error", details: e?.message || String(e) });
+    return json(500, { error: "Unhandled error", details: e?.message || String(e) }, cors);
   }
 });

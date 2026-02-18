@@ -29,49 +29,47 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { BinanceWatermark } from "@/components/brand/BinanceWatermark";
 import { isDemoEntry } from "@/lib/demoEntry";
 
-type DemoCreds = {
-  username: string;
-  password: string;
-  expires_at: string | null;
-};
-
-const DEMO_CREDS_KEY = "binancexi_demo_creds_v1";
 const DEMO_EXPIRES_KEY = "binancexi_demo_expires_at";
 
-function parseIsoToMs(raw: unknown): number | null {
-  const s = String(raw || "").trim();
-  if (!s) return null;
-  const ts = Date.parse(s);
-  return Number.isFinite(ts) ? ts : null;
-}
-
-function loadDemoCreds(): DemoCreds | null {
-  try {
-    const raw = localStorage.getItem(DEMO_CREDS_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as any;
-    const username = sanitizeUsername(String(parsed?.username || ""));
-    const password = String(parsed?.password || "");
-    const expires_at = parsed?.expires_at == null ? null : String(parsed.expires_at);
-
-    if (!username || username.length < 3) return null;
-    if (!password || password.length < 6) return null;
-
-    const expTs = expires_at ? parseIsoToMs(expires_at) : null;
-    if (expTs != null && expTs <= Date.now()) return null;
-
-    return { username, password, expires_at: expTs != null ? expires_at : null };
-  } catch {
-    return null;
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (el: HTMLElement, opts: any) => string | number;
+      reset: (widgetId?: any) => void;
+      remove: (widgetId: any) => void;
+    };
   }
 }
 
-function saveDemoCreds(creds: DemoCreds) {
-  try {
-    localStorage.setItem(DEMO_CREDS_KEY, JSON.stringify(creds));
-  } catch {
-    // ignore
-  }
+let turnstileScriptPromise: Promise<void> | null = null;
+
+function loadTurnstileScript(): Promise<void> {
+  if (turnstileScriptPromise) return turnstileScriptPromise;
+  turnstileScriptPromise = new Promise((resolve, reject) => {
+    try {
+      if (typeof document === "undefined") return resolve();
+      if (window.turnstile?.render) return resolve();
+
+      const existing = document.querySelector<HTMLScriptElement>("script[data-turnstile]");
+      if (existing) {
+        existing.addEventListener("load", () => resolve());
+        existing.addEventListener("error", () => reject(new Error("Failed to load Turnstile")));
+        return;
+      }
+
+      const s = document.createElement("script");
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      s.async = true;
+      s.defer = true;
+      s.dataset.turnstile = "1";
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Failed to load Turnstile"));
+      document.head.appendChild(s);
+    } catch (e) {
+      reject(e);
+    }
+  });
+  return turnstileScriptPromise;
 }
 
 export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
@@ -85,9 +83,14 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   const [demoOpen, setDemoOpen] = useState(false);
   const [demoEmail, setDemoEmail] = useState("");
   const [demoLoading, setDemoLoading] = useState(false);
+  const turnstileSiteKey = String((import.meta as any)?.env?.VITE_TURNSTILE_SITE_KEY || "").trim();
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const secretRef = useRef<HTMLInputElement>(null);
+  const turnstileContainerRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetIdRef = useRef<any>(null);
 
   const showDemo = isDemoEntry() || String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1";
 
@@ -106,24 +109,56 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
     })();
   }, []);
 
-  // Convenience: if you arrive via `/?demo=1` and already created a demo session before,
-  // reuse the cached credentials to avoid burning rate limits on refresh.
+  // Live demo captcha (Turnstile) - rendered only when site key is configured.
   useEffect(() => {
-    if (!showDemo) return;
-    if (!isDemoEntry()) return;
-    if (username || secret) return;
-
-    const cached = loadDemoCreds();
-    if (!cached) return;
-
-    setUsername(cached.username);
-    setSecret(cached.password);
-    try {
-      if (cached.expires_at) localStorage.setItem(DEMO_EXPIRES_KEY, cached.expires_at);
-    } catch {
-      // ignore
+    if (!demoOpen) {
+      setTurnstileToken("");
+      setTurnstileError(null);
+      const id = turnstileWidgetIdRef.current;
+      turnstileWidgetIdRef.current = null;
+      try {
+        if (id != null && window.turnstile?.remove) window.turnstile.remove(id);
+      } catch {
+        // ignore
+      }
+      return;
     }
-  }, [showDemo, username, secret]);
+
+    if (!turnstileSiteKey) return;
+    const el = turnstileContainerRef.current;
+    if (!el) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await loadTurnstileScript();
+        if (cancelled) return;
+        if (!window.turnstile?.render) throw new Error("Captcha unavailable");
+
+        el.innerHTML = "";
+        const widgetId = window.turnstile.render(el, {
+          sitekey: turnstileSiteKey,
+          theme: "auto",
+          callback: (token: string) => {
+            setTurnstileToken(String(token || ""));
+            setTurnstileError(null);
+          },
+          "expired-callback": () => setTurnstileToken(""),
+          "error-callback": () => {
+            setTurnstileToken("");
+            setTurnstileError("Captcha failed. Try again.");
+          },
+        });
+        turnstileWidgetIdRef.current = widgetId;
+      } catch (e: any) {
+        setTurnstileError(e?.message || "Failed to load captcha");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [demoOpen, turnstileSiteKey]);
 
   const enforceDeviceLicense = async (profile: any) => {
     const role = String(profile?.role || "").trim();
@@ -347,19 +382,8 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       return;
     }
 
-    // If we already provisioned a demo in this browser and it hasn't expired yet, reuse it.
-    const cached = loadDemoCreds();
-    if (cached) {
-      setUsername(cached.username);
-      setSecret(cached.password);
-      try {
-        if (cached.expires_at) localStorage.setItem(DEMO_EXPIRES_KEY, cached.expires_at);
-      } catch {
-        // ignore
-      }
-
-      toast.success("Demo credentials ready. Click Access System to enter the demo.");
-      setDemoOpen(false);
+    if (turnstileSiteKey && !turnstileToken) {
+      toast.error("Please complete the captcha to start the demo");
       return;
     }
 
@@ -367,7 +391,10 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
     try {
       const email = String(demoEmail || "").trim() || null;
       const { data, error: fnErr } = await supabase.functions.invoke("create_demo_session", {
-        body: email ? { email } : {},
+        body: {
+          ...(email ? { email } : {}),
+          ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
+        },
       });
       if (fnErr) throw fnErr;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -385,11 +412,36 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
         // ignore
       }
 
-      saveDemoCreds({ username: demoUsername, password: demoPassword, expires_at: expires_at || null });
-
-      // Set inputs so the visitor doesn't have to type anything.
+      // Fill inputs so the visitor doesn't have to type anything if auto-login fails.
       setUsername(demoUsername);
       setSecret(demoPassword);
+
+      // Auto-login immediately (1-click demo entry).
+      try {
+        const cloudUser = await ensureOnlineSession(demoUsername, demoPassword);
+        await enforceDeviceLicense(cloudUser as any);
+
+        setCurrentUser({
+          id: String((cloudUser as any).id),
+          full_name: (cloudUser as any).full_name || (cloudUser as any).username,
+          name: (cloudUser as any).full_name || (cloudUser as any).username,
+          username: (cloudUser as any).username,
+          role: ((cloudUser as any).role as any) || "cashier",
+          permissions: (cloudUser as any).permissions || {},
+          business_id: (cloudUser as any).business_id ?? null,
+          active: true,
+        } as any);
+
+        sessionStorage.setItem("binancexi_session_active", "1");
+        localStorage.setItem("binancexi_last_username", String((cloudUser as any).username || demoUsername));
+
+        toast.success("Welcome to the live demo");
+        setDemoOpen(false);
+        onLogin();
+        return;
+      } catch (autoErr: any) {
+        if (import.meta.env.DEV) console.warn("[Demo] Auto-login failed, falling back to manual login", autoErr);
+      }
 
       toast.success("Demo credentials ready. Click Access System to enter the demo.");
       setDemoOpen(false);
@@ -689,7 +741,7 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
           <DialogHeader>
             <DialogTitle>Live Demo</DialogTitle>
             <DialogDescription>
-              We will create a temporary demo business and fill the login details for you. Then click Access System to enter the demo.
+              We will create a temporary demo business, fill the login details, and log you in automatically.
             </DialogDescription>
           </DialogHeader>
 
@@ -700,6 +752,17 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
               Optional: helps us understand usage. Leave blank if you want.
             </div>
           </div>
+
+          {turnstileSiteKey && (
+            <div className="space-y-2">
+              <Label>Verification</Label>
+              <div ref={turnstileContainerRef} />
+              {turnstileError ? <div className="text-[11px] text-red-500">{turnstileError}</div> : null}
+              <div className="text-[11px] text-muted-foreground">
+                This protects the demo from abuse so it stays available.
+              </div>
+            </div>
+          )}
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDemoOpen(false)}>

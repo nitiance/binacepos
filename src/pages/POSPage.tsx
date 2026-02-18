@@ -35,9 +35,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Camera } from "@capacitor/camera";
 import { enqueueThermalJob } from "@/lib/printQueue";
 import { tryPrintThermalQueue } from "@/lib/thermalPrint";
-import { createPortal } from "react-dom";
 import { ServiceBookingsDialog } from "@/components/services/ServiceBookingsDialog";
 import { pullRecentServiceBookings, pushUnsyncedServiceBookings } from "@/lib/serviceBookings";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 
 type FocusArea = "search" | "customer" | "products" | "cart";
@@ -747,7 +747,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
   const removeLine = useCallback((lineId: string) => removeFromCart(lineId), [removeFromCart]);
 
   return (
-  <div className="flex min-h-[100dvh] flex-col lg:flex-row bg-background pt-[env(safe-area-inset-top)]">
+  <div className="flex flex-col lg:flex-row bg-background">
       <AnimatePresence>
         {showShortcuts && (
           <motion.div
@@ -844,24 +844,26 @@ const [showMobileCart, setShowMobileCart] = useState(false);
             <Button
               size="sm"
               variant="outline"
-              className="h-8 text-xs gap-1"
+              className="h-9 text-xs gap-1"
               onClick={() => setShowDiscountDialog(true)}
               title="Discount code"
             >
               <Percent className="w-3.5 h-3.5" />
+              <span className="inline sm:hidden">Disc</span>
               <span className="hidden sm:inline">Discount</span>
             </Button>
 
             <Button
-  size="icon"
-  variant="outline"
-  className="h-8 w-8"
-  onClick={async () => {
-    const ok = await ensureCameraPermission();
-    if (ok) setShowScanner(true);
-  }}
->
+              size="sm"
+              variant="outline"
+              className="h-9 text-xs gap-1"
+              onClick={async () => {
+                const ok = await ensureCameraPermission();
+                if (ok) setShowScanner(true);
+              }}
+            >
               <ScanLine className="w-4 h-4" />
+              <span className="inline sm:hidden">Scan</span>
             </Button>
           </div>
         </div>
@@ -871,7 +873,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               ref={searchInputRef}
-              placeholder="Search Item, SKU, or Scan (F2)..."
+              placeholder="Search item, SKU, or barcode…"
               className="pl-9 h-10 font-mono text-sm bg-card shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -910,7 +912,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
 </div>
         </div>
 
-        <div className="flex-1 p-3 overflow-y-auto min-h-0 max-h-[calc(100dvh-160px)] pb-28">
+        <div className="flex-1 p-3 min-h-0 pb-36">
           {productsLoading ? (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="animate-spin text-primary" />
@@ -978,7 +980,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
             <User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
             <Input
               ref={customerInputRef}
-              placeholder="Customer Name (Optional) [F8]"
+              placeholder="Customer name (optional)"
               className="pl-9 h-9 text-sm bg-muted/50 border-transparent focus:bg-background focus:border-input transition-all"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
@@ -1053,119 +1055,120 @@ const [showMobileCart, setShowMobileCart] = useState(false);
           setShowScanner(false);
         }}
       />
-      {/* MOBILE FLOATING CART BUTTON (PORTAL FIX) */}
-{typeof document !== "undefined" &&
-  createPortal(
-    <div
-      className="lg:hidden"
-      style={{
-        position: "fixed",
-        right: "16px",
-        bottom: "calc(16px + env(safe-area-inset-bottom))",
-        zIndex: 99999,
-        pointerEvents: "auto",
-      }}
-    >
-      <Button
-        onClick={() => setShowMobileCart(true)}
-        className="rounded-full shadow-xl h-12 px-4"
-      >
-        <ShoppingCart className="w-4 h-4 mr-2" />
-        Cart ({cartItemCount})
-      </Button>
-    </div>,
-    document.body
-  )}
-
-{/* MOBILE CART DIALOG */}
-<Dialog open={showMobileCart} onOpenChange={setShowMobileCart}>
-  <DialogContent className="p-0 max-w-[95vw] w-full">
-    <div className="flex flex-col bg-card h-[85dvh]">
-
-      {/* HEADER */}
-      <div className="p-4 border-b space-y-3 bg-card">
-        <div className="flex justify-between items-center">
-          <h2 className="font-bold text-lg flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-primary" />
-            Current Sale
-            <span className="bg-primary/10 text-primary text-xs rounded-full px-2 py-0.5">
-              {cartItemCount}
-            </span>
-          </h2>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowMobileCart(false)}
-          >
-            Close
+      {/* MOBILE: sticky cart summary bar + bottom-sheet checkout */}
+      {cart.length > 0 && (
+        <div className="fixed left-0 right-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-[60] lg:hidden px-3">
+          <Button onClick={() => setShowMobileCart(true)} className="w-full h-12 rounded-2xl shadow-xl">
+            <div className="flex items-center justify-between gap-3 w-full">
+              <div className="flex items-center gap-2 min-w-0">
+                <ShoppingCart className="w-4 h-4 shrink-0" />
+                <span className="font-semibold truncate">Cart</span>
+                <span className="bg-white/15 text-white text-xs rounded-full px-2 py-0.5 shrink-0">
+                  {cartItemCount}
+                </span>
+              </div>
+              <div className="font-extrabold tabular-nums">${Number(total || 0).toFixed(2)}</div>
+            </div>
           </Button>
         </div>
+      )}
 
-        <div className="relative">
-          <User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Customer Name"
-            className="pl-9 h-9 text-sm"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-          />
-        </div>
-      </div>
+      <Drawer open={showMobileCart} onOpenChange={setShowMobileCart}>
+        <DrawerContent className="lg:hidden h-[85dvh] overflow-hidden pb-[env(safe-area-inset-bottom)]">
+          <div className="flex flex-col h-full bg-card">
+            <DrawerHeader className="text-left pb-2">
+              <div className="flex items-center justify-between gap-3">
+                <DrawerTitle className="flex items-center gap-2 min-w-0">
+                  <ShoppingCart className="w-5 h-5 text-primary shrink-0" />
+                  <span className="truncate">Current Sale</span>
+                  <span className="bg-primary/10 text-primary text-xs rounded-full px-2 py-0.5 shrink-0">
+                    {cartItemCount}
+                  </span>
+                </DrawerTitle>
 
-      {/* CART ITEMS */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-muted/10">
-        <AnimatePresence mode="popLayout">
-          {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-40">
-              <ShoppingCart className="w-12 h-12 mb-2" />
-              <p className="text-sm">Cart is empty</p>
+                <div className="flex items-center gap-2 shrink-0">
+                  {cart.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        clearCart();
+                        toast.info("Cart cleared");
+                      }}
+                      className="text-destructive h-8 text-xs hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" /> Clear
+                    </Button>
+                  )}
+                  <Button variant="outline" size="sm" onClick={() => setShowMobileCart(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </DrawerHeader>
+
+            <div className="px-4 pb-3">
+              <div className="relative">
+                <User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Customer name (optional)"
+                  className="pl-9 h-10 text-sm"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
             </div>
-          ) : (
-            cart.map((item: any, idx) => (
-              <CartItemRow
-                key={`${item.lineId}-${idx}`}
-                item={item}
-                onDec={() => decQty(item.lineId, item.quantity)}
-                onInc={() => incQty(item.lineId, item.quantity)}
-                onRemove={() => removeLine(item.lineId)}
-                onDiscount={() => openItemDiscount(item.lineId)}
-              />
-            ))
-          )}
-        </AnimatePresence>
-      </div>
 
-      {/* PAYMENT */}
-      <div className="border-t">
-        {posMode === "service" && (
-          <div className="p-3 border-b border-border bg-card">
-            <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline" className="gap-2" onClick={openNewServiceBooking}>
-                <CalendarPlus className="w-4 h-4" /> Book Service
-              </Button>
-              <Button type="button" variant="secondary" className="gap-2" onClick={openServiceBookingsList}>
-                <ClipboardList className="w-4 h-4" /> Bookings
-              </Button>
+            <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-2 bg-muted/10">
+              <AnimatePresence mode="popLayout">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-40">
+                    <ShoppingCart className="w-12 h-12 mb-2" />
+                    <p className="text-sm">Cart is empty</p>
+                  </div>
+                ) : (
+                  cart.map((item: any, idx) => (
+                    <CartItemRow
+                      key={`${item.lineId}-${idx}`}
+                      item={item}
+                      onDec={() => decQty(item.lineId, item.quantity)}
+                      onInc={() => incQty(item.lineId, item.quantity)}
+                      onRemove={() => removeLine(item.lineId)}
+                      onDiscount={() => openItemDiscount(item.lineId)}
+                    />
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="border-t">
+              {posMode === "service" && (
+                <div className="p-3 border-b border-border bg-card">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button type="button" variant="outline" className="gap-2" onClick={openNewServiceBooking}>
+                      <CalendarPlus className="w-4 h-4" /> Book Service
+                    </Button>
+                    <Button type="button" variant="secondary" className="gap-2" onClick={openServiceBookingsList}>
+                      <ClipboardList className="w-4 h-4" /> Bookings
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <PaymentPanel
+                ref={paymentPanelRef}
+                subtotal={subtotal}
+                discount={globalDiscount}
+                tax={tax}
+                total={total}
+                onComplete={async (method) => {
+                  await handlePaymentComplete(method);
+                  setShowMobileCart(false);
+                }}
+              />
             </div>
           </div>
-        )}
-        <PaymentPanel
-          ref={paymentPanelRef}
-          subtotal={subtotal}
-          discount={globalDiscount}
-          tax={tax}
-          total={total}
-          onComplete={async (method) => {
-            await handlePaymentComplete(method);
-            setShowMobileCart(false);
-          }}
-        />
-      </div>
-
-    </div>
-  </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
 
 
       <ServiceBookingsDialog

@@ -20,7 +20,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <TopBar />
 
         {/* ✅ The ONLY scroll container */}
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pos-scrollbar pb-20 md:pb-0">
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pos-scrollbar pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
           <div className="page-enter w-full">
             {children}
           </div>

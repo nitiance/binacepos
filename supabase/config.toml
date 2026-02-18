@@ -50,7 +50,9 @@ verify_jwt = false
 import_map = "./functions/impersonate_business/deno.json"
 entrypoint = "./functions/impersonate_business/index.ts"
 
-# DEMO ONLY: enable this in your DEMO Supabase project (keep disabled in production).
+# Live demo provisioning (public endpoint).
+# Enable this in production ONLY if you want the marketing-site demo to provision real demo tenants in the same project.
+# Otherwise, keep it disabled and run demos in a separate Supabase project.
 [functions.create_demo_session]
 enabled = true
 verify_jwt = false

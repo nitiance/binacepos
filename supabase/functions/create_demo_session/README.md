@@ -6,8 +6,11 @@ This Edge Function provisions a **per-visitor demo tenant** (business + admin us
 - `DEMO_ALLOWED_ORIGINS` (comma-separated origins/hosts)
 - `DEMO_IP_HASH_SALT` (required secret)
 - `DEMO_RATE_LIMIT_MAX` (default `3`)
+- `DEMO_RATE_LIMIT_MAX_TURNSTILE` (default `10`, only when Turnstile is enabled)
 - `DEMO_RATE_LIMIT_WINDOW_MINUTES` (default `60`)
 - `DEMO_TTL_HOURS` (default `24`)
+- Optional Turnstile hardening:
+  - `TURNSTILE_SECRET_KEY` (if set, captcha is required)
 
 ## DB
 Apply migrations:
