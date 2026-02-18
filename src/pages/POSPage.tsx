@@ -1056,7 +1056,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
         }}
       />
       {/* MOBILE: sticky cart summary bar + bottom-sheet checkout */}
-      {cart.length > 0 && (
+      {cart.length > 0 && !showMobileCart && (
         <div className="fixed left-0 right-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-[60] lg:hidden px-3">
           <Button onClick={() => setShowMobileCart(true)} className="w-full h-12 rounded-2xl shadow-xl">
             <div className="flex items-center justify-between gap-3 w-full">
