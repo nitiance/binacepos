@@ -1,19 +1,19 @@
-# create_demo_session (DEMO ONLY)
+# create_demo_session (Live Demo, Same Supabase Project)
 
-This Edge Function provisions a per-visitor demo tenant.
+This Edge Function provisions a **per-visitor demo tenant** (business + admin user + seeded data).
 
-## Safety
-- Guarded by `DEMO_MODE=1`. If not set, it returns `404`.
-- Keep this function **disabled in production** (`supabase/config.toml` sets `enabled=false`).
+## Required Env (Supabase Edge Function)
+- `DEMO_ALLOWED_ORIGINS` (comma-separated origins/hosts)
+- `DEMO_IP_HASH_SALT` (required secret)
+- `DEMO_RATE_LIMIT_MAX` (default `3`)
+- `DEMO_RATE_LIMIT_WINDOW_MINUTES` (default `60`)
+- `DEMO_TTL_HOURS` (default `24`)
 
-## Required Env (Demo Supabase project)
-- `DEMO_MODE=1`
-- `DEMO_IP_SALT=<random secret>` (used to hash visitor IPs for rate limiting)
-- `DEMO_TTL_HOURS=24` (optional)
-- Standard Supabase Edge Function envs:
-  - `SUPABASE_URL`
-  - `SUPABASE_SERVICE_ROLE_KEY`
+## DB
+Apply migrations:
+- `supabase/migrations/0013_demo_sessions.sql`
+- `supabase/migrations/0014_stock_rpc_tenant_guard.sql`
 
-## DB (Demo Supabase project)
-Apply `supabase/demo_migrations/0001_demo_sessions.sql` in the demo project.
-
+## Notes
+- `verify_jwt=false` by design (public provisioning endpoint). Guard rails are origin allowlist + rate limiting.
+- Demo cleanup runs opportunistically when new demos are created.

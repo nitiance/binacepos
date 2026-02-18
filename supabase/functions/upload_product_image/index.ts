@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     const admin = supabaseAdminClient(env);
     const { data: profile, error: profErr } = await admin
       .from("profiles")
-      .select("role, active, permissions")
+      .select("role, active, permissions, business_id")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -52,6 +52,21 @@ Deno.serve(async (req) => {
     const perms = (profile as ProfileRow).permissions || {};
     const canInventory = role === "admin" || !!perms?.allowInventory;
     if (!canInventory) return json(403, { error: "Not allowed" });
+
+    // Demo guard: block uploads in demo tenants (prevents quota abuse)
+    if (role !== "platform_admin") {
+      const businessId = String((profile as any)?.business_id || "").trim();
+      if (businessId) {
+        const { data: biz, error: bizErr } = await admin
+          .from("businesses")
+          .select("is_demo")
+          .eq("id", businessId)
+          .maybeSingle();
+        if (bizErr) return json(500, { error: "Failed to check business" });
+        if ((biz as any)?.is_demo === true) return json(403, { error: "Not available in demo" });
+      }
+    }
+
 
     const body = await req.json().catch(() => ({} as any));
     const fileName = String(body?.fileName || "").trim();

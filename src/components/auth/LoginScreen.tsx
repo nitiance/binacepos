@@ -27,6 +27,7 @@ import { NativeBiometric } from "@capgo/capacitor-native-biometric";
 import { BRAND } from "@/lib/brand";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { BinanceWatermark } from "@/components/brand/BinanceWatermark";
+import { isDemoEntry } from "@/lib/demoEntry";
 
 export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   const { setCurrentUser, syncStatus } = usePOS();
@@ -42,6 +43,8 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const secretRef = useRef<HTMLInputElement>(null);
+
+  const showDemo = isDemoEntry() || String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1";
 
   useEffect(() => {
     usernameRef.current?.focus();
@@ -613,7 +616,7 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
               Use Fingerprint
             </Button>
 
-            {String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1" && (
+            {showDemo && (
               <Button
                 type="button"
                 variant="secondary"

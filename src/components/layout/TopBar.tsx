@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { flushFeedbackQueue, getQueuedFeedbackCount } from "@/lib/feedbackQueue";
+import { demoEntryPath, isDemoEntry } from "@/lib/demoEntry";
 
 type PlatformAdminSessionBackup = {
   access_token: string;
@@ -91,16 +92,27 @@ export const TopBar = () => {
   const [returning, setReturning] = useState(false);
 
   const demoExpiresAt = useMemo(() => {
-    const isDemo = String((import.meta as any)?.env?.VITE_DEMO_MODE || "").trim() === "1";
-    if (!isDemo) return null;
     return safeGetItem(DEMO_EXPIRES_KEY);
   }, []);
+
+  useEffect(() => {
+    if (!demoExpiresAt) return;
+    const ts = Date.parse(demoExpiresAt);
+    if (!Number.isFinite(ts) || ts <= Date.now()) {
+      try {
+        localStorage.removeItem(DEMO_EXPIRES_KEY);
+      } catch {
+        // ignore
+      }
+    }
+  }, [demoExpiresAt]);
 
   const demoBanner = useMemo(() => {
     if (!demoExpiresAt) return null;
     const ts = Date.parse(demoExpiresAt);
     if (!Number.isFinite(ts)) return null;
     const msLeft = ts - Date.now();
+    if (msLeft <= 0) return null;
     return { ts, msLeft };
   }, [demoExpiresAt]);
 
@@ -156,6 +168,8 @@ export const TopBar = () => {
   };
 
   const handleLogout = async () => {
+    const redirectTo = isDemoEntry() ? demoEntryPath() : "/";
+
     try {
       // Kill Supabase session (if online)
       await supabase.auth.signOut();
@@ -169,6 +183,7 @@ export const TopBar = () => {
       localStorage.removeItem(IMPERSONATION_BACKUP_KEY);
       localStorage.removeItem(IMPERSONATION_INFO_KEY);
       localStorage.removeItem(REACT_QUERY_PERSIST_KEY);
+      localStorage.removeItem(DEMO_EXPIRES_KEY);
       // clear any supabase tokens if present (safe)
       Object.keys(localStorage).forEach((k) => {
         if (k.startsWith("sb-") && k.endsWith("-auth-token")) localStorage.removeItem(k);
@@ -179,7 +194,7 @@ export const TopBar = () => {
     queryClient.clear();
 
     // Force back to login route without weird double reloads
-    window.location.assign("/");
+    window.location.assign(redirectTo);
   };
 
   const returnToPlatformAdmin = async () => {

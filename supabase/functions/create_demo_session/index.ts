@@ -3,15 +3,21 @@ import { corsHeaders, json } from "../_shared/cors.ts";
 import { hashPassword } from "../_shared/password.ts";
 import { getSupabaseEnv, supabaseAdminClient } from "../_shared/supabase.ts";
 
+function firstIpFromXff(xff: string) {
+  return xff
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)[0] || null;
+}
+
 function getClientIp(req: Request) {
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0]?.trim() || null;
-  const real = req.headers.get("x-real-ip");
-  if (real) return real.trim();
+  // Prefer Cloudflare, then generic proxies.
   const cf = req.headers.get("cf-connecting-ip");
   if (cf) return cf.trim();
-  const fly = req.headers.get("fly-client-ip");
-  if (fly) return fly.trim();
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) return firstIpFromXff(xff);
+  const real = req.headers.get("x-real-ip");
+  if (real) return real.trim();
   return null;
 }
 
@@ -35,167 +41,275 @@ function sanitizeEmail(raw: unknown) {
   const s = String(raw || "").trim().toLowerCase();
   if (!s) return null;
   if (s.length > 254) return null;
-  // Minimal check; we do not send email in v1.
+  // Minimal check; we only store it as lead attribution.
   if (!s.includes("@") || !s.includes(".")) return null;
   return s;
 }
 
-async function bestEffortCleanup(admin: ReturnType<typeof supabaseAdminClient>) {
+function clampInt(n: number, min: number, max: number) {
+  if (!Number.isFinite(n)) return min;
+  return Math.max(min, Math.min(max, Math.trunc(n)));
+}
+
+function intEnv(name: string, fallback: number) {
+  const raw = String(Deno.env.get(name) || "").trim();
+  if (!raw) return fallback;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function parseAllowedHosts(raw: string | null) {
+  const parts = String(raw || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return null;
+
+  const out = new Set<string>();
+  for (const p of parts) {
+    try {
+      const u = p.includes("://") ? new URL(p) : new URL(`https://${p}`);
+      if (u.host) out.add(u.host.toLowerCase());
+    } catch {
+      // ignore invalid entry
+    }
+  }
+
+  return out.size > 0 ? out : null;
+}
+
+function getOriginHost(req: Request) {
+  const origin = req.headers.get("origin");
+  if (origin) {
+    try {
+      return new URL(origin).host.toLowerCase();
+    } catch {
+      return null;
+    }
+  }
+
+  // Non-browser clients: fall back to Host.
+  const host = req.headers.get("host");
+  return host ? host.toLowerCase() : null;
+}
+
+async function cleanupExpiredDemoTenants(admin: ReturnType<typeof supabaseAdminClient>) {
   const nowIso = new Date().toISOString();
-  const { data } = await admin
+
+  const { data: sessions, error: sessErr } = await admin
     .from("demo_sessions")
-    .select("id, business_id")
-    .lt("expires_at", nowIso)
-    .is("purged_at", null)
+    .select("id, business_id, user_id")
+    .lte("expires_at", nowIso)
     .order("expires_at", { ascending: true })
     .limit(10);
 
-  if (!Array.isArray(data) || data.length === 0) return;
+  if (sessErr || !Array.isArray(sessions) || sessions.length === 0) return;
 
-  for (const s of data as any[]) {
-    const id = String(s?.id || "").trim();
-    const business_id = String(s?.business_id || "").trim();
-    if (!id || !business_id) continue;
+  for (const row of sessions as any[]) {
+    const sessionId = String(row?.id || "").trim();
+    const businessId = String(row?.business_id || "").trim();
+    const userId = String(row?.user_id || "").trim();
 
-    // Prefer "disable access" over hard deletes (orders/users may have FKs).
-    await admin.from("businesses").update({ status: "suspended" }).eq("id", business_id);
-    await admin.from("business_billing").update({ locked_override: true }).eq("business_id", business_id);
-    await admin.from("profiles").update({ active: false }).eq("business_id", business_id);
-    await admin.from("business_devices").update({ active: false }).eq("business_id", business_id);
+    if (!sessionId || !businessId) continue;
 
-    await admin.from("demo_sessions").update({ purged_at: nowIso }).eq("id", id);
+    try {
+      // Safety: only delete demo tenants.
+      const { data: biz, error: bizErr } = await admin
+        .from("businesses")
+        .select("is_demo")
+        .eq("id", businessId)
+        .maybeSingle();
+
+      if (bizErr) {
+        // If the schema isn't migrated yet, do nothing (avoid risky deletes).
+        continue;
+      }
+
+      if (!biz) {
+        // Business already removed; drop the tracking row.
+        await admin.from("demo_sessions").delete().eq("id", sessionId);
+        continue;
+      }
+
+      if ((biz as any)?.is_demo !== true) {
+        // Never touch non-demo businesses.
+        continue;
+      }
+
+      // Delete tenant data (order matters due to FK constraints).
+      await admin.from("orders").delete().eq("business_id", businessId);
+      await admin.from("order_items").delete().eq("business_id", businessId);
+      await admin.from("products").delete().eq("business_id", businessId);
+      await admin.from("expenses").delete().eq("business_id", businessId);
+      await admin.from("service_bookings").delete().eq("business_id", businessId);
+      await admin.from("store_settings").delete().eq("business_id", businessId);
+      await admin.from("app_feedback").delete().eq("business_id", businessId);
+      await admin.from("business_devices").delete().eq("business_id", businessId);
+
+      // Remove auth user (cascades profile row).
+      if (userId) {
+        await admin.auth.admin.deleteUser(userId).catch(() => void 0);
+      }
+
+      // Remove the business (billing/related rows cascade).
+      await admin.from("businesses").delete().eq("id", businessId);
+
+      // Remove tracking row (may already be gone if cascaded).
+      await admin.from("demo_sessions").delete().eq("id", sessionId);
+    } catch {
+      // best-effort cleanup: continue
+    }
   }
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
   if (req.method !== "POST") return json(405, { error: "Method not allowed" });
 
-  // Guard: if accidentally deployed to production, keep it inert.
-  if (String(Deno.env.get("DEMO_MODE") || "").trim() !== "1") {
-    return json(404, { error: "Not found" });
+  const allowedHosts = parseAllowedHosts(Deno.env.get("DEMO_ALLOWED_ORIGINS") || null);
+  if (allowedHosts) {
+    const originHost = getOriginHost(req);
+    if (!originHost || !allowedHosts.has(originHost)) {
+      return json(403, { error: "Forbidden" });
+    }
   }
 
-  try {
-    const env = getSupabaseEnv();
-    const admin = supabaseAdminClient(env);
+  const env = getSupabaseEnv();
+  const admin = supabaseAdminClient(env);
 
+  let createdBusinessId: string | null = null;
+  let createdUserId: string | null = null;
+
+  try {
     const body = await req.json().catch(() => ({} as any));
     const email = sanitizeEmail((body as any)?.email);
 
-    const ip = getClientIp(req) || "0.0.0.0";
-    const salt = String(Deno.env.get("DEMO_IP_SALT") || "demo").trim();
-    const ip_hash = await sha256Hex(`${ip}|${salt}`);
+    const ipRaw = getClientIp(req);
+    const ip = ipRaw || "unknown";
 
-    // Opportunistic cleanup of expired demo tenants.
-    await bestEffortCleanup(admin);
+    const salt = String(Deno.env.get("DEMO_IP_HASH_SALT") || "").trim();
+    if (!salt) return json(500, { error: "Server misconfigured (missing DEMO_IP_HASH_SALT)" });
 
-    // Rate limit: max 3 sessions per IP per 24 hours.
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const ip_hash = await sha256Hex(`${salt}|${ip}`);
+
+    const windowMinutes = clampInt(intEnv("DEMO_RATE_LIMIT_WINDOW_MINUTES", 60), 1, 24 * 60);
+    const maxPerWindow = clampInt(intEnv("DEMO_RATE_LIMIT_MAX", 3), 1, 50);
+    const effectiveMax = ipRaw ? maxPerWindow : Math.min(maxPerWindow, 1);
+
+    const sinceIso = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString();
+
     const { count, error: rateErr } = await admin
       .from("demo_sessions")
       .select("id", { count: "exact", head: true })
       .eq("ip_hash", ip_hash)
-      .gte("created_at", since);
-    if (rateErr) {
-      return json(500, { error: "Rate limit check failed" });
-    }
-    if ((count || 0) >= 3) {
+      .gte("created_at", sinceIso);
+
+    if (rateErr) return json(500, { error: "Rate limit check failed" });
+    if ((count || 0) >= effectiveMax) {
       return json(429, { error: "Too many demo sessions from this network. Try again later." });
     }
 
-    const ttlHours = Math.max(1, Math.min(72, Number(Deno.env.get("DEMO_TTL_HOURS") || "24") || 24));
+    // Opportunistic cleanup (bounded, best-effort).
+    await cleanupExpiredDemoTenants(admin);
+
+    const ttlHours = clampInt(intEnv("DEMO_TTL_HOURS", 24), 1, 72);
     const expires_at = new Date(Date.now() + ttlHours * 60 * 60 * 1000).toISOString();
 
-    // Create business
-    const bizName = `Demo ${randomString(6, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789")}`;
+    const shortId = randomString(6, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+    const bizName = `Demo Business ${shortId}`;
+
+    // Create demo business
     const { data: biz, error: bizErr } = await admin
       .from("businesses")
-      .insert({ name: bizName, status: "active", plan_type: "business_system" })
+      .insert({ name: bizName, status: "active", plan_type: "business_system", is_demo: true } as any)
       .select("id")
       .single();
-    if (bizErr || !biz?.id) {
-      return json(500, { error: "Failed to create demo business" });
-    }
-    const business_id = String((biz as any).id);
 
-    // Ensure billing is active until expiry (grace=0, max_devices high to reduce friction).
+    if (bizErr || !biz?.id) return json(500, { error: "Failed to create demo business" });
+    createdBusinessId = String((biz as any).id);
+
+    // Ensure billing is active until demo expiry; max devices high to avoid friction.
     const { error: billErr } = await admin.from("business_billing").upsert(
       {
-        business_id,
+        business_id: createdBusinessId,
         grace_days: 0,
         paid_through: expires_at,
         locked_override: false,
-        max_devices: 5,
+        max_devices: 10,
         currency: "USD",
       } as any,
       { onConflict: "business_id" }
     );
-    if (billErr) {
-      return json(500, { error: "Failed to initialize demo billing" });
-    }
 
-    // Create demo admin user
-    const username = `demo_${randomString(8, "abcdefghijklmnopqrstuvwxyz0123456789")}`;
-    const password = randomString(18, "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*");
+    if (billErr) return json(500, { error: "Failed to initialize demo billing" });
+
+    // Create demo admin user (retry a few times for uniqueness)
     const full_name = "Demo Admin";
-    const permissions = {
-      allowRefunds: true,
-      allowVoid: true,
-      allowPriceEdit: true,
-      allowDiscount: true,
-      allowReports: true,
-      allowInventory: true,
-      allowSettings: true,
-      allowEditReceipt: true,
-    };
+    const password = randomString(
+      18,
+      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*"
+    );
 
-    const authEmail = `${username}@binancexi-pos.app`;
-    const { data: created, error: createErr } = await admin.auth.admin.createUser({
-      email: authEmail,
-      password,
-      email_confirm: true,
-      user_metadata: { full_name },
-    });
-    if (createErr || !created.user?.id) {
-      return json(500, { error: createErr?.message || "Failed to create demo user" });
+    let username: string | null = null;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const candidate = `demo_${randomString(8, "abcdefghijklmnopqrstuvwxyz0123456789")}`;
+      const authEmail = `${candidate}@binancexi-pos.app`;
+
+      const { data: created, error: createErr } = await admin.auth.admin.createUser({
+        email: authEmail,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name },
+      });
+
+      if (createErr) {
+        const msg = String(createErr.message || "").toLowerCase();
+        // If random collision happens, just retry.
+        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) continue;
+        return json(500, { error: "Failed to create demo user", details: createErr.message });
+      }
+
+      if (!created.user?.id) return json(500, { error: "Failed to create demo user" });
+
+      username = candidate;
+      createdUserId = String(created.user.id);
+      break;
     }
-    const user_id = String(created.user.id);
+
+    if (!createdUserId || !username) return json(500, { error: "Failed to provision demo user" });
 
     const { error: profileErr } = await admin.from("profiles").upsert(
       {
-        id: user_id,
+        id: createdUserId,
         username,
         full_name,
         role: "admin",
-        permissions,
+        permissions: {},
         active: true,
-        business_id,
+        business_id: createdBusinessId,
         is_support: false,
       } as any,
       { onConflict: "id" }
     );
-    if (profileErr) {
-      return json(500, { error: "Failed to create demo profile" });
-    }
+
+    if (profileErr) return json(500, { error: "Failed to create demo profile" });
 
     const passHash = await hashPassword(password);
     const { error: passErr } = await admin.from("profile_secrets").upsert(
       {
-        id: user_id,
+        id: createdUserId,
         ...passHash,
         updated_at: new Date().toISOString(),
       } as any,
       { onConflict: "id" }
     );
-    if (passErr) {
-      return json(500, { error: "Password storage failed" });
-    }
+
+    if (passErr) return json(500, { error: "Password storage failed" });
 
     // Seed store settings
     await admin.from("store_settings").upsert(
       {
-        business_id,
+        business_id: createdBusinessId,
         id: "default",
         business_name: bizName,
         currency: "USD",
@@ -210,56 +324,325 @@ serve(async (req) => {
       { onConflict: "business_id,id" }
     );
 
-    // Seed a small catalog (fast, realistic enough for a demo)
-    const products = [
-      { name: "Coca Cola 500ml", category: "Beverages", price: 1.5, cost_price: 1.0, stock_quantity: 30 },
-      { name: "Water 1L", category: "Beverages", price: 1.0, cost_price: 0.6, stock_quantity: 40 },
-      { name: "Orange Juice", category: "Beverages", price: 2.0, cost_price: 1.2, stock_quantity: 18 },
-      { name: "Potato Chips", category: "Snacks", price: 1.2, cost_price: 0.7, stock_quantity: 25 },
-      { name: "Chocolate Bar", category: "Snacks", price: 0.9, cost_price: 0.4, stock_quantity: 50 },
-      { name: "Bread", category: "Bakery", price: 1.1, cost_price: 0.7, stock_quantity: 22 },
-      { name: "Milk 1L", category: "Dairy", price: 1.3, cost_price: 0.9, stock_quantity: 16 },
-      { name: "Eggs (12)", category: "Dairy", price: 2.4, cost_price: 1.8, stock_quantity: 12 },
-      { name: "USB-C Cable", category: "Accessories", price: 3.5, cost_price: 2.2, stock_quantity: 10 },
-      { name: "Phone Charger", category: "Accessories", price: 6.0, cost_price: 3.8, stock_quantity: 8 },
-      { name: "Screen Protector", category: "Accessories", price: 2.5, cost_price: 1.0, stock_quantity: 20 },
-      { name: "Headphones", category: "Accessories", price: 8.0, cost_price: 5.2, stock_quantity: 6 },
-      { name: "SIM Registration", category: "Services", type: "service", price: 1.0, cost_price: 0, stock_quantity: 0 },
-      { name: "Phone Cleaning", category: "Services", type: "service", price: 2.0, cost_price: 0, stock_quantity: 0 },
-      { name: "Basic Repair Fee", category: "Services", type: "service", price: 5.0, cost_price: 0, stock_quantity: 0 },
-    ].map((p) => ({
-      business_id,
-      name: p.name,
-      category: p.category,
-      type: (p as any).type || "good",
-      price: p.price,
-      cost_price: p.cost_price,
-      stock_quantity: p.stock_quantity,
-      low_stock_threshold: 5,
-    }));
+    // Seed products
+    const seedProducts = [
+      {
+        name: "Coca Cola 500ml",
+        category: "Beverages",
+        type: "good",
+        sku: "BEV-COC-500",
+        barcode: "6001065507508",
+        shortcut_code: "101",
+        price: 1.5,
+        cost_price: 1.0,
+        stock_quantity: 30,
+      },
+      {
+        name: "Water 1L",
+        category: "Beverages",
+        type: "good",
+        sku: "BEV-WAT-1L",
+        barcode: "6009601262342",
+        shortcut_code: "102",
+        price: 1.0,
+        cost_price: 0.6,
+        stock_quantity: 40,
+      },
+      {
+        name: "Orange Juice",
+        category: "Beverages",
+        type: "good",
+        sku: "BEV-JUI-ORG",
+        barcode: "5010478012345",
+        shortcut_code: "103",
+        price: 2.0,
+        cost_price: 1.2,
+        stock_quantity: 18,
+      },
+      {
+        name: "Potato Chips",
+        category: "Snacks",
+        type: "good",
+        sku: "SNK-CHP-001",
+        barcode: "6009689123456",
+        shortcut_code: "201",
+        price: 1.2,
+        cost_price: 0.7,
+        stock_quantity: 25,
+      },
+      {
+        name: "Chocolate Bar",
+        category: "Snacks",
+        type: "good",
+        sku: "SNK-CHO-001",
+        barcode: "5000159484695",
+        shortcut_code: "202",
+        price: 0.9,
+        cost_price: 0.4,
+        stock_quantity: 50,
+      },
+      {
+        name: "Bread",
+        category: "Bakery",
+        type: "good",
+        sku: "BAK-BRD-001",
+        barcode: "6001206100007",
+        shortcut_code: "301",
+        price: 1.1,
+        cost_price: 0.7,
+        stock_quantity: 22,
+      },
+      {
+        name: "Milk 1L",
+        category: "Dairy",
+        type: "good",
+        sku: "DAR-MLK-1L",
+        barcode: "6001052001234",
+        shortcut_code: "401",
+        price: 1.3,
+        cost_price: 0.9,
+        stock_quantity: 16,
+      },
+      {
+        name: "Eggs (12)",
+        category: "Dairy",
+        type: "good",
+        sku: "DAR-EGG-12",
+        barcode: "6009876543210",
+        shortcut_code: "402",
+        price: 2.4,
+        cost_price: 1.8,
+        stock_quantity: 12,
+      },
+      {
+        name: "USB-C Cable",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-USBC-1M",
+        barcode: "6971234567890",
+        shortcut_code: "501",
+        price: 3.5,
+        cost_price: 2.2,
+        stock_quantity: 10,
+      },
+      {
+        name: "Phone Charger",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-CHR-20W",
+        barcode: "6970987654321",
+        shortcut_code: "502",
+        price: 6.0,
+        cost_price: 3.8,
+        stock_quantity: 8,
+      },
+      {
+        name: "Screen Protector",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-SCR-001",
+        barcode: "6921234509876",
+        shortcut_code: "503",
+        price: 2.5,
+        cost_price: 1.0,
+        stock_quantity: 20,
+      },
+      {
+        name: "Headphones",
+        category: "Accessories",
+        type: "good",
+        sku: "ACC-HDP-001",
+        barcode: "6955555012345",
+        shortcut_code: "504",
+        price: 8.0,
+        cost_price: 5.2,
+        stock_quantity: 3, // deliberately low to trigger low-stock UI
+      },
+      {
+        name: "SIM Registration",
+        category: "Services",
+        type: "service",
+        sku: "SRV-SIM-REG",
+        barcode: null,
+        shortcut_code: "901",
+        price: 1.0,
+        cost_price: 0,
+        stock_quantity: 0,
+      },
+      {
+        name: "Phone Cleaning",
+        category: "Services",
+        type: "service",
+        sku: "SRV-PHN-CLN",
+        barcode: null,
+        shortcut_code: "902",
+        price: 2.0,
+        cost_price: 0,
+        stock_quantity: 0,
+      },
+      {
+        name: "Basic Repair Fee",
+        category: "Services",
+        type: "service",
+        sku: "SRV-RPR-BSC",
+        barcode: null,
+        shortcut_code: "903",
+        price: 5.0,
+        cost_price: 0,
+        stock_quantity: 0,
+      },
+    ];
 
-    await admin.from("products").insert(products as any);
+    const seeded = seedProducts.map((p) => {
+      const id = crypto.randomUUID();
+      return {
+        id,
+        business_id: createdBusinessId,
+        name: p.name,
+        category: p.category,
+        type: p.type,
+        sku: p.sku,
+        barcode: p.barcode,
+        shortcut_code: p.shortcut_code,
+        price: p.price,
+        cost_price: p.cost_price,
+        stock_quantity: p.stock_quantity,
+        low_stock_threshold: 5,
+        is_archived: false,
+      };
+    });
 
-    // Persist demo session metadata
-    const { error: sessErr } = await admin.from("demo_sessions").insert({
-      expires_at,
-      ip_hash,
-      email,
-      business_id,
-      user_id,
-      username,
-      user_agent: req.headers.get("user-agent") || null,
-    } as any);
-    if (sessErr) {
-      return json(500, { error: "Failed to record demo session" });
+    const { error: prodErr } = await admin.from("products").insert(seeded as any);
+    if (prodErr) return json(500, { error: "Failed to seed products" });
+
+    // Seed a bit of sales history so reports aren't empty.
+    const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+    const paymentMethods = ["cash", "card", "ecocash", "mobile"];
+
+    const goods = seeded.filter((p: any) => String(p.type) !== "service");
+    const allItems = seeded;
+
+    const orders: any[] = [];
+    const orderItems: any[] = [];
+
+    const now = Date.now();
+
+    for (let i = 0; i < 15; i++) {
+      const orderId = crypto.randomUUID();
+
+      const daysAgo = i < 4 ? 0 : Math.floor(Math.random() * 7); // ensure some are today
+      const hour = 9 + Math.floor(Math.random() * 10); // 09:00 - 18:59
+      const minute = Math.floor(Math.random() * 60);
+      const created = new Date(now - daysAgo * 24 * 60 * 60 * 1000);
+      created.setHours(hour, minute, Math.floor(Math.random() * 60), 0);
+      const created_at = created.toISOString();
+
+      const y = created.getFullYear();
+      const m = String(created.getMonth() + 1).padStart(2, "0");
+      const d = String(created.getDate()).padStart(2, "0");
+      const dateKey = `${y}${m}${d}`;
+
+      const receiptSuffix = randomString(6, "0123456789");
+      const receipt_number = `BXI-${dateKey}-${receiptSuffix}`;
+      const receipt_id = crypto.randomUUID();
+
+      const itemCount = 1 + Math.floor(Math.random() * 4);
+
+      let subtotal = 0;
+      for (let j = 0; j < itemCount; j++) {
+        const product = j === 0 ? pick(goods) : pick(allItems);
+        const qty = String(product.type) === "service" ? 1 : 1 + Math.floor(Math.random() * 3);
+        const price = Number(product.price || 0);
+        const cost = Number(product.cost_price || 0);
+        subtotal += price * qty;
+
+        orderItems.push({
+          id: crypto.randomUUID(),
+          business_id: createdBusinessId,
+          order_id: orderId,
+          product_id: product.id,
+          product_name: product.name,
+          quantity: qty,
+          price_at_sale: price,
+          cost_at_sale: cost,
+          created_at,
+        });
+      }
+
+      const total = Math.round(subtotal * 100) / 100;
+
+      orders.push({
+        id: orderId,
+        business_id: createdBusinessId,
+        cashier_id: createdUserId,
+        customer_name: null,
+        customer_contact: null,
+        total_amount: total,
+        payment_method: pick(paymentMethods),
+        status: "completed",
+        receipt_id,
+        receipt_number,
+        subtotal_amount: total,
+        discount_amount: 0,
+        tax_amount: 0,
+        created_at,
+        updated_at: created_at,
+        sale_type: "product",
+        booking_id: null,
+      });
     }
+
+    const { error: orderErr } = await admin.from("orders").insert(orders as any);
+    if (orderErr) return json(500, { error: "Failed to seed orders" });
+
+    const { error: itemsErr } = await admin.from("order_items").insert(orderItems as any);
+    if (itemsErr) return json(500, { error: "Failed to seed order items" });
+
+    // Track demo session metadata (server-only)
+    const { error: sessErr } = await admin.from("demo_sessions").insert(
+      {
+        expires_at,
+        ip_hash,
+        email,
+        business_id: createdBusinessId,
+        user_id: createdUserId,
+        username,
+        user_agent: req.headers.get("user-agent") || null,
+      } as any
+    );
+    if (sessErr) return json(500, { error: "Failed to record demo session" });
 
     return json(
       200,
-      { username, password, business_id, expires_at },
+      { ok: true, username, password, expires_at },
       { "Cache-Control": "no-store" }
     );
   } catch (e: any) {
+    // Best-effort cleanup for partial provisioning.
+    try {
+      if (createdUserId) {
+        await admin.auth.admin.deleteUser(createdUserId).catch(() => void 0);
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      if (createdBusinessId) {
+        await admin.from("orders").delete().eq("business_id", createdBusinessId);
+        await admin.from("order_items").delete().eq("business_id", createdBusinessId);
+        await admin.from("products").delete().eq("business_id", createdBusinessId);
+        await admin.from("expenses").delete().eq("business_id", createdBusinessId);
+        await admin.from("service_bookings").delete().eq("business_id", createdBusinessId);
+        await admin.from("store_settings").delete().eq("business_id", createdBusinessId);
+        await admin.from("app_feedback").delete().eq("business_id", createdBusinessId);
+        await admin.from("business_devices").delete().eq("business_id", createdBusinessId);
+        await admin.from("businesses").delete().eq("id", createdBusinessId);
+      }
+    } catch {
+      // ignore
+    }
+
     return json(500, { error: "Unhandled error", details: e?.message || String(e) });
   }
 });

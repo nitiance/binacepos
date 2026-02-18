@@ -8,6 +8,7 @@ export default defineConfig(({ command, mode }) => {
   const supabaseUrl = env.VITE_SUPABASE_URL;
 
   return {
+    base: "./", // relative asset paths (needed when mounted behind BinanceXI at /pos/)
     ...(mode ? { envPrefix: "VITE_" } : {}),
     server: {
       host: "::",

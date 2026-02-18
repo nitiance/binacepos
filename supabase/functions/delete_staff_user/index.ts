@@ -47,6 +47,21 @@ serve(async (req) => {
 
     if (!isPlatformAdmin && !isBusinessAdmin) return json(403, { error: "Admins only" });
 
+    // Demo guard: block staff management inside demo tenants (prevents abuse)
+    if (!isPlatformAdmin) {
+      const businessId = String((caller as any)?.business_id || "").trim();
+      if (businessId) {
+        const { data: biz, error: bizErr } = await admin
+          .from("businesses")
+          .select("is_demo")
+          .eq("id", businessId)
+          .maybeSingle();
+        if (bizErr) return json(500, { error: "Failed to check business" });
+        if ((biz as any)?.is_demo === true) return json(403, { error: "Not available in demo" });
+      }
+    }
+
+
     const body = await req.json().catch(() => ({} as any));
     const user_id = String(body?.user_id || "").trim();
     if (!user_id) return json(400, { error: "Missing user_id" });
