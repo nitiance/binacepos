@@ -598,6 +598,108 @@ serve(async (req) => {
     const { error: itemsErr } = await admin.from("order_items").insert(orderItems as any);
     if (itemsErr) return json(500, { error: "Failed to seed order items" });
 
+    // Seed a few expenses so the Expenses/Profit pages aren't empty.
+    try {
+      const expenses = [
+        {
+          business_id: createdBusinessId,
+          user_id: createdUserId,
+          created_by: createdUserId,
+          source: "demo",
+          occurred_at: new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          category: "Rent",
+          notes: "Shop rent (demo)",
+          amount: 35,
+          payment_method: "cash",
+          expense_type: "expense",
+          synced_at: new Date().toISOString(),
+        },
+        {
+          business_id: createdBusinessId,
+          user_id: createdUserId,
+          created_by: createdUserId,
+          source: "demo",
+          occurred_at: new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          category: "Supplies",
+          notes: "Packaging + cleaning supplies (demo)",
+          amount: 12.5,
+          payment_method: "cash",
+          expense_type: "expense",
+          synced_at: new Date().toISOString(),
+        },
+        {
+          business_id: createdBusinessId,
+          user_id: createdUserId,
+          created_by: createdUserId,
+          source: "demo",
+          occurred_at: new Date(now - 6 * 60 * 60 * 1000).toISOString(),
+          category: "Transport",
+          notes: "Supplier pickup (demo)",
+          amount: 6,
+          payment_method: "cash",
+          expense_type: "expense",
+          synced_at: new Date().toISOString(),
+        },
+        {
+          business_id: createdBusinessId,
+          user_id: createdUserId,
+          created_by: createdUserId,
+          source: "demo",
+          occurred_at: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
+          category: "Owner drawing",
+          notes: "Owner cash withdrawal (demo)",
+          amount: 10,
+          payment_method: "cash",
+          expense_type: "owner_draw",
+          synced_at: new Date().toISOString(),
+        },
+      ];
+
+      await admin.from("expenses").insert(expenses as any);
+    } catch {
+      // Best-effort: do not fail demo provisioning if seeding fails.
+    }
+
+    // Seed a few service bookings so the service bookings list isn't empty.
+    try {
+      const services = seeded.filter((p: any) => String(p.type) === "service");
+      const pickService = () => (services.length ? pick(services) : pick(seeded));
+
+      const mk = (opts: {
+        customer: string;
+        hoursFromNow: number;
+        status: "booked" | "completed" | "cancelled";
+        deposit: number;
+        total: number;
+      }) => {
+        const svc = pickService();
+        const when = new Date(now + opts.hoursFromNow * 60 * 60 * 1000);
+        const booking_date_time = when.toISOString();
+        return {
+          business_id: createdBusinessId,
+          service_id: svc.id,
+          service_name: svc.name,
+          customer_name: opts.customer,
+          booking_date_time,
+          deposit_amount: opts.deposit,
+          total_price: opts.total,
+          status: opts.status,
+          created_at: booking_date_time,
+          updated_at: booking_date_time,
+        };
+      };
+
+      const bookings = [
+        mk({ customer: "Tariro", hoursFromNow: 2, status: "booked", deposit: 0, total: 5 }),
+        mk({ customer: "Brian", hoursFromNow: 26, status: "booked", deposit: 1, total: 8 }),
+        mk({ customer: "Rudo", hoursFromNow: -30, status: "completed", deposit: 2, total: 10 }),
+      ];
+
+      await admin.from("service_bookings").insert(bookings as any);
+    } catch {
+      // Best-effort: do not fail demo provisioning if seeding fails.
+    }
+
     // Track demo session metadata (server-only)
     const { error: sessErr } = await admin.from("demo_sessions").insert(
       {

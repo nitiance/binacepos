@@ -29,6 +29,51 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { BinanceWatermark } from "@/components/brand/BinanceWatermark";
 import { isDemoEntry } from "@/lib/demoEntry";
 
+type DemoCreds = {
+  username: string;
+  password: string;
+  expires_at: string | null;
+};
+
+const DEMO_CREDS_KEY = "binancexi_demo_creds_v1";
+const DEMO_EXPIRES_KEY = "binancexi_demo_expires_at";
+
+function parseIsoToMs(raw: unknown): number | null {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+  const ts = Date.parse(s);
+  return Number.isFinite(ts) ? ts : null;
+}
+
+function loadDemoCreds(): DemoCreds | null {
+  try {
+    const raw = localStorage.getItem(DEMO_CREDS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as any;
+    const username = sanitizeUsername(String(parsed?.username || ""));
+    const password = String(parsed?.password || "");
+    const expires_at = parsed?.expires_at == null ? null : String(parsed.expires_at);
+
+    if (!username || username.length < 3) return null;
+    if (!password || password.length < 6) return null;
+
+    const expTs = expires_at ? parseIsoToMs(expires_at) : null;
+    if (expTs != null && expTs <= Date.now()) return null;
+
+    return { username, password, expires_at: expTs != null ? expires_at : null };
+  } catch {
+    return null;
+  }
+}
+
+function saveDemoCreds(creds: DemoCreds) {
+  try {
+    localStorage.setItem(DEMO_CREDS_KEY, JSON.stringify(creds));
+  } catch {
+    // ignore
+  }
+}
+
 export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   const { setCurrentUser, syncStatus } = usePOS();
 
@@ -60,6 +105,25 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       }
     })();
   }, []);
+
+  // Convenience: if you arrive via `/?demo=1` and already created a demo session before,
+  // reuse the cached credentials to avoid burning rate limits on refresh.
+  useEffect(() => {
+    if (!showDemo) return;
+    if (!isDemoEntry()) return;
+    if (username || secret) return;
+
+    const cached = loadDemoCreds();
+    if (!cached) return;
+
+    setUsername(cached.username);
+    setSecret(cached.password);
+    try {
+      if (cached.expires_at) localStorage.setItem(DEMO_EXPIRES_KEY, cached.expires_at);
+    } catch {
+      // ignore
+    }
+  }, [showDemo, username, secret]);
 
   const enforceDeviceLicense = async (profile: any) => {
     const role = String(profile?.role || "").trim();
@@ -283,6 +347,22 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       return;
     }
 
+    // If we already provisioned a demo in this browser and it hasn't expired yet, reuse it.
+    const cached = loadDemoCreds();
+    if (cached) {
+      setUsername(cached.username);
+      setSecret(cached.password);
+      try {
+        if (cached.expires_at) localStorage.setItem(DEMO_EXPIRES_KEY, cached.expires_at);
+      } catch {
+        // ignore
+      }
+
+      toast.success("Demo credentials ready. Click Access System to enter the demo.");
+      setDemoOpen(false);
+      return;
+    }
+
     setDemoLoading(true);
     try {
       const email = String(demoEmail || "").trim() || null;
@@ -300,51 +380,19 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       if (!demoPassword || demoPassword.length < 6) throw new Error("Demo provisioning returned invalid password");
 
       try {
-        if (expires_at) localStorage.setItem("binancexi_demo_expires_at", expires_at);
+        if (expires_at) localStorage.setItem(DEMO_EXPIRES_KEY, expires_at);
       } catch {
         // ignore
       }
 
-      // Set inputs for transparency (user can see what happened if needed).
+      saveDemoCreds({ username: demoUsername, password: demoPassword, expires_at: expires_at || null });
+
+      // Set inputs so the visitor doesn't have to type anything.
       setUsername(demoUsername);
       setSecret(demoPassword);
 
-      // Online sign-in using the existing username/password pipeline.
-      const cloudUser = await ensureOnlineSession(demoUsername, demoPassword);
-
-      try {
-        await enforceDeviceLicense(cloudUser as any);
-      } catch (licErr: any) {
-        try {
-          await deleteLocalUser(demoUsername);
-        } catch {
-          // ignore
-        }
-        try {
-          await supabase.auth.signOut();
-        } catch {
-          // ignore
-        }
-        throw licErr;
-      }
-
-      setCurrentUser({
-        id: cloudUser.id,
-        full_name: cloudUser.full_name || cloudUser.username,
-        name: cloudUser.full_name || cloudUser.username,
-        username: cloudUser.username,
-        role: (cloudUser.role as any) || "cashier",
-        permissions: cloudUser.permissions || {},
-        business_id: (cloudUser as any).business_id ?? null,
-        active: true,
-      } as any);
-
-      sessionStorage.setItem("binancexi_session_active", "1");
-      localStorage.setItem("binancexi_last_username", cloudUser.username);
-
-      toast.success("Welcome to the live demo");
+      toast.success("Demo credentials ready. Click Access System to enter the demo.");
       setDemoOpen(false);
-      onLogin();
     } catch (e: any) {
       toast.error(e?.message || "Failed to start live demo");
     } finally {
@@ -641,7 +689,7 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
           <DialogHeader>
             <DialogTitle>Live Demo</DialogTitle>
             <DialogDescription>
-              We will create a temporary demo business and sign you in automatically. Demo expires after a short time.
+              We will create a temporary demo business and fill the login details for you. Then click Access System to enter the demo.
             </DialogDescription>
           </DialogHeader>
 
