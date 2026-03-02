@@ -64,8 +64,6 @@ export type ReceiptPrintModel = {
     logoAlt: string;
     logoMaxWidthPx?: number;
     logoMaxHeightPx?: number;
-    brandTitleLines: string[];
-    brandSupportLine?: string;
     businessName: string;
     address?: string;
     phone?: string;
@@ -168,8 +166,6 @@ export function buildReceiptPrintModel(input: ReceiptPrintModelInput): ReceiptPr
       logoAlt: BRAND.receiptLogoAlt || BRAND.name,
       logoMaxWidthPx: BRAND.receiptLogoMaxWidthPx,
       logoMaxHeightPx: BRAND.receiptLogoMaxHeightPx,
-      brandTitleLines: BRAND.receiptTitleLines || [],
-      brandSupportLine: BRAND.supportLine,
       businessName: safeString(settings.business_name, "Your Business"),
       address: safeString(settings.address) || undefined,
       phone: safeString(settings.phone) || undefined,

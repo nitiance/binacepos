@@ -25,6 +25,7 @@ interface ReceiptProps {
   taxRatePct?: number;
   timestamp?: string;
   settingsOverride?: ReceiptStoreSettings | null;
+  paperMm?: 58 | 80;
 }
 
 function fmtMoney(n: number) {
@@ -48,6 +49,7 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
     taxRatePct,
     timestamp,
     settingsOverride,
+    paperMm = 80,
   } = props;
   const { currentUser } = usePOS();
   const tenantBusinessId = String(currentUser?.business_id || "").trim();
@@ -108,8 +110,12 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
   return (
     <div
       ref={ref}
-      className="w-[58mm] p-2 text-black font-mono text-[11px] leading-tight bg-white"
-      style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" as any }}
+      className="p-2 text-black font-mono text-[11px] leading-tight bg-white"
+      style={{
+        width: paperMm === 58 ? "58mm" : "80mm",
+        WebkitPrintColorAdjust: "exact",
+        printColorAdjust: "exact" as any,
+      }}
     >
       {/* HEADER */}
       <div className="text-center mb-2">
@@ -134,16 +140,6 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
             />
           </div>
         ) : null}
-        <div className="mb-1 text-[8px]">
-          <div className="font-black text-[12px] uppercase tracking-[0.22em] leading-none">
-            {model.header.brandTitleLines.map((line) => (
-              <div key={line}>{line}</div>
-            ))}
-          </div>
-          {model.header.brandSupportLine ? (
-            <div className="text-[8px] uppercase mt-1">{model.header.brandSupportLine}</div>
-          ) : null}
-        </div>
       </div>
 
       <div className="border-b border-dashed border-black my-2" />

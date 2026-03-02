@@ -39,6 +39,7 @@ import {
   PRINTER_FALLBACK_BROWSER_KEY,
   PRINTER_IP_KEY,
   PRINTER_MODE_KEY,
+  PRINTER_PAPER_MM_KEY,
   PRINTER_PORT_KEY,
   PRINTER_SERIAL_BAUD_KEY,
   PRINTER_SERIAL_PORT_KEY,
@@ -48,9 +49,15 @@ import {
   listWindowsPrinters,
   printReceiptSmart,
   tryPrintThermalQueue,
+  type ReceiptPaperMm,
   type PrinterOverrides,
 } from "@/lib/thermalPrint";
 import type { ReceiptStoreSettings } from "@/core/receipts/receiptPrintModel";
+import {
+  getOfflineReadiness,
+  loadCachedRecentReceipts,
+  saveCachedRecentReceipts,
+} from "@/lib/offlineRuntimeCache";
 
 // --------------------
 // Offline queue helpers
@@ -72,15 +79,6 @@ function isTauriRuntime() {
   const w = window as any;
   const ua = String(window.navigator?.userAgent || "");
   return Boolean(w.__TAURI_INTERNALS__ || w.__TAURI__ || w.__TAURI_IPC__ || ua.includes("Tauri"));
-}
-
-function safeJSONParse<T>(raw: string | null, fallback: T): T {
-  if (!raw) return fallback;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
 }
 
 function writeOfflineQueue(queue: any[]) {
@@ -123,6 +121,12 @@ type OnlineReceiptRow = {
 
   voided_at?: string | null;
   void_reason?: string | null;
+  cashier_name?: string | null;
+  order_items?: Array<{
+    product_name: string;
+    quantity: number;
+    price_at_sale: number;
+  }>;
 };
 
 type PrintData = {
@@ -141,6 +145,12 @@ type PrintData = {
   taxRatePct?: number;
 };
 
+type PrintAttemptDiagnostic = {
+  transport: string;
+  ok: boolean;
+  error?: string;
+};
+
 function num(x: any) {
   const n = Number(x);
   return Number.isFinite(n) ? n : 0;
@@ -149,8 +159,17 @@ function round2(n: number) {
   return Math.round(n * 100) / 100;
 }
 
+function normalizePaperMm(raw: unknown): ReceiptPaperMm {
+  return Number(raw) === 58 ? 58 : 80;
+}
+
 function mapPrinterErrorMessage(err: any, transport: string, tauriRuntime: boolean) {
   const raw = String(err?.message || "Print failed");
+  const possibleStage = raw.includes(":") ? raw.split(":")[0].trim().toLowerCase() : "";
+  const stagePrefix = ["spooler", "serial", "tcp", "browser", "bt"].includes(possibleStage)
+    ? possibleStage
+    : "";
+  const effectiveTransport = stagePrefix || String(transport || "").toLowerCase();
   const lower = raw.toLowerCase();
 
   if (lower.includes("printer ip not set")) {
@@ -172,13 +191,13 @@ function mapPrinterErrorMessage(err: any, transport: string, tauriRuntime: boole
     return "Printer is not ready (offline/paper issue). Check printer power, paper, and cable/network.";
   }
 
-  if (transport === "serial") {
+  if (effectiveTransport === "serial") {
     return `${raw}. Confirm the COM port and baud rate match the printer settings.`;
   }
-  if (transport === "spooler") {
+  if (effectiveTransport === "spooler") {
     return `${raw}. Confirm the printer exists in Windows Printers and supports raw ESC/POS data.`;
   }
-  if (transport === "tcp") {
+  if (effectiveTransport === "tcp") {
     return `${raw}. Confirm printer IP/port 9100 and network reachability.`;
   }
   return raw;
@@ -221,16 +240,31 @@ export const ReceiptsPage = () => {
   const tauriRuntime = isTauriRuntime();
   const configuredPublicAppUrl = getConfiguredPublicAppUrl();
   const isVerifyBaseManaged = !!configuredPublicAppUrl;
+  const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
   // 🔥 AUTO-RUN THERMAL QUEUE
 useEffect(() => {
-  tryPrintThermalQueue();
+  void tryPrintThermalQueue({ source: "receipts_mount", maxJobsPerPass: 20, silent: true });
 }, []);
 
 useEffect(() => {
-  const onOnline = () => tryPrintThermalQueue();
+  const onOnline = () => {
+    void tryPrintThermalQueue({ source: "receipts_online", maxJobsPerPass: 20, silent: true });
+  };
   window.addEventListener("online", onOnline);
   return () => window.removeEventListener("online", onOnline);
 }, []);
+
+  const refreshOfflineReadiness = useCallback(async () => {
+    const readiness = await getOfflineReadiness();
+    setOfflineReadiness(readiness.status);
+  }, []);
+
+  useEffect(() => {
+    void refreshOfflineReadiness();
+    const onOnline = () => void refreshOfflineReadiness();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [isOnline, refreshOfflineReadiness]);
 
   const [activeTab, setActiveTab] = useState<"settings" | "receipts">("settings");
   // 🔥 PRINTER SETTINGS
@@ -250,6 +284,9 @@ useEffect(() => {
   const [serialBaud, setSerialBaud] = useState(localStorage.getItem(PRINTER_SERIAL_BAUD_KEY) || "9600");
   const [spoolerPrinterName, setSpoolerPrinterName] = useState(
     localStorage.getItem(PRINTER_SPOOLER_PRINTER_KEY) || ""
+  );
+  const [printerPaperMm, setPrinterPaperMm] = useState<ReceiptPaperMm>(
+    normalizePaperMm(localStorage.getItem(PRINTER_PAPER_MM_KEY) || "80")
   );
   const [autoPrintSales, setAutoPrintSales] = useState(
     ["1", "true", "yes"].includes(String(localStorage.getItem(PRINTER_AUTO_PRINT_SALES_KEY) ?? "1").toLowerCase())
@@ -274,6 +311,9 @@ useEffect(() => {
   // printing
   const [printData, setPrintData] = useState<PrintData | null>(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [lastPrintTransport, setLastPrintTransport] = useState<string>("");
+  const [lastPrintAttempts, setLastPrintAttempts] = useState<PrintAttemptDiagnostic[]>([]);
+  const [offlineReadiness, setOfflineReadiness] = useState<"ready" | "stale" | "missing">("missing");
   useEffect(() => {
   if (activeTab !== "receipts") return;
 
@@ -329,15 +369,27 @@ useEffect(() => {
       // Let React commit #receipt-print-area before printer pipeline reads it.
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      await printReceiptSmart(toThermalPayload(data, settings as any), overrides);
-      toast.success("Print sent");
+      const result = await printReceiptSmart(toThermalPayload(data, settings as any), {
+        paper_mm: printerPaperMm,
+        ...overrides,
+      });
+      setLastPrintTransport(result.finalTransport);
+      setLastPrintAttempts(
+        (result.attempts || []).map((attempt) => ({
+          transport: attempt.transport,
+          ok: attempt.ok,
+          error: attempt.error,
+        }))
+      );
+      toast.success(`Print sent via ${result.finalTransport.toUpperCase()}`);
     } catch (e: any) {
       const transport = String(overrides?.transport || normalizePrinterTransport(printerTransport));
+      setLastPrintAttempts([]);
       toast.error(mapPrinterErrorMessage(e, transport, tauriRuntime));
     } finally {
       setTimeout(() => setIsPrinting(false), 700);
     }
-  }, [printerTransport, settings, tauriRuntime]);
+  }, [printerPaperMm, printerTransport, settings, tauriRuntime]);
 
   // 2) Save settings
   const updateSettingsMutation = useMutation({
@@ -405,9 +457,31 @@ useEffect(() => {
     if (printerTransport === "spooler") void refreshWindowsPrinterList();
   }, [tauriRuntime, printerTransport, refreshSerialPorts, refreshWindowsPrinterList]);
 
+  const validatePrinterConfig = useCallback(
+    (transport: string) => {
+      const mode = normalizePrinterTransport(transport);
+      if (mode === "tcp" && !printerIp.trim()) {
+        return "Printer IP is required for TCP transport.";
+      }
+      if (mode === "serial" && !serialPortName.trim()) {
+        return "Serial/COM port is required for serial transport.";
+      }
+      if (mode === "spooler" && !spoolerPrinterName.trim()) {
+        return "Windows printer name is required for spooler transport.";
+      }
+      return "";
+    },
+    [printerIp, serialPortName, spoolerPrinterName]
+  );
+
   // 🔥 SAVE PRINTER SETTINGS
 const savePrinterSettings = () => {
   const nextMode = normalizePrinterTransport(printerTransport);
+  const validationError = validatePrinterConfig(nextMode);
+  if (validationError) {
+    toast.error(validationError);
+    return;
+  }
   if (nextMode !== printerTransport) setPrinterTransport(nextMode);
   localStorage.setItem(PRINTER_TRANSPORT_KEY, nextMode);
   localStorage.setItem(PRINTER_MODE_KEY, nextMode);
@@ -418,13 +492,19 @@ const savePrinterSettings = () => {
   localStorage.setItem(PRINTER_SPOOLER_PRINTER_KEY, spoolerPrinterName);
   localStorage.setItem(PRINTER_AUTO_PRINT_SALES_KEY, autoPrintSales ? "1" : "0");
   localStorage.setItem(PRINTER_FALLBACK_BROWSER_KEY, fallbackToBrowser ? "1" : "0");
+  localStorage.setItem(PRINTER_PAPER_MM_KEY, String(printerPaperMm));
 
   toast.success("Printer settings saved");
-  tryPrintThermalQueue(); // 🔥 PRINT ANY QUEUED RECEIPTS
+  void tryPrintThermalQueue({ source: "receipts_save_printer", maxJobsPerPass: 20, silent: true }); // 🔥 PRINT ANY QUEUED RECEIPTS
 };
 
 // 🔥 TEST THERMAL PRINT
 const testThermalPrint = async () => {
+  const validationError = validatePrinterConfig(printerTransport);
+  if (validationError) {
+    toast.error(validationError);
+    return;
+  }
   await runReprint({
     cart: [
       {
@@ -454,6 +534,7 @@ const testThermalPrint = async () => {
     serial_baud: Number(serialBaud || "9600"),
     spooler_printer_name: spoolerPrinterName,
     fallback_to_browser: fallbackToBrowser,
+    paper_mm: printerPaperMm,
   });
 };
 
@@ -486,49 +567,109 @@ const testThermalPrint = async () => {
   // 3) Receipts list (online)
   // --------------------
   const [q, setQ] = useState("");
-  const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
   const { data: onlineReceipts = [], isLoading: receiptsLoading, refetch } = useQuery({
     queryKey: ["receipts", currentUser?.business_id || "no-business", q],
     queryFn: async () => {
-  if (!navigator.onLine) return [];
+      if (!navigator.onLine) {
+        const cached = await loadCachedRecentReceipts();
+        return cached.map((row) => ({
+          ...row,
+          profiles: { full_name: row.cashier_name || "Staff" },
+        })) as any[];
+      }
 
-  const base = supabase
-    .from("orders")
-    .select("id,receipt_id,receipt_number,customer_name,total_amount,payment_method,status,created_at,cashier_id")
-    .order("created_at", { ascending: false })
-    .limit(200);
+      try {
+        const base = supabase
+          .from("orders")
+          .select("id,receipt_id,receipt_number,customer_name,total_amount,payment_method,status,created_at,cashier_id")
+          .order("created_at", { ascending: false })
+          .limit(200);
 
-  if (q.trim()) {
-    const s = q.trim();
-    base.or(`receipt_number.ilike.%${s}%,customer_name.ilike.%${s}%`);
-  }
+        if (q.trim()) {
+          const s = q.trim();
+          base.or(`receipt_number.ilike.%${s}%,customer_name.ilike.%${s}%`);
+        }
 
-  const { data: orders, error } = await base;
-  if (error) throw error;
+        const { data: orders, error } = await base;
+        if (error) throw error;
 
-  const cashierIds = Array.from(new Set((orders || []).map((o: any) => o.cashier_id).filter(Boolean)));
+        const cashierIds = Array.from(new Set((orders || []).map((o: any) => o.cashier_id).filter(Boolean)));
+        const orderIds = Array.from(new Set((orders || []).map((o: any) => o.id).filter(Boolean)));
 
-  const cashierMap = new Map<string, string>();
-  if (cashierIds.length) {
-    const { data: profs } = await supabase
-      .from("profiles")
-      .select("id,full_name")
-      .in("id", cashierIds);
+        const [profilesRes, itemsRes] = await Promise.all([
+          cashierIds.length
+            ? supabase.from("profiles").select("id,full_name").in("id", cashierIds)
+            : Promise.resolve({ data: [], error: null } as any),
+          orderIds.length
+            ? supabase
+                .from("order_items")
+                .select("order_id,product_name,quantity,price_at_sale")
+                .in("order_id", orderIds)
+            : Promise.resolve({ data: [], error: null } as any),
+        ]);
 
-    (profs || []).forEach((p: any) => cashierMap.set(p.id, p.full_name || "Staff"));
-  }
+        const cashierMap = new Map<string, string>();
+        (profilesRes.data || []).forEach((p: any) => cashierMap.set(p.id, p.full_name || "Staff"));
 
-  return (orders || []).map((o: any) => ({
-    ...o,
-    profiles: { full_name: cashierMap.get(o.cashier_id) || "Staff" },
-  })) as any[];
-},
+        const itemMap = new Map<string, any[]>();
+        for (const item of (itemsRes.data || []) as any[]) {
+          const key = String(item.order_id || "");
+          if (!key) continue;
+          const rows = itemMap.get(key) || [];
+          rows.push({
+            product_name: String(item.product_name || "Item"),
+            quantity: Number(item.quantity || 0),
+            price_at_sale: Number(item.price_at_sale || 0),
+          });
+          itemMap.set(key, rows);
+        }
+
+        const mapped = (orders || []).map((o: any) => ({
+          ...o,
+          cashier_name: cashierMap.get(o.cashier_id) || "Staff",
+          profiles: { full_name: cashierMap.get(o.cashier_id) || "Staff" },
+          order_items: itemMap.get(String(o.id || "")) || [],
+        })) as any[];
+
+        if (!q.trim()) {
+          await saveCachedRecentReceipts(
+            mapped.map((row: any) => ({
+              id: String(row.id || ""),
+              receipt_id: String(row.receipt_id || ""),
+              receipt_number: String(row.receipt_number || ""),
+              customer_name: row.customer_name ? String(row.customer_name) : null,
+              total_amount: Number(row.total_amount || 0),
+              payment_method: row.payment_method ? String(row.payment_method) : null,
+              status: row.status ? String(row.status) : null,
+              created_at: String(row.created_at || new Date().toISOString()),
+              cashier_name: String(row.cashier_name || "Staff"),
+              order_items: Array.isArray(row.order_items) ? row.order_items : [],
+            }))
+          );
+        }
+
+        return mapped;
+      } catch (e) {
+        const cached = await loadCachedRecentReceipts();
+        if (cached.length > 0) {
+          return cached.map((row) => ({
+            ...row,
+            profiles: { full_name: row.cashier_name || "Staff" },
+          })) as any[];
+        }
+        throw e;
+      }
+    },
     enabled: activeTab === "receipts",
     staleTime: 1000 * 20,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    void refreshOfflineReadiness();
+  }, [onlineReceipts.length, refreshOfflineReadiness]);
 
   // --------------------
   // 4) Offline pending receipts
@@ -573,14 +714,24 @@ const testThermalPrint = async () => {
   const printOnlineReceipt = useCallback(
     async (row: OnlineReceiptRow) => {
       try {
-        const { data, error } = await supabase
-          .from("order_items")
-          .select("product_name, quantity, price_at_sale")
-          .eq("order_id", row.id);
+        let itemsData: Array<{ product_name: string; quantity: number; price_at_sale: number }> =
+          Array.isArray(row.order_items) ? row.order_items : [];
 
-        if (error) throw error;
+        if (!itemsData.length && navigator.onLine) {
+          const { data, error } = await supabase
+            .from("order_items")
+            .select("product_name, quantity, price_at_sale")
+            .eq("order_id", row.id);
 
-        const cart: CartItem[] = (data || []).map((it: any, idx: number) => {
+          if (error) throw error;
+          itemsData = (data || []) as any[];
+        }
+
+        if (!itemsData.length) {
+          throw new Error("Receipt items are unavailable offline for this entry.");
+        }
+
+        const cart: CartItem[] = itemsData.map((it: any, idx: number) => {
           const product: Product = {
             id: `p-${idx}`,
             name: it.product_name,
@@ -772,7 +923,7 @@ const testThermalPrint = async () => {
   // UI
   // --------------------
   return (
-    <div className="flex h-full flex-col lg:flex-row gap-6 p-4 md:p-6 bg-slate-950 min-h-screen">
+    <div className="flex h-full flex-col lg:flex-row gap-4 md:gap-6 p-3 md:p-6 bg-slate-950 min-h-screen">
       {/* LEFT */}
       <div className="flex-1 flex flex-col gap-5 max-w-4xl">
         {/* Header */}
@@ -816,7 +967,11 @@ const testThermalPrint = async () => {
               className="space-y-5"
             >
               <SettingsCard title="Store Identity" icon={Settings2}>
-                <SettingsCard title="Thermal Printer" icon={Printer}>
+                <div className="space-y-4 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+                  <div className="flex items-center gap-2">
+                    <Printer className="h-4 w-4 text-blue-400" />
+                    <h4 className="text-sm font-semibold text-white">Thermal Printer</h4>
+                  </div>
                   <div className="space-y-4">
                     <Field label="Transport">
                       <select
@@ -830,6 +985,18 @@ const testThermalPrint = async () => {
                         {tauriRuntime && <option value="serial">Serial / COM (USB/Bluetooth SPP)</option>}
                         {tauriRuntime && <option value="spooler">Windows Printer Spooler</option>}
                         <option value="browser">Browser Fallback</option>
+                      </select>
+                    </Field>
+
+                    <Field label="Paper Size">
+                      <select
+                        value={String(printerPaperMm)}
+                        onChange={(e) => setPrinterPaperMm(normalizePaperMm(e.target.value))}
+                        className="w-full bg-slate-950 border border-slate-800 text-white p-2 rounded"
+                        disabled={!isAdmin}
+                      >
+                        <option value="80">80mm (Default)</option>
+                        <option value="58">58mm (Fallback)</option>
                       </select>
                     </Field>
 
@@ -982,8 +1149,22 @@ const testThermalPrint = async () => {
                         Test Print
                       </Button>
                     </div>
+                    {lastPrintTransport ? (
+                      <div className="text-xs text-slate-300">
+                        Last successful transport: <b>{lastPrintTransport.toUpperCase()}</b>
+                      </div>
+                    ) : null}
+                    {lastPrintAttempts.length > 0 ? (
+                      <div className="text-[11px] text-slate-400 space-y-1">
+                        {lastPrintAttempts.map((attempt, idx) => (
+                          <div key={`${attempt.transport}-${idx}`}>
+                            {attempt.transport.toUpperCase()}: {attempt.ok ? "OK" : `FAILED${attempt.error ? ` (${attempt.error})` : ""}`}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
-                </SettingsCard>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field label="Business Name">
                     <Input
@@ -1108,6 +1289,17 @@ const testThermalPrint = async () => {
                   <span className="text-slate-300">
                     Pending Sync: <b className="text-white">{pendingCount}</b>
                   </span>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-300">
+                    Offline Data:{" "}
+                    <b className={cn(
+                      offlineReadiness === "ready" && "text-emerald-300",
+                      offlineReadiness === "stale" && "text-amber-300",
+                      offlineReadiness === "missing" && "text-red-300"
+                    )}>
+                      {offlineReadiness.toUpperCase()}
+                    </b>
+                  </span>
                 </div>
 
                 <div className="flex gap-2">
@@ -1171,7 +1363,7 @@ const testThermalPrint = async () => {
                             )}
                           </div>
 
-                          <div className="flex gap-2 flex-wrap">
+                          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                             <Button size="sm" variant="outline" className="border-slate-700 text-slate-200 hover:text-white" onClick={() => copyText(verifyUrl)}>
                               <Copy className="w-4 h-4 mr-2" /> Copy Verify Link
                             </Button>
@@ -1204,13 +1396,13 @@ const testThermalPrint = async () => {
               )}
 
               {/* ONLINE RECEIPTS */}
-              <SettingsCard title="Receipts History (Online)" icon={Receipt}>
-                {!isOnline ? (
-                  <div className="text-sm text-slate-400">You are offline. Online receipts history will show when connected.</div>
-                ) : receiptsLoading ? (
+              <SettingsCard title={isOnline ? "Receipts History" : "Receipts History (Cached Offline)"} icon={Receipt}>
+                {receiptsLoading ? (
                   <div className="text-sm text-slate-400">Loading receipts…</div>
                 ) : onlineReceipts.length === 0 ? (
-                  <div className="text-sm text-slate-400">No receipts found.</div>
+                  <div className="text-sm text-slate-400">
+                    {isOnline ? "No receipts found." : "No cached receipts on this device yet. Connect once to sync history."}
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {onlineReceipts.map((row) => {
@@ -1262,7 +1454,7 @@ const testThermalPrint = async () => {
                             )}
                           </div>
 
-                          <div className="flex gap-2 flex-wrap">
+                          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                             <Button size="sm" variant="outline" className="border-slate-700 text-slate-200 hover:text-white" onClick={() => copyText(verifyUrl)}>
                               <Copy className="w-4 h-4 mr-2" /> Copy Link
                             </Button>
@@ -1332,6 +1524,7 @@ const testThermalPrint = async () => {
             taxRatePct={printData.taxRatePct}
             timestamp={printData.timestamp}
             settingsOverride={(settings as any) || null}
+            paperMm={printerPaperMm}
           />
         )}
       </div>

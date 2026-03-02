@@ -18,12 +18,14 @@ const OFFLINE_CACHE_KEYS = [
   "binancexi_products_mutation_queue_v2",
   "binancexi_feedback_queue_v1",
   "binancexi_thermal_print_queue_v1",
+  "binancexi_thermal_print_queue_v2",
 ] as const;
 
 const INDEXED_DB_BASES = [
   "binancexi_pos_expenses",
   "binancexi_pos_bookings",
   "binancexi_pos_auth",
+  "binancexi_pos_runtime_cache",
 ] as const;
 
 function safeRemoveItem(key: string) {
@@ -68,6 +70,18 @@ export function clearClientStorage() {
   for (const k of OFFLINE_CACHE_KEYS) removeKeyAcrossScopes(k);
 
   for (const k of collectSupabaseTokenKeys()) safeRemoveItem(k);
+
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      if (key.includes("binancexi_thermal_print_queue_v2")) {
+        safeRemoveItem(key);
+      }
+    }
+  } catch {
+    // ignore
+  }
 }
 
 export async function clearClientIndexedDb() {

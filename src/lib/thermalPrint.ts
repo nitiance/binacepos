@@ -14,6 +14,9 @@ export const PRINTER_SERIAL_BAUD_KEY = "binancexi_printer_serial_baud"; // e.g. 
 export const PRINTER_SPOOLER_PRINTER_KEY = "binancexi_printer_spooler_name"; // Windows printer name
 export const PRINTER_AUTO_PRINT_SALES_KEY = "binancexi_printer_auto_print_sales"; // "1" | "0"
 export const PRINTER_FALLBACK_BROWSER_KEY = "binancexi_printer_fallback_browser"; // "1" | "0"
+export const PRINTER_PAPER_MM_KEY = "binancexi_printer_paper_mm";
+
+export type ReceiptPaperMm = 58 | 80;
 
 type PrinterTransport = "browser" | "tcp" | "bt" | "serial" | "spooler";
 
@@ -25,6 +28,7 @@ export type PrinterOverrides = {
   serial_baud?: number;
   spooler_printer_name?: string;
   fallback_to_browser?: boolean;
+  paper_mm?: ReceiptPaperMm;
 };
 
 type PrinterConfig = {
@@ -35,6 +39,24 @@ type PrinterConfig = {
   serial_baud: number;
   spooler_printer_name: string;
   fallback_to_browser: boolean;
+  paper_mm: ReceiptPaperMm;
+};
+
+type PrintAttempt = {
+  transport: PrinterTransport;
+  ok: boolean;
+  error?: string;
+};
+
+export type PrintReceiptResult = {
+  attempts: PrintAttempt[];
+  finalTransport: PrinterTransport;
+};
+
+type QueuePrintResult = {
+  processed: number;
+  failed: number;
+  lastError?: string;
 };
 
 const encoder = new TextEncoder();
@@ -69,6 +91,18 @@ function normalizePrinterMode(rawMode: string, platform: string, tauriRuntime = 
   return tauriRuntime ? "spooler" : "browser";
 }
 
+function normalizePaperMm(raw: unknown): ReceiptPaperMm {
+  return Number(raw) === 58 ? 58 : 80;
+}
+
+function charsPerLine(paper: ReceiptPaperMm) {
+  return paper === 80 ? 48 : 32;
+}
+
+function paperCssWidth(paper: ReceiptPaperMm) {
+  return `${paper}mm`;
+}
+
 function loadPrinterConfig(platform: string, tauriRuntime: boolean, overrides?: PrinterOverrides): PrinterConfig {
   const legacyMode = String(localStorage.getItem(PRINTER_MODE_KEY) || "").trim();
   const transportRaw = String(localStorage.getItem(PRINTER_TRANSPORT_KEY) || legacyMode || "").trim();
@@ -78,6 +112,7 @@ function loadPrinterConfig(platform: string, tauriRuntime: boolean, overrides?: 
   const serial_port = String(localStorage.getItem(PRINTER_SERIAL_PORT_KEY) || "").trim();
   const serial_baud = Number(localStorage.getItem(PRINTER_SERIAL_BAUD_KEY) || "9600");
   const spooler_printer_name = String(localStorage.getItem(PRINTER_SPOOLER_PRINTER_KEY) || "").trim();
+  const paper_mm = normalizePaperMm(localStorage.getItem(PRINTER_PAPER_MM_KEY) || "80");
   const fallbackToBrowserRaw = localStorage.getItem(PRINTER_FALLBACK_BROWSER_KEY);
   const fallback_to_browser =
     fallbackToBrowserRaw == null
@@ -93,6 +128,7 @@ function loadPrinterConfig(platform: string, tauriRuntime: boolean, overrides?: 
     spooler_printer_name: String(overrides?.spooler_printer_name ?? spooler_printer_name).trim(),
     fallback_to_browser:
       typeof overrides?.fallback_to_browser === "boolean" ? overrides.fallback_to_browser : fallback_to_browser,
+    paper_mm: normalizePaperMm(overrides?.paper_mm ?? paper_mm),
   };
 }
 
@@ -173,7 +209,7 @@ function buildCanonicalReceiptModel(d: ThermalReceiptData) {
   });
 }
 
-function buildFallbackReceiptHtml(d: ThermalReceiptData) {
+function buildFallbackReceiptHtml(d: ThermalReceiptData, paper: ReceiptPaperMm) {
   const model = buildCanonicalReceiptModel(d);
   const items = (model.items || [])
     .map((it) => {
@@ -204,7 +240,7 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData) {
     .join("");
 
   return `
-    <div style="width:58mm;padding:6px;font-family:monospace;font-size:11px;line-height:1.3;color:#000;background:#fff;">
+    <div style="width:${paperCssWidth(paper)};padding:6px;font-family:monospace;font-size:11px;line-height:1.3;color:#000;background:#fff;">
       <div style="text-align:center;font-weight:800;font-size:16px;margin-top:2px;">${esc(model.header.businessName)}</div>
       ${model.header.address ? `<div style="text-align:center;">${esc(model.header.address)}</div>` : ""}
       ${model.header.phone ? `<div style="text-align:center;">${esc(model.header.phone)}</div>` : ""}
@@ -214,10 +250,6 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData) {
           ? `<div style="text-align:center;margin-bottom:4px;"><img src="${esc(model.header.logoUrl)}" alt="${esc(model.header.logoAlt)}" style="max-width:${Number(model.header.logoMaxWidthPx || 148)}px;max-height:${Number(model.header.logoMaxHeightPx || 34)}px;width:auto;height:auto;" /></div>`
           : ""
       }
-      <div style="text-align:center;font-weight:700;font-size:8px;letter-spacing:0.8px;opacity:0.8;">${model.header.brandTitleLines
-        .map((line) => esc(line))
-        .join("<br/>")}</div>
-      ${model.header.brandSupportLine ? `<div style="text-align:center;font-size:8px;margin-top:2px;opacity:0.7;">${esc(model.header.brandSupportLine)}</div>` : ""}
       <div style="border-top:1px dashed #000;margin:6px 0;"></div>
       <div style="display:flex;justify-content:space-between;font-size:10px;">
         <div>
@@ -274,7 +306,7 @@ function collectHeadStyles() {
   }
 }
 
-async function printHtmlInIframe(receiptHtml: string) {
+async function printHtmlInIframe(receiptHtml: string, paper: ReceiptPaperMm) {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
   iframe.style.position = "fixed";
@@ -301,16 +333,16 @@ async function printHtmlInIframe(receiptHtml: string) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           ${sharedStyles}
           <style>
-            @page { size: 58mm auto; margin: 0; }
+            @page { size: ${paperCssWidth(paper)} auto; margin: 0; }
             html, body {
               margin: 0 !important;
               padding: 0 !important;
-              width: 58mm !important;
+              width: ${paperCssWidth(paper)} !important;
               background: #fff !important;
               color: #000 !important;
             }
             #receipt-print-area {
-              width: 58mm !important;
+              width: ${paperCssWidth(paper)} !important;
               margin: 0 !important;
               padding: 0 !important;
             }
@@ -486,10 +518,11 @@ async function escPosRasterImage(src: string, opts?: { maxWidth?: number; maxHei
   }
 }
 
-async function buildEscPos(d: ThermalReceiptData) {
+async function buildEscPos(d: ThermalReceiptData, paper: ReceiptPaperMm) {
   const model = buildCanonicalReceiptModel(d);
   const parts: Uint8Array[] = [];
-  const divider = "-".repeat(32);
+  const width = charsPerLine(paper);
+  const divider = "-".repeat(width);
 
   parts.push(bytes(ESC, 0x40)); // init
   parts.push(bytes(ESC, 0x61, 0x01)); // center
@@ -509,53 +542,45 @@ async function buildEscPos(d: ThermalReceiptData) {
   parts.push(textLine(model.header.businessName));
   parts.push(bytes(ESC, 0x45, 0x00)); // bold off
   if (model.header.address) {
-    for (const line of splitPrinterText(model.header.address, 32)) parts.push(textLine(line));
+    for (const line of splitPrinterText(model.header.address, width)) parts.push(textLine(line));
   }
   if (model.header.phone) parts.push(textLine(model.header.phone));
   if (model.header.taxId) parts.push(textLine(`TAX: ${model.header.taxId}`));
-
-  for (const line of model.header.brandTitleLines) {
-    if (!line) continue;
-    parts.push(bytes(ESC, 0x4d, 0x01)); // font B for subtle brand line
-    parts.push(textLine(line));
-    parts.push(bytes(ESC, 0x4d, 0x00)); // back to font A
-  }
-  if (model.header.brandSupportLine) parts.push(textLine(model.header.brandSupportLine));
 
   parts.push(textLine(divider));
   parts.push(bytes(ESC, 0x61, 0x00)); // left align
   parts.push(textLine(model.meta.dateLabel));
   parts.push(textLine(model.meta.timeLabel));
-  parts.push(textLine(leftRight(`#${model.meta.receiptNumber}`, `Staff:${model.meta.cashierName.slice(0, 10)}`)));
+  parts.push(textLine(leftRight(`#${model.meta.receiptNumber}`, `Staff:${model.meta.cashierName.slice(0, 10)}`, width)));
   parts.push(textLine(`Customer: ${model.meta.customerName}`));
   parts.push(textLine(divider));
 
   for (const it of model.items) {
-    for (const line of splitPrinterText(it.name, 32)) parts.push(textLine(line));
-    parts.push(textLine(leftRight(`${it.qty} x ${money(it.unit)}`, money(it.lineTotal))));
+    for (const line of splitPrinterText(it.name, width)) parts.push(textLine(line));
+    parts.push(textLine(leftRight(`${it.qty} x ${money(it.unit)}`, money(it.lineTotal), width)));
     if (it.lineDiscount > 0) {
-      parts.push(textLine(leftRight("Disc", `-${money(it.lineDiscount)}`)));
-      parts.push(textLine(leftRight("Line Total", money(it.finalLine))));
+      parts.push(textLine(leftRight("Disc", `-${money(it.lineDiscount)}`, width)));
+      parts.push(textLine(leftRight("Line Total", money(it.finalLine), width)));
     }
     if (it.customDescription) {
-      for (const line of splitPrinterText(`- ${it.customDescription}`, 32)) parts.push(textLine(line));
+      for (const line of splitPrinterText(`- ${it.customDescription}`, width)) parts.push(textLine(line));
     }
   }
 
   parts.push(textLine(divider));
-  parts.push(textLine(leftRight("Subtotal", money(model.totals.subtotal))));
+  parts.push(textLine(leftRight("Subtotal", money(model.totals.subtotal), width)));
   if (model.totals.showGlobalDiscount) {
     const label = model.totals.activeDiscountName ? `Discount (${model.totals.activeDiscountName})` : "Discount";
-    parts.push(textLine(leftRight(label.slice(0, 18), `-${money(model.totals.discount)}`)));
+    parts.push(textLine(leftRight(label.slice(0, width - 10), `-${money(model.totals.discount)}`, width)));
   }
   if (model.totals.showTax) {
     const taxLabel =
       typeof model.totals.taxRatePct === "number" ? `Tax (${model.totals.taxRatePct}%)` : "Tax";
-    parts.push(textLine(leftRight(taxLabel, money(model.totals.tax))));
+    parts.push(textLine(leftRight(taxLabel, money(model.totals.tax), width)));
   }
 
   parts.push(bytes(ESC, 0x45, 0x01)); // bold
-  parts.push(textLine(leftRight("TOTAL", money(model.totals.total))));
+  parts.push(textLine(leftRight("TOTAL", money(model.totals.total), width)));
   parts.push(bytes(ESC, 0x45, 0x00));
   parts.push(textLine(divider));
   parts.push(bytes(ESC, 0x61, 0x01)); // center
@@ -573,7 +598,7 @@ async function buildEscPos(d: ThermalReceiptData) {
   }
 
   if (model.footer.footerMessage) {
-    for (const line of splitPrinterText(model.footer.footerMessage.toUpperCase(), 32)) {
+    for (const line of splitPrinterText(model.footer.footerMessage.toUpperCase(), width)) {
       parts.push(textLine(line));
     }
   }
@@ -589,7 +614,7 @@ async function buildEscPos(d: ThermalReceiptData) {
   return concat(parts);
 }
 
-async function printBrowserReceipt(d?: ThermalReceiptData) {
+async function printBrowserReceipt(d?: ThermalReceiptData, paper: ReceiptPaperMm = 80) {
   // We rely on an existing DOM node with this id (POSPage + ReceiptsPage include it).
   let el = document.getElementById("receipt-print-area") as HTMLElement | null;
   let createdHost = false;
@@ -607,7 +632,7 @@ async function printBrowserReceipt(d?: ThermalReceiptData) {
   el.style.position = "fixed";
   el.style.left = "-9999px";
   el.style.top = "0";
-  el.style.width = "58mm";
+  el.style.width = paperCssWidth(paper);
   el.style.overflow = "visible";
 
   try {
@@ -624,7 +649,7 @@ async function printBrowserReceipt(d?: ThermalReceiptData) {
       if (!fallbackNode && d) {
         fallbackNode = document.createElement("div");
         fallbackNode.setAttribute("data-print-fallback", "1");
-        fallbackNode.innerHTML = buildFallbackReceiptHtml(d);
+        fallbackNode.innerHTML = buildFallbackReceiptHtml(d, paper);
         el.appendChild(fallbackNode);
       }
       await new Promise<void>((r) => requestAnimationFrame(() => r()));
@@ -634,7 +659,7 @@ async function printBrowserReceipt(d?: ThermalReceiptData) {
     if (!hasRenderableContent && d) {
       fallbackNode = document.createElement("div");
       fallbackNode.setAttribute("data-print-fallback", "1");
-      fallbackNode.innerHTML = buildFallbackReceiptHtml(d);
+      fallbackNode.innerHTML = buildFallbackReceiptHtml(d, paper);
       el.appendChild(fallbackNode);
     }
 
@@ -672,7 +697,7 @@ async function printBrowserReceipt(d?: ThermalReceiptData) {
 
     const htmlToPrint = (el.innerHTML || "").trim();
     if (!htmlToPrint) throw new Error("Receipt content is empty");
-    await printHtmlInIframe(htmlToPrint);
+    await printHtmlInIframe(htmlToPrint, paper);
   } finally {
     if (fallbackNode && fallbackNode.parentElement === el) {
       fallbackNode.remove();
@@ -762,11 +787,61 @@ export async function listWindowsPrinters(): Promise<string[]> {
   }
 }
 
-export async function printReceiptSmart(d: ThermalReceiptData, overrides?: PrinterOverrides) {
+function transportErrorFromMessage(transport: PrinterTransport, message: string) {
+  return `${transport}: ${message}`;
+}
+
+function isDesktopTransportConfigured(transport: PrinterTransport, printer: PrinterConfig) {
+  if (transport === "browser") return true;
+  if (transport === "tcp") return !!printer.tcp_host;
+  if (transport === "serial" || transport === "bt") return !!printer.serial_port;
+  if (transport === "spooler") return !!printer.spooler_printer_name;
+  return false;
+}
+
+async function runDesktopTransport(
+  transport: PrinterTransport,
+  printer: PrinterConfig,
+  escpos: Uint8Array,
+  d: ThermalReceiptData
+) {
+  if (transport === "browser") {
+    await printBrowserReceipt(d, printer.paper_mm);
+    return;
+  }
+  if (transport === "tcp") {
+    if (!printer.tcp_host) throw new Error("Printer IP not set for TCP transport");
+    await sendTcpDesktopViaTauri(printer.tcp_host, printer.tcp_port, escpos);
+    return;
+  }
+  if (transport === "serial" || transport === "bt") {
+    if (!printer.serial_port) throw new Error("Serial/COM port not set");
+    await sendSerialDesktopViaTauri(printer.serial_port, printer.serial_baud, escpos);
+    return;
+  }
+  if (transport === "spooler") {
+    if (!printer.spooler_printer_name) throw new Error("Windows printer name not set");
+    await sendSpoolerDesktopViaTauri(printer.spooler_printer_name, escpos);
+    return;
+  }
+  throw new Error(`Unsupported desktop transport '${transport}'`);
+}
+
+function logAttemptDiagnostics(prefix: string, attempts: PrintAttempt[]) {
+  const payload = attempts.map((a) => ({
+    transport: a.transport,
+    ok: a.ok,
+    error: a.error || null,
+  }));
+  console.info(prefix, payload);
+}
+
+export async function printReceiptSmart(d: ThermalReceiptData, overrides?: PrinterOverrides): Promise<PrintReceiptResult> {
   const platform = Capacitor.getPlatform();
   const tauriRuntime = isTauriRuntime();
   const printer = loadPrinterConfig(platform, tauriRuntime, overrides);
   const model = buildCanonicalReceiptModel(d);
+  const attempts: PrintAttempt[] = [];
   const debugEnabled =
     !!(import.meta as any)?.env?.DEV || localStorage.getItem("binancexi_debug_receipt_qr") === "1";
   if (debugEnabled) {
@@ -778,13 +853,19 @@ export async function printReceiptSmart(d: ThermalReceiptData, overrides?: Print
     });
   }
 
-  const escpos = await buildEscPos(d);
+  const escpos = await buildEscPos(d, printer.paper_mm);
 
   // ✅ ANDROID
   if (platform === "android") {
     if (printer.transport === "bt") {
-      await printToBluetooth58mm(escpos, { chunkSize: 800, chunkDelayMs: 35, retries: 3 });
-      return;
+      try {
+        await printToBluetooth58mm(escpos, { chunkSize: 800, chunkDelayMs: 35, retries: 3 });
+        attempts.push({ transport: "bt", ok: true });
+        return { attempts, finalTransport: "bt" };
+      } catch (e: any) {
+        attempts.push({ transport: "bt", ok: false, error: String(e?.message || "Bluetooth print failed") });
+        throw e;
+      }
     }
 
     // Android supports BT + TCP in this app.
@@ -792,53 +873,111 @@ export async function printReceiptSmart(d: ThermalReceiptData, overrides?: Print
     const port = printer.tcp_port;
     if (!ip) {
       if (printer.fallback_to_browser === false) {
-        throw new Error("Printer IP not set for Android TCP mode");
+        const msg = "Printer IP not set for Android TCP mode";
+        attempts.push({ transport: "tcp", ok: false, error: msg });
+        throw new Error(msg);
       }
-      await printToBluetooth58mm(escpos, { chunkSize: 800, chunkDelayMs: 35, retries: 3 });
-      return;
+      try {
+        await printToBluetooth58mm(escpos, { chunkSize: 800, chunkDelayMs: 35, retries: 3 });
+        attempts.push({ transport: "bt", ok: true });
+        return { attempts, finalTransport: "bt" };
+      } catch (e: any) {
+        attempts.push({ transport: "bt", ok: false, error: String(e?.message || "Bluetooth print failed") });
+        throw e;
+      }
     }
-    await sendTcp(ip, port, escpos);
-    return;
+    try {
+      await sendTcp(ip, port, escpos);
+      attempts.push({ transport: "tcp", ok: true });
+      return { attempts, finalTransport: "tcp" };
+    } catch (e: any) {
+      attempts.push({ transport: "tcp", ok: false, error: String(e?.message || "TCP print failed") });
+      throw e;
+    }
   }
 
   if (tauriRuntime) {
+    const attemptDesktop = async (transport: PrinterTransport) => {
+      try {
+        await runDesktopTransport(transport, printer, escpos, d);
+        attempts.push({ transport, ok: true });
+        return true;
+      } catch (e: any) {
+        const rawError = String(e?.message || "Print failed");
+        attempts.push({ transport, ok: false, error: transportErrorFromMessage(transport, rawError) });
+        return false;
+      }
+    };
+
+    if (printer.transport === "spooler") {
+      const chain: PrinterTransport[] = ["spooler", "serial", "tcp"];
+      for (const transport of chain) {
+        if (!isDesktopTransportConfigured(transport, printer)) {
+          attempts.push({
+            transport,
+            ok: false,
+            error: transportErrorFromMessage(transport, "not configured"),
+          });
+          continue;
+        }
+        const ok = await attemptDesktop(transport);
+        if (ok) {
+          if (debugEnabled) logAttemptDiagnostics("[print] desktop spooler strategy", attempts);
+          return { attempts, finalTransport: transport };
+        }
+      }
+
+      if (printer.fallback_to_browser) {
+        const browserOk = await attemptDesktop("browser");
+        if (browserOk) {
+          if (debugEnabled) logAttemptDiagnostics("[print] desktop spooler strategy", attempts);
+          return { attempts, finalTransport: "browser" };
+        }
+      }
+
+      if (debugEnabled) logAttemptDiagnostics("[print] desktop spooler strategy", attempts);
+      const failedAttempts = attempts.filter((a) => !a.ok);
+      const last = failedAttempts[failedAttempts.length - 1];
+      throw new Error(last?.error || "All desktop print transports failed");
+    }
+
     if (printer.transport === "browser") {
-      await printBrowserReceipt(d);
-      return;
+      await printBrowserReceipt(d, printer.paper_mm);
+      attempts.push({ transport: "browser", ok: true });
+      if (debugEnabled) logAttemptDiagnostics("[print] desktop manual strategy", attempts);
+      return { attempts, finalTransport: "browser" };
     }
-    try {
-      if (printer.transport === "tcp") {
-        if (!printer.tcp_host) throw new Error("Printer IP not set for TCP transport");
-        await sendTcpDesktopViaTauri(printer.tcp_host, printer.tcp_port, escpos);
-        return;
-      }
-      if (printer.transport === "serial" || printer.transport === "bt") {
-        if (!printer.serial_port) throw new Error("Serial/COM port not set");
-        await sendSerialDesktopViaTauri(printer.serial_port, printer.serial_baud, escpos);
-        return;
-      }
-      if (printer.transport === "spooler") {
-        if (!printer.spooler_printer_name) throw new Error("Windows printer name not set");
-        await sendSpoolerDesktopViaTauri(printer.spooler_printer_name, escpos);
-        return;
-      }
-      throw new Error(`Unsupported desktop transport '${printer.transport}'`);
-    } catch (nativeErr) {
-      if (!printer.fallback_to_browser) throw nativeErr;
-      console.warn("[print] native transport failed, falling back to browser:", nativeErr);
-      await printBrowserReceipt(d);
-      return;
+
+    const primaryOk = await attemptDesktop(printer.transport);
+    if (primaryOk) {
+      if (debugEnabled) logAttemptDiagnostics("[print] desktop manual strategy", attempts);
+      return { attempts, finalTransport: printer.transport };
     }
+
+    if (printer.fallback_to_browser && printer.transport !== "browser") {
+      const browserOk = await attemptDesktop("browser");
+      if (browserOk) {
+        if (debugEnabled) logAttemptDiagnostics("[print] desktop manual strategy", attempts);
+        return { attempts, finalTransport: "browser" };
+      }
+    }
+
+    if (debugEnabled) logAttemptDiagnostics("[print] desktop manual strategy", attempts);
+    const failedAttempts = attempts.filter((a) => !a.ok);
+    const last = failedAttempts[failedAttempts.length - 1];
+    throw new Error(last?.error || "Desktop print failed");
   }
 
   // Browser runtime: explicit fallback only.
   if (printer.transport === "browser") {
-    await printBrowserReceipt(d);
-    return;
+    await printBrowserReceipt(d, printer.paper_mm);
+    attempts.push({ transport: "browser", ok: true });
+    return { attempts, finalTransport: "browser" };
   }
   if (printer.fallback_to_browser) {
-    await printBrowserReceipt(d);
-    return;
+    await printBrowserReceipt(d, printer.paper_mm);
+    attempts.push({ transport: "browser", ok: true });
+    return { attempts, finalTransport: "browser" };
   }
   throw new Error(`Transport '${printer.transport}' requires desktop runtime`);
 }
@@ -848,26 +987,59 @@ export async function printReceiptSmart(d: ThermalReceiptData, overrides?: Print
 // --------------------
 let processing = false;
 
-export async function tryPrintThermalQueue() {
-  if (processing) return;
+export async function tryPrintThermalQueue(opts?: {
+  maxJobsPerPass?: number;
+  source?: string;
+  silent?: boolean;
+}): Promise<QueuePrintResult> {
+  if (processing) return { processed: 0, failed: 0 };
   processing = true;
+  const maxJobsPerPass = Math.max(1, Math.min(100, Number(opts?.maxJobsPerPass ?? 20)));
+  const source = String(opts?.source || "unknown");
+  const silent = !!opts?.silent;
+  let processed = 0;
+  let failed = 0;
+  let lastError = "";
 
   try {
-    const q = getThermalQueue();
-    if (!q.length) return;
+    while (processed < maxJobsPerPass) {
+      const queue = getThermalQueue();
+      if (!queue.length) break;
 
-    const job: ThermalJob = q[0];
+      const job: ThermalJob = queue[0];
 
-    await printReceiptSmart(job as any);
-
-    removeThermalJob(job.receiptNumber);
-    } catch (err: any) {
-    console.warn("Thermal print failed (kept queued):", err);
-
-    // ✅ Show error on screen
-    const { toast } = await import("sonner");
-    toast.error(err?.message || "Printing failed");
+      try {
+        const result = await printReceiptSmart(job as any);
+        removeThermalJob(job.jobId);
+        processed += 1;
+        if ((import.meta as any)?.env?.DEV) {
+          console.info("[print-queue] processed", {
+            source,
+            jobId: job.jobId,
+            receiptNumber: job.receiptNumber,
+            finalTransport: result.finalTransport,
+            attempts: result.attempts,
+          });
+        }
+      } catch (err: any) {
+        failed += 1;
+        lastError = String(err?.message || "Printing failed");
+        console.warn("Thermal print failed (kept queued):", {
+          source,
+          jobId: job.jobId,
+          receiptNumber: job.receiptNumber,
+          error: lastError,
+        });
+        if (!silent) {
+          const { toast } = await import("sonner");
+          toast.error(lastError);
+        }
+        break;
+      }
+    }
   } finally {
     processing = false;
   }
+
+  return { processed, failed, lastError: lastError || undefined };
 }

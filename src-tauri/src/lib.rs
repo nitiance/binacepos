@@ -16,21 +16,26 @@ struct SerialPortDto {
 #[tauri::command]
 async fn tcp_print_escpos(host: String, port: u16, data: Vec<u8>) -> Result<(), String> {
   tauri::async_runtime::spawn_blocking(move || {
+    let host_label = host.clone();
     let addr = (host.as_str(), port)
       .to_socket_addrs()
-      .map_err(|e| format!("Unable to resolve host: {e}"))?
+      .map_err(|e| format!("Unable to resolve host '{host_label}:{port}': {e}. Check printer IP/DNS."))?
       .next()
-      .ok_or("Unable to resolve host")?;
+      .ok_or_else(|| format!("Unable to resolve host '{host_label}:{port}'. Check printer IP/DNS."))?;
 
     let timeout = Duration::from_secs(3);
     let mut stream =
-      TcpStream::connect_timeout(&addr, timeout).map_err(|e| format!("TCP connect failed: {e}"))?;
+      TcpStream::connect_timeout(&addr, timeout).map_err(|e| {
+        format!(
+          "TCP connect failed to '{host_label}:{port}': {e}. Verify printer is online and port 9100 is reachable."
+        )
+      })?;
     let _ = stream.set_write_timeout(Some(Duration::from_secs(3)));
     let _ = stream.set_nodelay(true);
 
     stream
       .write_all(&data)
-      .map_err(|e| format!("TCP write failed: {e}"))?;
+      .map_err(|e| format!("TCP write failed to '{host_label}:{port}': {e}. Check network stability and printer state."))?;
     let _ = stream.flush();
 
     Ok(())
@@ -43,7 +48,11 @@ async fn tcp_print_escpos(host: String, port: u16, data: Vec<u8>) -> Result<(), 
 async fn list_serial_ports() -> Result<Vec<SerialPortDto>, String> {
   tauri::async_runtime::spawn_blocking(move || {
     let mut ports =
-      serialport::available_ports().map_err(|e| format!("Unable to list serial ports: {e}"))?;
+      serialport::available_ports().map_err(|e| {
+        format!(
+          "Unable to list serial ports: {e}. Confirm USB/Bluetooth serial drivers are installed."
+        )
+      })?;
     ports.sort_by(|a, b| a.port_name.cmp(&b.port_name));
 
     let out = ports
@@ -94,16 +103,20 @@ async fn serial_print_escpos(port: String, baud: u32, data: Vec<u8>) -> Result<(
     let mut sp = serialport::new(port, baud)
       .timeout(Duration::from_secs(3))
       .open()
-      .map_err(|e| format!("Unable to open serial port {port_name}: {e}"))?;
+      .map_err(|e| {
+        format!(
+          "Unable to open serial port {port_name} at {baud} baud: {e}. Check COM port, pairing, and driver."
+        )
+      })?;
 
     for chunk in data.chunks(512) {
       sp.write_all(chunk)
-        .map_err(|e| format!("Serial write failed ({port_name}): {e}"))?;
+        .map_err(|e| format!("Serial write failed on {port_name}: {e}. Check cable/pairing and printer readiness."))?;
       std::thread::sleep(Duration::from_millis(20));
     }
 
     sp.flush()
-      .map_err(|e| format!("Serial flush failed ({port_name}): {e}"))?;
+      .map_err(|e| format!("Serial flush failed on {port_name}: {e}. Printer may be offline or busy."))?;
     Ok(())
   })
   .await
@@ -173,7 +186,7 @@ mod windows_printing {
         &mut returned,
       );
       if ok == 0 {
-        return Err("Failed to enumerate windows printers".to_string());
+        return Err("Failed to enumerate Windows printers. Verify print spooler service is running.".to_string());
       }
 
       let ptr = buffer.as_ptr() as *const PRINTER_INFO_4W;
@@ -201,7 +214,7 @@ mod windows_printing {
       let mut printer_name_w = to_wide(&printer_name);
       let open_ok = OpenPrinterW(printer_name_w.as_mut_ptr(), &mut handle, null_mut());
       if open_ok == 0 || handle.is_null() {
-        return Err(format!("Failed to open printer '{printer_name}'"));
+        return Err(format!("Failed to open printer '{printer_name}'. Verify exact printer name and driver installation."));
       }
 
       let doc_name = to_wide("BinanceXI Receipt");
@@ -215,13 +228,13 @@ mod windows_printing {
       let job_id = StartDocPrinterW(handle, 1, &doc_info as *const DOC_INFO_1W);
       if job_id == 0 {
         ClosePrinter(handle);
-        return Err("StartDocPrinter failed".to_string());
+        return Err("StartDocPrinter failed. Printer driver/spooler rejected RAW job.".to_string());
       }
 
       if StartPagePrinter(handle) == 0 {
         EndDocPrinter(handle);
         ClosePrinter(handle);
-        return Err("StartPagePrinter failed".to_string());
+        return Err("StartPagePrinter failed. Printer may be offline or out of paper.".to_string());
       }
 
       let mut written = 0u32;
@@ -237,12 +250,12 @@ mod windows_printing {
 
       if write_ok == 0 || written != data.len() as u32 {
         return Err(format!(
-          "WritePrinter failed (written {written}/{} bytes)",
+          "WritePrinter failed (written {written}/{} bytes). RAW printing may not be supported by this driver.",
           data.len()
         ));
       }
       if page_ok == 0 || doc_ok == 0 {
-        return Err("Failed to finalize print job".to_string());
+        return Err("Failed to finalize print job. Check printer spooler status and driver health.".to_string());
       }
 
       Ok(())

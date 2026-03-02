@@ -62,6 +62,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ZimraFiscalisationSettings } from "@/components/settings/ZimraFiscalisationSettings";
+import { getOfflineReadiness } from "@/lib/offlineRuntimeCache";
 
 /* ============================
    LOCAL STORAGE KEYS (shared)
@@ -228,6 +229,7 @@ export const SettingsPage = () => {
     isAdmin || isMasterLikeAdmin || !!(currentUser as any)?.permissions?.allowSettings;
 
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
+  const [offlineReadiness, setOfflineReadiness] = useState<"ready" | "stale" | "missing">("missing");
   const [activeSection, setActiveSection] = useState("business");
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains("dark")
@@ -804,6 +806,17 @@ export const SettingsPage = () => {
   }, []);
 
   useEffect(() => {
+    const refresh = async () => {
+      const readiness = await getOfflineReadiness();
+      setOfflineReadiness(readiness.status);
+    };
+    void refresh();
+    const onOnline = () => void refresh();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [isOnline, settings, users.length]);
+
+  useEffect(() => {
     if (visibleSettingsSections.some((s) => s.id === activeSection)) return;
     setActiveSection(visibleSettingsSections[0]?.id || "business");
   }, [activeSection, visibleSettingsSections]);
@@ -983,7 +996,7 @@ export const SettingsPage = () => {
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={cn(
-                  "px-3 py-2 rounded-xl border text-xs font-medium whitespace-nowrap",
+                  "px-3 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap",
                   activeSection === section.id
                     ? "bg-blue-600 text-white border-blue-600"
                     : "bg-white/70 dark:bg-slate-950/40 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800"
@@ -1024,6 +1037,16 @@ export const SettingsPage = () => {
           {/* Quick status */}
           <div className="mt-3 px-2 text-[11px] text-slate-500 dark:text-slate-400">
             {settingsLoading ? "Loading settings…" : "Settings synced"}
+            <div
+              className={cn(
+                "mt-1",
+                offlineReadiness === "ready" && "text-emerald-500",
+                offlineReadiness === "stale" && "text-amber-500",
+                offlineReadiness === "missing" && "text-red-500"
+              )}
+            >
+              Offline readiness: {offlineReadiness}
+            </div>
           </div>
         </div>
       </div>

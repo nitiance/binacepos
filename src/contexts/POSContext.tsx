@@ -23,6 +23,11 @@ import {
   pullRecentServiceBookings,
   pushUnsyncedServiceBookings,
 } from "@/lib/serviceBookings";
+import {
+  saveCachedProducts,
+  saveCachedRecentReceipts,
+  saveCachedSettings,
+} from "@/lib/offlineRuntimeCache";
 
 /* ---------------------------------- USER TYPES --------------------------------- */
 export type Role = "platform_admin" | "master_admin" | "super_admin" | "admin" | "cashier";
@@ -505,6 +510,96 @@ export const POSProvider = ({ children }: { children: ReactNode }) => {
     return { sales, inventory, expenses, bookings, total };
   }, [getSalesQueueCount]);
 
+  const warmOfflineRuntimeSnapshots = useCallback(async () => {
+    if (!navigator.onLine) return;
+
+    try {
+      const [settingsRes, productsRes, ordersRes] = await Promise.all([
+        supabase.from("store_settings").select("*").maybeSingle(),
+        supabase
+          .schema("public")
+          .from("products")
+          .select("*")
+          .eq("is_archived", false)
+          .order("name"),
+        supabase
+          .from("orders")
+          .select("id,receipt_id,receipt_number,customer_name,total_amount,payment_method,status,created_at,cashier_id")
+          .order("created_at", { ascending: false })
+          .limit(120),
+      ]);
+
+      if (!productsRes.error && Array.isArray(productsRes.data)) {
+        const mappedProducts = productsRes.data.map((p: any) => ({
+          ...p,
+          shortcutCode: p.shortcut_code,
+          lowStockThreshold: p.low_stock_threshold ?? 5,
+          image: p.image_url,
+        }));
+        await saveCachedProducts(mappedProducts);
+      }
+
+      if (!settingsRes.error) {
+        await saveCachedSettings((settingsRes.data || {}) as any);
+      }
+
+      const orders = Array.isArray(ordersRes.data) ? ordersRes.data : [];
+      if (!ordersRes.error && orders.length > 0) {
+        const orderIds = orders.map((o: any) => o.id).filter(Boolean);
+        const cashierIds = Array.from(new Set(orders.map((o: any) => o.cashier_id).filter(Boolean)));
+
+        const [itemsRes, profilesRes] = await Promise.all([
+          orderIds.length
+            ? supabase
+                .from("order_items")
+                .select("order_id,product_name,quantity,price_at_sale")
+                .in("order_id", orderIds)
+            : Promise.resolve({ data: [], error: null } as any),
+          cashierIds.length
+            ? supabase.from("profiles").select("id,full_name").in("id", cashierIds)
+            : Promise.resolve({ data: [], error: null } as any),
+        ]);
+
+        const itemMap = new Map<string, any[]>();
+        for (const row of (itemsRes.data || []) as any[]) {
+          const key = String(row.order_id || "");
+          if (!key) continue;
+          const list = itemMap.get(key) || [];
+          list.push({
+            product_name: String(row.product_name || "Item"),
+            quantity: Number(row.quantity || 0),
+            price_at_sale: Number(row.price_at_sale || 0),
+          });
+          itemMap.set(key, list);
+        }
+
+        const cashierMap = new Map<string, string>();
+        for (const row of (profilesRes.data || []) as any[]) {
+          const id = String(row.id || "");
+          if (!id) continue;
+          cashierMap.set(id, String(row.full_name || "Staff"));
+        }
+
+        const cachedReceipts = orders.map((o: any) => ({
+          id: String(o.id || ""),
+          receipt_id: String(o.receipt_id || ""),
+          receipt_number: String(o.receipt_number || ""),
+          customer_name: o.customer_name ? String(o.customer_name) : null,
+          total_amount: Number(o.total_amount || 0),
+          payment_method: o.payment_method ? String(o.payment_method) : null,
+          status: o.status ? String(o.status) : null,
+          created_at: String(o.created_at || new Date().toISOString()),
+          cashier_name: cashierMap.get(String(o.cashier_id || "")) || "Staff",
+          order_items: itemMap.get(String(o.id || "")) || [],
+        }));
+
+        await saveCachedRecentReceipts(cachedReceipts as any);
+      }
+    } catch (e) {
+      console.warn("[offline-cache] warm sync failed", e);
+    }
+  }, []);
+
   /* ---------------------- LOAD HELD SALES & QUEUE --------------------------- */
 
   useEffect(() => {
@@ -775,6 +870,12 @@ export const POSProvider = ({ children }: { children: ReactNode }) => {
         } catch {
           // pull failures shouldn't block everything
         }
+
+        try {
+          await warmOfflineRuntimeSnapshots();
+        } catch {
+          // cache warming is best effort
+        }
       } finally {
         globalSyncingRef.current = false;
         const counts = await refreshPendingSyncCount();
@@ -784,7 +885,7 @@ export const POSProvider = ({ children }: { children: ReactNode }) => {
         else setSyncStatus("online");
       }
     },
-    [currentUser, processOfflineQueue, queryClient, refreshPendingSyncCount]
+    [currentUser, processOfflineQueue, queryClient, refreshPendingSyncCount, warmOfflineRuntimeSnapshots]
   );
 
   /* ---------------------------- ONLINE / OFFLINE ---------------------------- */

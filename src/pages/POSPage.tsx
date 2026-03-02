@@ -34,13 +34,18 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Camera } from "@capacitor/camera";
 import { enqueueThermalJob } from "@/lib/printQueue";
-import { isAutoPrintSalesEnabled, tryPrintThermalQueue } from "@/lib/thermalPrint";
+import { isAutoPrintSalesEnabled, PRINTER_PAPER_MM_KEY, tryPrintThermalQueue } from "@/lib/thermalPrint";
 import { ServiceBookingsDialog } from "@/components/services/ServiceBookingsDialog";
 import { pullRecentServiceBookings, pushUnsyncedServiceBookings } from "@/lib/serviceBookings";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import type { ReceiptStoreSettings } from "@/core/receipts/receiptPrintModel";
 import { loadStoreSettingsWithBusinessFallback } from "@/lib/storeSettings";
 import { getTenantScopeFromLocalUser } from "@/lib/tenantScope";
+import {
+  getOfflineReadiness,
+  loadCachedProducts,
+  saveCachedProducts,
+} from "@/lib/offlineRuntimeCache";
 
 
 type FocusArea = "search" | "customer" | "products" | "cart";
@@ -82,6 +87,10 @@ function round2(n: number) {
 
 // Settings key (so you can control later from Settings page)
 const TAX_RATE_KEY = "binancexi_tax_rate"; // store as percentage e.g. "0" or "15"
+
+function normalizePaperMm(raw: unknown): 58 | 80 {
+  return Number(raw) === 58 ? 58 : 80;
+}
 
 export const POSPage = () => {
   const ensureCameraPermission = useCallback(async () => {
@@ -137,6 +146,18 @@ export const POSPage = () => {
     return () => window.removeEventListener("online", sync);
   }, []);
 
+  const refreshOfflineReadiness = useCallback(async () => {
+    const readiness = await getOfflineReadiness();
+    setOfflineReadiness(readiness.status);
+  }, []);
+
+  useEffect(() => {
+    void refreshOfflineReadiness();
+    const onOnline = () => void refreshOfflineReadiness();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [refreshOfflineReadiness]);
+
   // ✅ PRINT + QUEUE (runs AFTER receipt UI is rendered)
 useEffect(() => {
   if (!lastOrderData) return;
@@ -168,7 +189,7 @@ useEffect(() => {
  const t = setTimeout(() => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      tryPrintThermalQueue();
+      void tryPrintThermalQueue({ source: "pos_sale", maxJobsPerPass: 20 });
       setTimeout(() => setIsPrinting(false), 700);
     });
   });
@@ -185,6 +206,10 @@ useEffect(() => {
   const [showShortcuts, setShowShortcuts] = useState(false);
 const [showScanner, setShowScanner] = useState(false);
 const [showMobileCart, setShowMobileCart] = useState(false);
+  const [offlineReadiness, setOfflineReadiness] = useState<"ready" | "stale" | "missing">("missing");
+  const scanBufferRef = useRef("");
+  const scanTimerRef = useRef<number | null>(null);
+  const scanLastAtRef = useRef(0);
 
   // Global discount code dialog
   const [showDiscountDialog, setShowDiscountDialog] = useState(false);
@@ -273,8 +298,18 @@ const [showMobileCart, setShowMobileCart] = useState(false);
     isLoading: productsLoading,
     isError,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", scopedBusinessId],
     queryFn: async () => {
+      const hydrateFromCache = async () => {
+        const cached = await loadCachedProducts<Product[]>();
+        return Array.isArray(cached) ? cached : [];
+      };
+
+      if (!navigator.onLine) {
+        const cached = await hydrateFromCache();
+        if (cached.length > 0) return cached;
+      }
+
       // If you have is_archived in DB, hide archived so POS updates instantly after "delete"
       const { data, error } = await supabase
   .schema("public")
@@ -283,14 +318,20 @@ const [showMobileCart, setShowMobileCart] = useState(false);
   .eq("is_archived", false)
   .order("name");
 
-      if (error) throw error;
+      if (error) {
+        const cached = await hydrateFromCache();
+        if (cached.length > 0) return cached;
+        throw error;
+      }
 
-      return (data || []).map((p: any) => ({
+      const mapped = (data || []).map((p: any) => ({
         ...p,
         shortcutCode: p.shortcut_code,
         lowStockThreshold: p.low_stock_threshold ?? 5,
         image: p.image_url,
       })) as Product[];
+      await saveCachedProducts(mapped);
+      return mapped;
     },
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -317,6 +358,11 @@ const [showMobileCart, setShowMobileCart] = useState(false);
   }, [queryClient]);
 
   const products = productsRaw;
+
+  useEffect(() => {
+    if (!products.length) return;
+    void refreshOfflineReadiness();
+  }, [products.length, refreshOfflineReadiness]);
 
   const categories = useMemo(
     () =>
@@ -396,20 +442,37 @@ const [showMobileCart, setShowMobileCart] = useState(false);
   );
 
   // ---- QUICK ENTRY ----
-  const handleQuickEntry = useCallback(
+  const findExactCodeMatches = useCallback(
     (code: string) => {
-      const trimmed = (code || "").trim();
-      if (!trimmed) return false;
+      const trimmed = String(code || "").trim();
+      const lowered = trimmed.toLowerCase();
+      if (!trimmed) return [] as Product[];
+      return (products || []).filter((p: any) => {
+        const modeOk = posMode === "retail" ? p.type !== "service" : p.type === "service";
+        if (!modeOk) return false;
+        return (
+          String(p.barcode || "") === trimmed ||
+          String(p.sku || "").toLowerCase() === lowered ||
+          String(p.shortcutCode || "").toLowerCase() === lowered
+        );
+      }) as Product[];
+    },
+    [products, posMode]
+  );
 
-      const product: any = products.find(
-        (p: any) =>
-          p.barcode === trimmed ||
-          p.sku === trimmed ||
-          (!!p.shortcutCode && String(p.shortcutCode).toLowerCase() === trimmed.toLowerCase())
-      );
+  const handleQuickEntry = useCallback(
+    (code: string, opts?: { toastOnAmbiguous?: boolean; toastOnSuccess?: boolean }) => {
+      const matches = findExactCodeMatches(code);
+      if (!matches.length) return false;
 
-      if (!product) return false;
+      if (matches.length > 1) {
+        if (opts?.toastOnAmbiguous) {
+          toast.error("Multiple products match this code. Refine catalog codes.");
+        }
+        return false;
+      }
 
+      const product: any = matches[0];
       if (product.type === "good" && Number(product.stock_quantity ?? 0) <= 0) {
         toast.error("Out of stock");
         return true;
@@ -417,12 +480,13 @@ const [showMobileCart, setShowMobileCart] = useState(false);
 
       const added = addToCart(product);
       if (added) {
-        setSearchQuery("");
-        toast.success(`${product.name} added`);
+        if (opts?.toastOnSuccess !== false) {
+          toast.success(`${product.name} added`);
+        }
       }
       return added;
     },
-    [addToCart, products]
+    [addToCart, findExactCodeMatches]
   );
 
   // ---- PAYMENT COMPLETE ----
@@ -459,6 +523,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
     activeDiscount: activeDiscount ?? null,
     taxRatePct,
     storeSettingsSnapshot: receiptStoreSettings || null,
+    paperMm: normalizePaperMm(localStorage.getItem(PRINTER_PAPER_MM_KEY) || "80"),
   });
 
   // ✅ reset POS after sale
@@ -498,6 +563,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
         activeDiscount: null,
         taxRatePct: 0,
         storeSettingsSnapshot: receiptStoreSettings || null,
+        paperMm: normalizePaperMm(localStorage.getItem(PRINTER_PAPER_MM_KEY) || "80"),
       });
     },
     [currentUser, receiptStoreSettings]
@@ -663,6 +729,22 @@ const [showMobileCart, setShowMobileCart] = useState(false);
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       const targetEditable = isEditableTarget(document.activeElement);
+      const key = String(e.key || "");
+      const lowerKey = key.toLowerCase();
+      const modifierPressed = e.ctrlKey || e.metaKey || e.altKey;
+      const isPrintable = key.length === 1 && !modifierPressed;
+
+      if ((e.ctrlKey || e.metaKey) && lowerKey === "f") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setFocusArea("search");
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && key === "Enter") {
+        e.preventDefault();
+        if (cart.length > 0) paymentPanelRef.current?.openPayment?.();
+        return;
+      }
 
       if (e.key === "Escape") {
         if (showScanner) {
@@ -737,7 +819,10 @@ const [showMobileCart, setShowMobileCart] = useState(false);
         if (document.activeElement === searchInputRef.current && e.key === "Enter") {
           if (!searchQuery.trim()) return;
           e.preventDefault();
-          const found = handleQuickEntry(searchQuery);
+          const found = handleQuickEntry(searchQuery, { toastOnAmbiguous: true });
+          if (found) {
+            setSearchQuery("");
+          }
           if (!found && filteredProducts.length > 0) {
             const first: any = filteredProducts[0];
             if (first.type === "good" && Number(first.stock_quantity ?? 0) <= 0) return;
@@ -745,6 +830,49 @@ const [showMobileCart, setShowMobileCart] = useState(false);
             if (added) setSearchQuery("");
           }
         }
+        return;
+      }
+
+      if (isPrintable) {
+        e.preventDefault();
+        const now = Date.now();
+        const delta = now - scanLastAtRef.current;
+        scanLastAtRef.current = now;
+
+        if (delta > 140) {
+          scanBufferRef.current = key;
+        } else {
+          scanBufferRef.current += key;
+        }
+
+        if (scanTimerRef.current != null) {
+          window.clearTimeout(scanTimerRef.current);
+        }
+        scanTimerRef.current = window.setTimeout(() => {
+          scanBufferRef.current = "";
+          scanTimerRef.current = null;
+        }, 250);
+
+        setFocusArea("search");
+        setSearchQuery((prev) => {
+          const next = `${prev}${key}`;
+          const added = handleQuickEntry(next, { toastOnSuccess: false });
+          if (added) {
+            scanBufferRef.current = "";
+            if (scanTimerRef.current != null) {
+              window.clearTimeout(scanTimerRef.current);
+              scanTimerRef.current = null;
+            }
+          }
+          return added ? "" : next;
+        });
+        return;
+      }
+
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        setSearchQuery((prev) => prev.slice(0, -1));
+        setFocusArea("search");
         return;
       }
 
@@ -762,6 +890,26 @@ const [showMobileCart, setShowMobileCart] = useState(false);
       }
       if (e.key === "Enter") {
         e.preventDefault();
+        const scanBuffered = String(scanBufferRef.current || "").trim();
+        if (scanBuffered) {
+          const scanned = handleQuickEntry(scanBuffered, { toastOnAmbiguous: true });
+          scanBufferRef.current = "";
+          if (scanTimerRef.current != null) {
+            window.clearTimeout(scanTimerRef.current);
+            scanTimerRef.current = null;
+          }
+          if (scanned) {
+            setSearchQuery("");
+            return;
+          }
+        }
+        if (searchQuery.trim()) {
+          const matched = handleQuickEntry(searchQuery.trim(), { toastOnAmbiguous: true });
+          if (matched) {
+            setSearchQuery("");
+            return;
+          }
+        }
         addSelectedProduct();
         return;
       }
@@ -781,7 +929,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
       searchQuery,
       cart.length,
       posMode,
-      setPosMode,
+      setPosModeSafe,
       holdCurrentSale,
       handleQuickEntry,
       filteredProducts,
@@ -797,6 +945,15 @@ const [showMobileCart, setShowMobileCart] = useState(false);
     window.addEventListener("keydown", handleKeyDown, { passive: false });
     return () => window.removeEventListener("keydown", handleKeyDown as any);
   }, [handleKeyDown]);
+
+  useEffect(
+    () => () => {
+      if (scanTimerRef.current != null) {
+        window.clearTimeout(scanTimerRef.current);
+      }
+    },
+    []
+  );
 
   // ---- CART HANDLERS (by lineId) ----
   const decQty = useCallback(
@@ -829,6 +986,9 @@ const [showMobileCart, setShowMobileCart] = useState(false);
                 <kbd className="bg-muted px-1 rounded">F2</kbd> Search
               </div>
               <div>
+                <kbd className="bg-muted px-1 rounded">Ctrl+F</kbd> Focus Search
+              </div>
+              <div>
                 <kbd className="bg-muted px-1 rounded">F8</kbd> Customer
               </div>
               <div>
@@ -839,6 +999,9 @@ const [showMobileCart, setShowMobileCart] = useState(false);
               </div>
               <div>
                 <kbd className="bg-muted px-1 rounded">F12</kbd> Pay
+              </div>
+              <div>
+                <kbd className="bg-muted px-1 rounded">Ctrl+Enter</kbd> Pay
               </div>
               <div>
                 <kbd className="bg-muted px-1 rounded">F3</kbd> Hold Sale
@@ -855,6 +1018,9 @@ const [showMobileCart, setShowMobileCart] = useState(false);
                 <kbd className="bg-muted px-1 rounded">Enter</kbd> Add selected
               </div>
               <div>
+                <kbd className="bg-muted px-1 rounded">Type</kbd> Search/Scan Anywhere
+              </div>
+              <div>
                 <kbd className="bg-muted px-1 rounded">Del</kbd> Clear cart
               </div>
               <div>
@@ -867,7 +1033,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
 
       {/* LEFT COLUMN */}
 <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950/50">
-        <div className="p-3 bg-card border-b border-border flex justify-between items-center gap-3 shadow-sm z-10">
+        <div className="p-2 sm:p-3 bg-card border-b border-border flex justify-between items-center gap-2 sm:gap-3 shadow-sm z-10">
           <div className="text-xs font-mono bg-muted px-2 py-1 rounded flex items-center gap-2">
             <span
               className={cn(
@@ -882,6 +1048,11 @@ const [showMobileCart, setShowMobileCart] = useState(false);
             {syncStatus === "offline" && (
               <span className="ml-2 inline-flex items-center gap-1 text-amber-500">
                 <CloudOff className="w-3 h-3" /> Offline
+              </span>
+            )}
+            {offlineReadiness !== "ready" && (
+              <span className="ml-2 text-[10px] text-amber-500">
+                {offlineReadiness === "missing" ? "Offline data missing" : "Offline data stale"}
               </span>
             )}
           </div>
@@ -935,7 +1106,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
           </div>
         </div>
 
-        <div className="p-3 space-y-3">
+        <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
           <div className="relative group">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
@@ -979,7 +1150,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
 </div>
         </div>
 
-        <div className="flex-1 p-3 min-h-0 pb-36">
+        <div className="flex-1 p-2 sm:p-3 min-h-0 pb-36">
           {productsLoading ? (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="animate-spin text-primary" />
@@ -987,7 +1158,11 @@ const [showMobileCart, setShowMobileCart] = useState(false);
           ) : isError ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
               <p className="text-sm">Failed to load products.</p>
-              <p className="text-xs opacity-70">If offline, cached products will show once you fetched them at least once.</p>
+              <p className="text-xs opacity-70">
+                {offlineReadiness === "missing"
+                  ? "Offline data is not prepared on this device yet. Connect once to bootstrap."
+                  : "If offline, cached products will show once you fetched them at least once."}
+              </p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
@@ -997,7 +1172,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
           ) : (
             <div
               className={cn(
-                "grid gap-3 pb-24",
+                "grid gap-2 sm:gap-3 pb-24",
                 viewMode === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5" : "grid-cols-1"
               )}
               onMouseEnter={() => setFocusArea("products")}
@@ -1124,6 +1299,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
         onClose={() => setShowScanner(false)}
         onScan={(code) => {
           const ok = handleQuickEntry(code);
+          if (ok) setSearchQuery("");
           if (!ok) toast.error("Item not found");
           setShowScanner(false);
         }}
@@ -1356,6 +1532,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
       taxRatePct={lastOrderData.taxRatePct}
       timestamp={lastOrderData.timestamp}
       settingsOverride={lastOrderData.storeSettingsSnapshot || null}
+      paperMm={normalizePaperMm(lastOrderData.paperMm)}
     />
   )}
 </div>
@@ -1393,7 +1570,7 @@ const ProductCard = ({
       onMouseEnter={onHover}
       onClick={() => onAdd(product)}
       className={cn(
-        "flex flex-col p-3 rounded-xl border text-left transition-all relative overflow-hidden bg-card hover:shadow-md hover:border-primary/50 group active:scale-[0.98] duration-150",
+        "flex flex-col p-2 sm:p-3 rounded-lg sm:rounded-xl border text-left transition-all relative overflow-hidden bg-card hover:shadow-md hover:border-primary/50 group active:scale-[0.98] duration-150",
         isSelected && "ring-2 ring-primary border-primary",
         isOutOfStock && "opacity-50 grayscale cursor-not-allowed bg-muted"
       )}
@@ -1404,7 +1581,7 @@ const ProductCard = ({
         </span>
       )}
 
-      <div className="w-full aspect-[4/3] rounded-lg bg-muted mb-3 overflow-hidden flex items-center justify-center">
+      <div className="w-full aspect-[4/3] rounded-lg bg-muted mb-2 sm:mb-3 overflow-hidden flex items-center justify-center">
         {p.image ? (
           <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
         ) : (
@@ -1414,8 +1591,8 @@ const ProductCard = ({
         )}
       </div>
 
-      <div className="font-semibold text-sm truncate w-full leading-tight">{p.name}</div>
-      <div className="text-[10px] text-muted-foreground mb-3">{p.category || "General"}</div>
+      <div className="font-semibold text-xs sm:text-sm truncate w-full leading-tight">{p.name}</div>
+      <div className="text-[10px] text-muted-foreground mb-2 sm:mb-3">{p.category || "General"}</div>
 
       <div className="mt-auto flex justify-between items-end w-full">
         <span className="font-bold text-primary text-base">${Number(p.price ?? 0)}</span>
