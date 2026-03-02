@@ -48,7 +48,7 @@ export function AppLaunchSplash({ open, onSkip }: AppLaunchSplashProps) {
             <div className="text-2xl font-extrabold tracking-tight text-foreground">
               {BRAND.shortName}
             </div>
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="text-xs tracking-[0.16em] text-muted-foreground">
               {BRAND.splashTagline || "by naishe labs"}
             </div>
           </motion.div>

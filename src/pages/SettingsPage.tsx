@@ -55,7 +55,6 @@ import { callVerifyPassword } from "@/lib/auth/offlinePasswordAuth";
 import { hashPassword } from "@/lib/auth/passwordKdf";
 import { getLocalUser, renameLocalUser, upsertLocalUser } from "@/lib/auth/localUserStore";
 import { supabase } from "@/lib/supabase";
-import { EXPECTED_SUPABASE_REFS, getBackendInfo } from "@/lib/backendInfo";
 import { invokeWithAuthRecovery } from "@/lib/edgeFunctions";
 import { ensureSupabaseSession, isLikelyAuthError } from "@/lib/supabaseSession";
 import { getConfiguredPublicAppUrl, normalizeBaseUrl } from "@/lib/verifyUrl";
@@ -238,9 +237,6 @@ function syncSettingsToLocalStorage(s: StoreSettings) {
 export const SettingsPage = () => {
   const { currentUser, setCurrentUser } = usePOS();
   const queryClient = useQueryClient();
-  const backendInfo = useMemo(() => getBackendInfo(), []);
-  const expectedRefs = EXPECTED_SUPABASE_REFS as readonly string[];
-  const backendOk = !!backendInfo.supabaseRef && expectedRefs.includes(backendInfo.supabaseRef);
   const configuredPublicAppUrl = getConfiguredPublicAppUrl();
   const isVerifyBaseManaged = !!configuredPublicAppUrl;
 
@@ -1090,21 +1086,24 @@ export const SettingsPage = () => {
             </Button>
           </div>
 
-          {/* Mobile: horizontal section bar */}
-          <div className="flex lg:hidden gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {/* Mobile: compact section grid */}
+          <div className="grid lg:hidden grid-cols-2 gap-2 pb-1">
             {visibleSettingsSections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap",
+                  "px-3 py-2 rounded-xl border text-xs font-medium whitespace-nowrap text-left",
                   activeSection === section.id
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card/70 text-foreground border-border"
                 )}
                 type="button"
               >
-                {section.label}
+                <span className="inline-flex items-center gap-1.5 min-w-0">
+                  <section.icon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{section.label}</span>
+                </span>
               </button>
             ))}
           </div>
@@ -1823,79 +1822,51 @@ export const SettingsPage = () => {
               exit={{ opacity: 0 }}
               className="space-y-4"
             >
-              <Card>
+              <Card className="overflow-hidden border-border/80 bg-card/90">
                 <CardHeader>
                   <CardTitle>Data Export</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-8 border-2 border-dashed border-border rounded-xl text-center">
-                    <Database className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <div className="p-6 md:p-8 border-2 border-dashed border-border rounded-2xl text-center bg-background/65 backdrop-blur-sm soft-enter">
+                    <Database className="w-12 h-12 mx-auto text-primary/80 mb-4" />
                     <h3 className="font-bold text-lg">Backup JSON</h3>
                     <p className="text-sm text-muted-foreground mb-6">
                       Export products, sales, settings and staff permissions.
                     </p>
-	                    <Button
-	                      variant="outline"
-	                      onClick={handleExportData}
-	                      className="gap-2"
-	                      disabled={!isAdmin || !isOnline}
-	                    >
-	                      <Download className="w-4 h-4" /> Export Backup
-	                    </Button>
-	                    {!isAdmin && (
-	                      <div className="text-xs text-muted-foreground mt-2">
-	                        Admins only.
-	                      </div>
-	                    )}
-	                    {isAdmin && !isOnline && (
-	                      <div className="text-xs text-muted-foreground mt-2">
-	                        Offline: connect to export a cloud backup.
-	                      </div>
-	                    )}
-	                  </div>
-	                </CardContent>
-	              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Backend</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="text-sm">
-                    Supabase URL:{" "}
-                    <span className="font-mono text-xs break-all">
-                      {backendInfo.supabaseUrl || "NOT SET"}
-                    </span>
-                  </div>
-
-                  <div className="text-sm">
-                    Project ref:{" "}
-                    <span
-                      className={cn(
-                        "font-mono text-xs",
-                        backendOk ? "text-emerald-500" : "text-red-400"
-                      )}
+                    <Button
+                      variant="outline"
+                      onClick={handleExportData}
+                      className="gap-2 rounded-xl px-5 h-11"
+                      disabled={!isAdmin || !isOnline}
                     >
-                      {backendInfo.supabaseRef || "UNKNOWN"}
-                    </span>
-                    {!backendOk && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Expected: <span className="font-mono">{expectedRefs.join(", ")}</span>. If
-                        this is wrong, fix `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in your
-                        build environment and redeploy/rebuild.
+                      <Download className="w-4 h-4" /> Export Backup
+                    </Button>
+                    {!isAdmin && (
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Admins only.
+                      </div>
+                    )}
+                    {isAdmin && !isOnline && (
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Offline: connect to export a cloud backup.
                       </div>
                     )}
                   </div>
 
-                  <div className="text-xs text-muted-foreground font-mono">
-                    mode={backendInfo.mode || "unknown"}
-                    {backendInfo.appVersion ? `  version=${backendInfo.appVersion}` : ""}
-                    {backendInfo.appCommit ? `  commit=${backendInfo.appCommit.slice(0, 7)}` : ""}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-border/80 bg-background/55 p-3">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide">Data scope</div>
+                      <div className="text-sm font-medium mt-1">Products, sales, settings, staff permissions</div>
+                    </div>
+                    <div className="rounded-xl border border-border/80 bg-background/55 p-3">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide">Security</div>
+                      <div className="text-sm font-medium mt-1">Sensitive backend references hidden on client UI</div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-	            </motion.div>
-	          )}
+            </motion.div>
+          )}
 
 	        </AnimatePresence>
 	      </div>

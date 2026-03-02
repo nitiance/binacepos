@@ -1,6 +1,6 @@
 // File: src/components/auth/LoginScreen.tsx
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Lock, ShieldCheck, Wifi, WifiOff, Eye, EyeOff, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +64,7 @@ function friendlyCloudAccountFailure(err: any) {
 
 export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
   const { setCurrentUser, syncStatus } = usePOS();
+  const reduceMotion = useReducedMotion();
 
   const [username, setUsername] = useState("");
   const [secret, setSecret] = useState(""); // password
@@ -459,26 +460,61 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
       {/* LEFT BRAND PANEL */}
       <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(800px_420px_at_12%_-8%,rgba(25,124,188,0.6),transparent_62%),radial-gradient(860px_420px_at_112%_0%,rgba(43,174,228,0.32),transparent_60%),linear-gradient(180deg,#05253b_0%,#061624_100%)]" />
-        <div className="absolute -left-16 top-24 w-56 h-56 rounded-full bg-cyan-300/20 blur-3xl" />
-        <div className="absolute right-0 bottom-16 w-64 h-64 rounded-full bg-blue-400/15 blur-3xl" />
+        <motion.div
+          className="absolute -left-16 top-24 w-56 h-56 rounded-full bg-cyan-300/20 blur-3xl"
+          animate={reduceMotion ? undefined : { y: [0, -12, 0], scale: [1, 1.04, 1] }}
+          transition={reduceMotion ? undefined : { duration: 7.2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute right-0 bottom-16 w-64 h-64 rounded-full bg-blue-400/15 blur-3xl"
+          animate={reduceMotion ? undefined : { y: [0, -10, 0], scale: [1, 1.05, 1] }}
+          transition={reduceMotion ? undefined : { duration: 8.4, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+        />
 
-        <div className="relative z-10 flex flex-col items-center text-white px-12 w-full soft-enter">
+        <motion.div
+          className="relative z-10 flex flex-col items-center text-white px-12 w-full soft-enter"
+          initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
+          animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={reduceMotion ? undefined : { duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
           {/* HUGE LOGO */}
-          <div className="mb-10 w-full flex justify-center">
+          <motion.div
+            className="mb-10 w-full flex justify-center"
+            initial={reduceMotion ? undefined : { opacity: 0, scale: 0.97 }}
+            animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+            transition={reduceMotion ? undefined : { duration: 0.45, delay: 0.1 }}
+          >
             <BrandLogo
               className="w-[500px] max-w-full drop-shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
               alt={BRAND.name}
               tone="light"
             />
-          </div>
+          </motion.div>
 
-          <h1 className="text-4xl font-extrabold text-center mb-4 tracking-tight">Point of Sale + Repairs</h1>
+          <motion.h1
+            className="text-4xl font-extrabold text-center mb-4 tracking-tight"
+            initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
+            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={reduceMotion ? undefined : { duration: 0.35, delay: 0.18 }}
+          >
+            Point of Sale + Repairs
+          </motion.h1>
 
-          <p className="text-slate-200/90 text-center max-w-lg text-lg leading-relaxed">
+          <motion.p
+            className="text-slate-200/90 text-center max-w-lg text-lg leading-relaxed"
+            initial={reduceMotion ? undefined : { opacity: 0, y: 8 }}
+            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={reduceMotion ? undefined : { duration: 0.35, delay: 0.24 }}
+          >
             Sales, services, and receipts managed in one fast offline-first workspace.
-          </p>
+          </motion.p>
 
-          <div className="flex gap-3 mt-8 flex-wrap justify-center">
+          <motion.div
+            className="flex gap-3 mt-8 flex-wrap justify-center"
+            initial={reduceMotion ? undefined : { opacity: 0, y: 8 }}
+            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={reduceMotion ? undefined : { duration: 0.35, delay: 0.3 }}
+          >
             <StatusBadge
               ok={syncStatus === "online"}
               okLabel="Online (Synced)"
@@ -487,10 +523,17 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
             <Tag label="Desktop Ready" />
             <Tag label="Keyboard-First" />
             <Tag label="Offline-First POS" />
-          </div>
+          </motion.div>
 
-          <div className="absolute bottom-6 text-xs text-slate-300/70">© {new Date().getFullYear()} {BRAND.name}</div>
-        </div>
+          <motion.div
+            className="absolute bottom-6 text-xs text-slate-300/70"
+            initial={reduceMotion ? undefined : { opacity: 0 }}
+            animate={reduceMotion ? undefined : { opacity: 1 }}
+            transition={reduceMotion ? undefined : { duration: 0.4, delay: 0.36 }}
+          >
+            © {new Date().getFullYear()} {BRAND.name}
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* RIGHT LOGIN PANEL */}
@@ -516,7 +559,7 @@ export const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
             <p className="text-muted-foreground">Enter your staff credentials</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5 rounded-2xl border border-border/90 bg-card/85 backdrop-blur-md p-5 shadow-card">
+          <form onSubmit={handleLogin} className="space-y-5 rounded-2xl border border-border/90 bg-card/85 backdrop-blur-md p-5 shadow-card smooth-pop">
             <div className="space-y-2">
               <Label>Username</Label>
               <div className="relative">
