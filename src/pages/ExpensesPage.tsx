@@ -315,10 +315,10 @@ export const ExpensesPage = () => {
   }, [doSyncNow]);
 
   return (
-    <div className="p-4 md:p-6 space-y-5 pb-24 lg:pb-6">
+    <div className="p-3 md:p-6 space-y-4 md:space-y-5 pb-24 lg:pb-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">Expenses</h1>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Expenses</h1>
           <div className="text-sm text-muted-foreground flex items-center gap-2">
             {syncStatus === "offline" && (
               <span className="inline-flex items-center gap-1 text-amber-500">

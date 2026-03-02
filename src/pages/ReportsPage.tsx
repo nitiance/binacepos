@@ -179,7 +179,7 @@ type ReportsPrefsLegacy = {
   staffFilter?: string;
 };
 
-type ReportsPrefsV2 = {
+type ReportsPrefsV3 = {
   dateMode?: "day" | "range";
   day?: string;
   rangeFrom?: string | null;
@@ -187,12 +187,31 @@ type ReportsPrefsV2 = {
   staffFilterIds?: string[];
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function safeIsoDate(input: unknown, fallbackIso: string) {
+  const parsed = new Date(String(input ?? ""));
+  return Number.isFinite(parsed.getTime()) ? parsed.toISOString() : fallbackIso;
+}
+
+function normalizeDateMode(input: unknown): "day" | "range" {
+  return String(input || "").trim().toLowerCase() === "range" ? "range" : "day";
+}
+
+function normalizeStaffFilterIds(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  return Array.from(new Set(input.map((id) => String(id || "").trim()).filter(Boolean)));
+}
+
 export const ReportsPage = () => {
   const { currentUser } = usePOS();
   const isAdmin = String(currentUser?.role || "").toLowerCase() === "admin";
   const staffSelfId = String(currentUser?.id || "");
   const REPORT_PREFS_V1_KEY = "binancexi_reports_prefs_v1";
-  const REPORT_PREFS_KEY = "binancexi_reports_prefs_v2";
+  const REPORT_PREFS_V2_KEY = "binancexi_reports_prefs_v2";
+  const REPORT_PREFS_KEY = "binancexi_reports_prefs_v3";
   const scope = useMemo(
     () =>
       resolveTenantScope(
@@ -209,16 +228,38 @@ export const ReportsPage = () => {
 
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const reportPrefs = useMemo(() => {
-    const current = readScopedJSON<ReportsPrefsV2>(REPORT_PREFS_KEY, {}, { scope, migrateLegacy: true });
-    if (Object.keys(current || {}).length > 0) return current;
+    const nowIso = new Date().toISOString();
+    const normalizeV3 = (raw: unknown): ReportsPrefsV3 | null => {
+      if (!isRecord(raw) || Object.keys(raw).length === 0) return null;
+      const day = safeIsoDate(raw.day, nowIso);
+      const rangeFrom = safeIsoDate(raw.rangeFrom, day);
+      const rangeTo = safeIsoDate(raw.rangeTo, rangeFrom);
+      return {
+        dateMode: normalizeDateMode(raw.dateMode),
+        day,
+        rangeFrom,
+        rangeTo,
+        staffFilterIds: normalizeStaffFilterIds(raw.staffFilterIds),
+      };
+    };
 
-    const legacy = readScopedJSON<ReportsPrefsLegacy>(REPORT_PREFS_V1_KEY, {}, {
+    const current = normalizeV3(
+      readScopedJSON<unknown>(REPORT_PREFS_KEY, {}, { scope, migrateLegacy: true })
+    );
+    if (current) return current;
+
+    const v2 = normalizeV3(
+      readScopedJSON<unknown>(REPORT_PREFS_V2_KEY, {}, { scope, migrateLegacy: true })
+    );
+    if (v2) return v2;
+
+    const legacyRaw = readScopedJSON<unknown>(REPORT_PREFS_V1_KEY, {}, {
       scope,
       migrateLegacy: true,
     });
-    const nowIso = new Date().toISOString();
-    const legacyFrom = String(legacy.from || nowIso);
-    const legacyTo = String(legacy.to || legacyFrom);
+    const legacy = isRecord(legacyRaw) ? (legacyRaw as ReportsPrefsLegacy) : ({} as ReportsPrefsLegacy);
+    const legacyFrom = safeIsoDate(legacy.from, nowIso);
+    const legacyTo = safeIsoDate(legacy.to, legacyFrom);
     return {
       dateMode: legacy.rangeType === "custom" ? "range" : "day",
       day: legacyFrom,
@@ -226,7 +267,7 @@ export const ReportsPage = () => {
       rangeTo: legacyTo,
       staffFilterIds:
         legacy.staffFilter && legacy.staffFilter !== "all" ? [String(legacy.staffFilter)] : [],
-    } as ReportsPrefsV2;
+    } as ReportsPrefsV3;
   }, [scope?.businessId, scope?.userId]);
 
   const [dateMode, setDateMode] = useState<"day" | "range">(reportPrefs.dateMode || "day");
@@ -622,13 +663,13 @@ export const ReportsPage = () => {
   if (isLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin h-8 w-8 text-primary"/></div>;
 
   return (
-    <div className="p-4 md:p-6 space-y-6 pb-20 bg-background min-h-screen">
+    <div className="p-3 md:p-6 space-y-4 md:space-y-6 pb-20 bg-background min-h-screen">
       
       {/* HEADER & FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Performance metrics & financial insights</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">Performance metrics & financial insights</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
@@ -684,9 +725,11 @@ export const ReportsPage = () => {
                   selected={dateRange}
                   onSelect={(range: any) => {
                     if (!range) return;
+                    const safeFrom = range.from instanceof Date ? range.from : day;
+                    const safeTo = range.to instanceof Date ? range.to : safeFrom;
                     setDateRange({
-                      from: range.from,
-                      to: range.to,
+                      from: safeFrom,
+                      to: safeTo,
                     });
                   }}
                   numberOfMonths={2}

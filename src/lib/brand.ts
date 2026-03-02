@@ -4,6 +4,8 @@ import receiptLogoUrl from "@/assets/binancexi-receipt-logo.svg";
 export type BrandConfig = {
   name: string;
   shortName: string;
+  splashTagline?: string;
+  poweredByFinePrint?: string;
   receiptLogoUrl?: string;
   receiptLogoAlt?: string;
   receiptLogoMaxWidthPx?: number;
@@ -18,6 +20,8 @@ export type BrandConfig = {
 export const BRAND: BrandConfig = {
   name: "BinanceXI POS",
   shortName: "BinanceXI",
+  splashTagline: "by naishe labs",
+  poweredByFinePrint: "Powered by BinanceXI · Naishe Labs",
   receiptLogoUrl,
   receiptLogoAlt: "BinanceXI POS",
   receiptLogoMaxWidthPx: 148,

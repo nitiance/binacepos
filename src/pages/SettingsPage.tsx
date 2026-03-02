@@ -1028,7 +1028,7 @@ export const SettingsPage = () => {
   ============================ */
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="max-w-md w-full">
           <CardHeader>
             <CardTitle>Not logged in</CardTitle>
@@ -1043,7 +1043,7 @@ export const SettingsPage = () => {
 
   if (!canAccessSettings) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="max-w-md w-full">
           <CardHeader>
             <CardTitle>Access denied</CardTitle>
@@ -1060,18 +1060,18 @@ export const SettingsPage = () => {
      UI
   ============================ */
   return (
-    <div className="flex flex-col lg:flex-row h-full gap-4 p-3 md:p-6 bg-slate-50 dark:bg-slate-950 min-h-screen">
+    <div className="flex flex-col lg:flex-row h-full gap-4 p-3 md:p-6 bg-background min-h-screen">
       {/* Sidebar (sticky on desktop) */}
       <div className="w-full lg:w-72 shrink-0">
-        <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto rounded-2xl bg-white/60 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 p-2.5 md:p-3">
+        <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto rounded-2xl bg-card/70 border border-border p-2.5 md:p-3">
           {/* Header */}
           <div className="flex items-center gap-3 px-1 mb-3">
             <BrandLogo className="text-xl" alt="BinanceXI POS" />
             <div className="leading-tight min-w-0">
-              <div className="text-base font-bold text-slate-900 dark:text-white truncate">
+              <div className="text-base font-bold text-foreground truncate">
                 Settings
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+              <div className="text-[11px] text-muted-foreground truncate">
                 {(currentUser as any)?.full_name ||
                   (currentUser as any)?.name ||
                   (currentUser as any)?.username ||
@@ -1099,8 +1099,8 @@ export const SettingsPage = () => {
                 className={cn(
                   "px-3 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap",
                   activeSection === section.id
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white/70 dark:bg-slate-950/40 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card/70 text-foreground border-border"
                 )}
                 type="button"
               >
@@ -1118,8 +1118,8 @@ export const SettingsPage = () => {
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all",
                   activeSection === section.id
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "hover:bg-muted text-foreground"
                 )}
                 type="button"
               >
@@ -1136,7 +1136,7 @@ export const SettingsPage = () => {
           </div>
 
           {/* Quick status */}
-          <div className="mt-3 px-2 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="mt-3 px-2 text-[11px] text-muted-foreground">
             {settingsLoading ? "Loading settings…" : "Settings synced"}
             <div
               className={cn(

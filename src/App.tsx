@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
@@ -13,7 +13,7 @@ import { POSProvider, usePOS } from "./contexts/POSContext";
 import { LoginScreen } from "./components/auth/LoginScreen";
 import { CloudSessionGate } from "./components/auth/CloudSessionGate";
 import { MainLayout } from "./components/layout/MainLayout";
-import { SubscriptionGate } from "./components/billing/SubscriptionGate";
+import { AppLaunchSplash } from "./components/brand/AppLaunchSplash";
 
 import { VerifyReceiptPage } from "./pages/VerifyReceiptPage";
 import { DashboardPage } from "./pages/Dashboard";
@@ -209,95 +209,79 @@ const AppRoutes = () => {
           <Route
             path="/dashboard"
             element={
-              <SubscriptionGate>
-                <RequireAdmin>
-                  <MainLayout>
-                    <DashboardPage />
-                  </MainLayout>
-                </RequireAdmin>
-              </SubscriptionGate>
+              <RequireAdmin>
+                <MainLayout>
+                  <DashboardPage />
+                </MainLayout>
+              </RequireAdmin>
             }
           />
           <Route
             path="/pos"
             element={
-              <SubscriptionGate>
-                <MainLayout>
-                  <POSPage />
-                </MainLayout>
-              </SubscriptionGate>
+              <MainLayout>
+                <POSPage />
+              </MainLayout>
             }
           />
           <Route
             path="/inventory"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowInventory">
-                  <MainLayout>
-                    <InventoryPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowInventory">
+                <MainLayout>
+                  <InventoryPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
           <Route
             path="/profit"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowReports">
-                  <MainLayout>
-                    <ProfitAnalysisPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowReports">
+                <MainLayout>
+                  <ProfitAnalysisPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
           <Route
             path="/receipts"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowEditReceipt">
-                  <MainLayout>
-                    <ReceiptsPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowEditReceipt">
+                <MainLayout>
+                  <ReceiptsPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
           <Route
             path="/reports"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowReports">
-                  <MainLayout>
-                    <ReportsPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowReports">
+                <MainLayout>
+                  <ReportsPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
           <Route
             path="/expenses"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowReports">
-                  <MainLayout>
-                    <ExpensesPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowReports">
+                <MainLayout>
+                  <ExpensesPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
           <Route
             path="/settings"
             element={
-              <SubscriptionGate>
-                <RequirePermission permission="allowSettings">
-                  <MainLayout>
-                    <SettingsPage />
-                  </MainLayout>
-                </RequirePermission>
-              </SubscriptionGate>
+              <RequirePermission permission="allowSettings">
+                <MainLayout>
+                  <SettingsPage />
+                </MainLayout>
+              </RequirePermission>
             }
           />
 
@@ -305,11 +289,9 @@ const AppRoutes = () => {
           <Route
             path="*"
             element={
-              <SubscriptionGate>
-                <MainLayout>
-                  <NotFound />
-                </MainLayout>
-              </SubscriptionGate>
+              <MainLayout>
+                <NotFound />
+              </MainLayout>
             }
           />
         </>
@@ -319,11 +301,36 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowSplash(false), 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     const saved = localStorage.getItem("binancexi_theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const shouldUseDark = saved ? saved === "dark" : prefersDark;
     document.documentElement.classList.toggle("dark", shouldUseDark);
+  }, []);
+
+  useEffect(() => {
+    const links = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"]')
+    ) as HTMLLinkElement[];
+    if (!links.length) {
+      console.warn("[startup] No stylesheet link tags found at boot.");
+      return;
+    }
+    const onError = (e: Event) => {
+      const target = e.currentTarget as HTMLLinkElement | null;
+      console.error("[startup] Failed to load stylesheet asset.", {
+        href: target?.href || "unknown",
+      });
+    };
+    links.forEach((link) => link.addEventListener("error", onError));
+    return () => links.forEach((link) => link.removeEventListener("error", onError));
   }, []);
 
   useEffect(() => {
@@ -353,7 +360,7 @@ const App = () => {
       persistOptions={{
         persister,
         maxAge: 1000 * 60 * 60 * 24 * 7,
-        buster: "binancexi-v1",
+        buster: "binancexi-v2-recovery",
       }}
     >
       <TooltipProvider>
@@ -361,6 +368,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <AppRoutes />
+          <AppLaunchSplash open={showSplash} onSkip={() => setShowSplash(false)} />
         </POSProvider>
       </TooltipProvider>
     </PersistQueryClientProvider>

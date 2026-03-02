@@ -88,7 +88,7 @@ export const POSSidebar = () => {
         className={cn(
           "hidden md:flex flex-col z-30",
           "fixed left-0 top-0 h-screen",
-          "bg-[hsl(var(--sidebar-background))/0.94] border-r border-white/10 backdrop-blur-xl"
+          "bg-[hsl(var(--sidebar-background)/0.94)] border-r border-white/10 backdrop-blur-xl"
         )}
       >
         {/* ===== BRAND HEADER (NO LOGO) ===== */}

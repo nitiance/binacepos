@@ -215,9 +215,9 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData, paper: ReceiptPaperMm) 
     .map((it) => {
       const name = esc(String(it.name || "Item"));
       return `
-        <div style="margin-bottom:6px;">
+        <div style="margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(0,0,0,0.2);">
           <div style="font-weight:700;">${name}</div>
-          <div style="display:flex;justify-content:space-between;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;">
             <span>${it.qty} x ${money(it.unit)}</span>
             <span>${money(it.lineTotal)}</span>
           </div>
@@ -240,17 +240,17 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData, paper: ReceiptPaperMm) 
     .join("");
 
   return `
-    <div style="width:${paperCssWidth(paper)};padding:6px;font-family:monospace;font-size:11px;line-height:1.3;color:#000;background:#fff;">
-      <div style="text-align:center;font-weight:800;font-size:16px;margin-top:2px;">${esc(model.header.businessName)}</div>
-      ${model.header.address ? `<div style="text-align:center;">${esc(model.header.address)}</div>` : ""}
-      ${model.header.phone ? `<div style="text-align:center;">${esc(model.header.phone)}</div>` : ""}
-      ${model.header.taxId ? `<div style="text-align:center;font-weight:700;">TAX: ${esc(model.header.taxId)}</div>` : ""}
+    <div style="width:${paperCssWidth(paper)};padding:6px;font-family:monospace;font-size:11px;line-height:1.3;color:#000;background:#fff;font-variant-numeric:tabular-nums;">
       ${
         model.header.logoUrl
           ? `<div style="text-align:center;margin-bottom:4px;"><img src="${esc(model.header.logoUrl)}" alt="${esc(model.header.logoAlt)}" style="max-width:${Number(model.header.logoMaxWidthPx || 148)}px;max-height:${Number(model.header.logoMaxHeightPx || 34)}px;width:auto;height:auto;" /></div>`
           : ""
       }
-      <div style="border-top:1px dashed #000;margin:6px 0;"></div>
+      <div style="text-align:center;font-weight:800;font-size:16px;margin-top:2px;">${esc(model.header.businessName)}</div>
+      ${model.header.address ? `<div style="text-align:center;">${esc(model.header.address)}</div>` : ""}
+      ${model.header.phone ? `<div style="text-align:center;">${esc(model.header.phone)}</div>` : ""}
+      ${model.header.taxId ? `<div style="text-align:center;font-weight:700;">TAX: ${esc(model.header.taxId)}</div>` : ""}
+      <div style="border-top:1px solid #000;margin:6px 0;"></div>
       <div style="display:flex;justify-content:space-between;font-size:10px;">
         <div>
           <div>${esc(model.meta.dateLabel)}</div>
@@ -262,9 +262,9 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData, paper: ReceiptPaperMm) 
         </div>
       </div>
       <div style="text-align:center;border:1px solid #000;padding:4px;margin-top:6px;margin-bottom:6px;font-weight:700;">Customer: ${esc(model.meta.customerName)}</div>
-      <div style="border-top:1px dashed #000;margin:6px 0;"></div>
+      <div style="border-top:1px solid #000;margin:6px 0;"></div>
       ${items || "<div>No items</div>"}
-      <div style="border-top:1px dashed #000;margin:6px 0;"></div>
+      <div style="border-top:1px solid #000;margin:6px 0;"></div>
       <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span>${money(model.totals.subtotal)}</span></div>
       ${
         model.totals.showGlobalDiscount
@@ -280,8 +280,10 @@ function buildFallbackReceiptHtml(d: ThermalReceiptData, paper: ReceiptPaperMm) 
             }</span><span>${money(model.totals.tax)}</span></div>`
           : ""
       }
-      <div style="display:flex;justify-content:space-between;font-weight:800;font-size:13px;margin-top:4px;">
-        <span>TOTAL</span><span>${money(model.totals.total)}</span>
+      <div style="margin-top:6px;border:2px solid #000;padding:4px 6px;">
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;">
+          <span>TOTAL</span><span>${money(model.totals.total)}</span>
+        </div>
       </div>
       <div style="text-align:center;margin-top:8px;">Paid via ${esc(model.meta.paymentMethod)}</div>
       ${
@@ -362,6 +364,7 @@ async function printHtmlInIframe(receiptHtml: string, paper: ReceiptPaperMm) {
               margin: 0 !important;
               padding: 0 !important;
               display: block !important;
+              font-variant-numeric: tabular-nums !important;
             }
             #receipt-print-area img {
               max-width: 100%;
@@ -547,6 +550,7 @@ async function buildEscPos(d: ThermalReceiptData, paper: ReceiptPaperMm) {
   const parts: Uint8Array[] = [];
   const width = charsPerLine(paper);
   const divider = "-".repeat(width);
+  const strongDivider = "=".repeat(width);
 
   parts.push(bytes(ESC, 0x40)); // init
   parts.push(bytes(ESC, 0x61, 0x01)); // center
@@ -603,10 +607,11 @@ async function buildEscPos(d: ThermalReceiptData, paper: ReceiptPaperMm) {
     parts.push(textLine(leftRight(taxLabel, money(model.totals.tax), width)));
   }
 
+  parts.push(textLine(strongDivider));
   parts.push(bytes(ESC, 0x45, 0x01)); // bold
   parts.push(textLine(leftRight("TOTAL", money(model.totals.total), width)));
   parts.push(bytes(ESC, 0x45, 0x00));
-  parts.push(textLine(divider));
+  parts.push(textLine(strongDivider));
   parts.push(bytes(ESC, 0x61, 0x01)); // center
   parts.push(textLine(`Paid via ${String(model.meta.paymentMethod || "").toUpperCase()}`));
 

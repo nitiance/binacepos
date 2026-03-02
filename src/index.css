@@ -159,7 +159,7 @@
   }
 }
 
-/* 🖨️ Receipt printing (58mm thermal) */
+/* 🖨️ Receipt printing (58mm / 80mm) */
 @media print {
   html, body {
     width: var(--receipt-paper-width, 80mm) !important;
@@ -193,6 +193,14 @@
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
+    font-variant-numeric: tabular-nums !important;
+    color: #000 !important;
+  }
+
+  #receipt-print-area hr,
+  #receipt-print-area [data-receipt-rule] {
+    border-color: #000 !important;
+    opacity: 1 !important;
   }
 
   @page {

@@ -923,21 +923,21 @@ const testThermalPrint = async () => {
   // UI
   // --------------------
   return (
-    <div className="flex h-full flex-col lg:flex-row gap-4 md:gap-6 p-3 md:p-6 bg-slate-950 min-h-screen">
+    <div className="flex h-full flex-col lg:flex-row gap-4 md:gap-6 p-3 md:p-6 bg-card min-h-screen">
       {/* LEFT */}
       <div className="flex-1 flex flex-col gap-5 max-w-4xl">
         {/* Header */}
         <div className="flex items-start md:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Receipts</h1>
-            <p className="text-slate-400 text-sm">Settings, verification links, reprint, void/delete, offline pending.</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">Receipts</h1>
+            <p className="text-muted-foreground text-sm">Settings, verification links, reprint, void/delete, offline pending.</p>
           </div>
 
           {activeTab === "settings" && (
             <Button
               onClick={handleSave}
               disabled={updateSettingsMutation.isPending || !isAdmin}
-              className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30"
               title={!isAdmin ? "Admins only" : undefined}
             >
               {updateSettingsMutation.isPending ? (
@@ -951,7 +951,7 @@ const testThermalPrint = async () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex p-1 bg-slate-900/50 border border-slate-800 rounded-xl w-full sm:w-fit backdrop-blur-md">
+        <div className="flex p-1 bg-card/70 border border-border rounded-xl w-full sm:w-fit backdrop-blur-md">
           <TabButton active={activeTab === "settings"} onClick={() => setActiveTab("settings")} icon={FileImage} label="Settings" />
           <TabButton active={activeTab === "receipts"} onClick={() => setActiveTab("receipts")} icon={Receipt} label="Receipts" />
         </div>
@@ -967,17 +967,17 @@ const testThermalPrint = async () => {
               className="space-y-5"
             >
               <SettingsCard title="Store Identity" icon={Settings2}>
-                <div className="space-y-4 rounded-xl border border-slate-800 bg-slate-950/40 p-3 md:p-4">
+                <div className="space-y-4 rounded-xl border border-border bg-card/40 p-3 md:p-4">
                   <div className="flex items-center gap-2">
                     <Printer className="h-4 w-4 text-blue-400" />
-                    <h4 className="text-sm font-semibold text-white">Thermal Printer</h4>
+                    <h4 className="text-sm font-semibold text-foreground">Thermal Printer</h4>
                   </div>
                   <div className="space-y-4">
                     <Field label="Transport">
                       <select
                         value={printerTransport}
                         onChange={(e) => setPrinterTransport(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 text-white p-2 rounded"
+                        className="w-full bg-card border border-border text-foreground p-2 rounded"
                         disabled={!isAdmin}
                       >
                         {isAndroid && <option value="bt">Bluetooth (Android)</option>}
@@ -992,7 +992,7 @@ const testThermalPrint = async () => {
                       <select
                         value={String(printerPaperMm)}
                         onChange={(e) => setPrinterPaperMm(normalizePaperMm(e.target.value))}
-                        className="w-full bg-slate-950 border border-slate-800 text-white p-2 rounded"
+                        className="w-full bg-card border border-border text-foreground p-2 rounded"
                         disabled={!isAdmin}
                       >
                         <option value="80">80mm (Default)</option>
@@ -1007,7 +1007,7 @@ const testThermalPrint = async () => {
                             value={printerIp}
                             onChange={(e) => setPrinterIp(e.target.value)}
                             placeholder="192.168.1.100"
-                            className="bg-slate-950 border-slate-800 text-white"
+                            className="bg-card border-border text-foreground"
                             disabled={!isAdmin}
                           />
                         </Field>
@@ -1017,7 +1017,7 @@ const testThermalPrint = async () => {
                             value={printerPort}
                             onChange={(e) => setPrinterPort(e.target.value)}
                             placeholder="9100"
-                            className="bg-slate-950 border-slate-800 text-white"
+                            className="bg-card border-border text-foreground"
                             disabled={!isAdmin}
                           />
                         </Field>
@@ -1032,7 +1032,7 @@ const testThermalPrint = async () => {
                               value={serialPortName}
                               onChange={(e) => setSerialPortName(e.target.value)}
                               placeholder="COM5"
-                              className="bg-slate-950 border-slate-800 text-white"
+                              className="bg-card border-border text-foreground"
                               disabled={!isAdmin}
                             />
                             <Button
@@ -1047,7 +1047,7 @@ const testThermalPrint = async () => {
                             <select
                               value={serialPortName}
                               onChange={(e) => setSerialPortName(e.target.value)}
-                              className="mt-2 w-full bg-slate-950 border border-slate-800 text-white p-2 rounded"
+                              className="mt-2 w-full bg-card border border-border text-foreground p-2 rounded"
                               disabled={!isAdmin}
                             >
                               <option value="">Select detected port</option>
@@ -1064,7 +1064,7 @@ const testThermalPrint = async () => {
                             value={serialBaud}
                             onChange={(e) => setSerialBaud(e.target.value)}
                             placeholder="9600"
-                            className="bg-slate-950 border-slate-800 text-white"
+                            className="bg-card border-border text-foreground"
                             disabled={!isAdmin}
                           />
                         </Field>
@@ -1078,7 +1078,7 @@ const testThermalPrint = async () => {
                             value={spoolerPrinterName}
                             onChange={(e) => setSpoolerPrinterName(e.target.value)}
                             placeholder="EPSON TM-T20III"
-                            className="bg-slate-950 border-slate-800 text-white"
+                            className="bg-card border-border text-foreground"
                             disabled={!isAdmin}
                           />
                           <Button
@@ -1093,7 +1093,7 @@ const testThermalPrint = async () => {
                           <select
                             value={spoolerPrinterName}
                             onChange={(e) => setSpoolerPrinterName(e.target.value)}
-                            className="mt-2 w-full bg-slate-950 border border-slate-800 text-white p-2 rounded"
+                            className="mt-2 w-full bg-card border border-border text-foreground p-2 rounded"
                             disabled={!isAdmin}
                           >
                             <option value="">Select detected printer</option>
@@ -1108,18 +1108,18 @@ const testThermalPrint = async () => {
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-card/60 border border-border">
                         <div>
-                          <div className="text-sm text-white">Auto print sales</div>
-                          <div className="text-xs text-slate-400">Print automatically after payment.</div>
+                          <div className="text-sm text-foreground">Auto print sales</div>
+                          <div className="text-xs text-muted-foreground">Print automatically after payment.</div>
                         </div>
                         <Switch checked={autoPrintSales} onCheckedChange={setAutoPrintSales} disabled={!isAdmin} />
                       </div>
 
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-card/60 border border-border">
                         <div>
-                          <div className="text-sm text-white">Fallback to browser</div>
-                          <div className="text-xs text-slate-400">Use browser print if native transport fails.</div>
+                          <div className="text-sm text-foreground">Fallback to browser</div>
+                          <div className="text-xs text-muted-foreground">Use browser print if native transport fails.</div>
                         </div>
                         <Switch
                           checked={fallbackToBrowser}
@@ -1130,12 +1130,12 @@ const testThermalPrint = async () => {
                     </div>
 
                     {!tauriRuntime && (printerTransport === "serial" || printerTransport === "spooler") && (
-                      <div className="text-xs text-amber-300">
+                      <div className="text-xs text-amber-700 dark:text-amber-300">
                         Serial and spooler transports require the Windows desktop (Tauri) app.
                       </div>
                     )}
                     {printerTransportHint ? (
-                      <div className="text-xs text-slate-300 bg-slate-950/70 border border-slate-800 rounded-md p-2">
+                      <div className="text-xs text-foreground/80 bg-card/70 border border-border rounded-md p-2">
                         {printerTransportHint}
                       </div>
                     ) : null}
@@ -1150,12 +1150,12 @@ const testThermalPrint = async () => {
                       </Button>
                     </div>
                     {lastPrintTransport ? (
-                      <div className="text-xs text-slate-300">
+                      <div className="text-xs text-foreground/80">
                         Last successful transport: <b>{lastPrintTransport.toUpperCase()}</b>
                       </div>
                     ) : null}
                     {lastPrintAttempts.length > 0 ? (
-                      <div className="text-[11px] text-slate-400 space-y-1">
+                      <div className="text-[11px] text-muted-foreground space-y-1">
                         {lastPrintAttempts.map((attempt, idx) => (
                           <div key={`${attempt.transport}-${idx}`}>
                             {attempt.transport.toUpperCase()}: {attempt.ok ? "OK" : `FAILED${attempt.error ? ` (${attempt.error})` : ""}`}
@@ -1170,7 +1170,7 @@ const testThermalPrint = async () => {
                     <Input
                       value={formData.business_name || ""}
                       onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                      className="bg-slate-950 border-slate-800 text-white focus:ring-blue-500"
+                      className="bg-card border-border text-foreground focus:ring-blue-500"
                       disabled={!isAdmin}
                     />
                   </Field>
@@ -1179,7 +1179,7 @@ const testThermalPrint = async () => {
                     <Input
                       value={formData.tax_id || ""}
                       onChange={(e) => setFormData({ ...formData, tax_id: e.target.value })}
-                      className="bg-slate-950 border-slate-800 text-white focus:ring-blue-500"
+                      className="bg-card border-border text-foreground focus:ring-blue-500"
                       disabled={!isAdmin}
                     />
                   </Field>
@@ -1188,7 +1188,7 @@ const testThermalPrint = async () => {
                     <Input
                       value={formData.address || ""}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      className="bg-slate-950 border-slate-800 text-white focus:ring-blue-500"
+                      className="bg-card border-border text-foreground focus:ring-blue-500"
                       disabled={!isAdmin}
                     />
                   </Field>
@@ -1197,7 +1197,7 @@ const testThermalPrint = async () => {
                     <Input
                       value={formData.phone || ""}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="bg-slate-950 border-slate-800 text-white focus:ring-blue-500"
+                      className="bg-card border-border text-foreground focus:ring-blue-500"
                       disabled={!isAdmin}
                     />
                   </Field>
@@ -1206,7 +1206,7 @@ const testThermalPrint = async () => {
                     <Textarea
                       value={formData.footer_message || ""}
                       onChange={(e) => setFormData({ ...formData, footer_message: e.target.value })}
-                      className="bg-slate-950 border-slate-800 text-white focus:ring-blue-500 min-h-[90px]"
+                      className="bg-card border-border text-foreground focus:ring-blue-500 min-h-[90px]"
                       disabled={!isAdmin}
                     />
                   </Field>
@@ -1214,10 +1214,10 @@ const testThermalPrint = async () => {
               </SettingsCard>
 
               <SettingsCard title="Security & Verification" icon={ShieldCheck}>
-                <div className="flex items-center justify-between p-3 bg-slate-950/50 rounded-lg border border-slate-800">
+                <div className="flex items-center justify-between p-3 bg-card/50 rounded-lg border border-border">
                   <div className="space-y-1">
-                    <Label className="text-white">Show QR Code</Label>
-                    <p className="text-xs text-slate-400">
+                    <Label className="text-foreground">Show QR Code</Label>
+                    <p className="text-xs text-muted-foreground">
                       QR contains the factual <b>receipt_id</b> and opens verification page.
                     </p>
                   </div>
@@ -1226,37 +1226,37 @@ const testThermalPrint = async () => {
 
                 {formData.show_qr_code !== false && (
                   <div className="mt-4 space-y-2">
-                    <Label className="text-slate-300">Verification Base URL</Label>
+                    <Label className="text-foreground/80">Verification Base URL</Label>
                     <Input
                       value={isVerifyBaseManaged ? configuredPublicAppUrl || "" : formData.qr_code_data || ""}
                       onChange={(e) => {
                         if (isVerifyBaseManaged) return;
                         setFormData({ ...formData, qr_code_data: e.target.value });
                       }}
-                      className="bg-slate-950 border-slate-800 text-white font-mono text-xs"
+                      className="bg-card border-border text-foreground font-mono text-xs"
                       placeholder={configuredPublicAppUrl || window.location.origin}
                       disabled={!isAdmin || isVerifyBaseManaged}
                     />
                     {isVerifyBaseManaged ? (
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px] text-muted-foreground">
                         Platform-managed by deployment config (<span className="font-mono">VITE_PUBLIC_APP_URL</span>).
                       </div>
                     ) : qrBaseInvalid ? (
-                      <div className="text-[11px] text-red-300">
+                      <div className="text-[11px] text-red-600 dark:text-red-300">
                         Invalid URL. Example: <span className="font-mono">https://binacepos.vercel.app</span>
                       </div>
                     ) : null}
 
                     <div className="mt-3 flex items-center gap-2">
-                      <Button type="button" variant="outline" className="border-slate-700 text-slate-300 hover:text-white" onClick={() => copyText(previewVerifyUrl)}>
+                      <Button type="button" variant="outline" className="border-border text-foreground/80 hover:text-foreground" onClick={() => copyText(previewVerifyUrl)}>
                         <Copy className="w-4 h-4 mr-2" /> Copy Preview Link
                       </Button>
-                      <div className="text-xs text-slate-400 font-mono truncate">{previewVerifyUrl}</div>
+                      <div className="text-xs text-muted-foreground font-mono truncate">{previewVerifyUrl}</div>
                     </div>
 
                     <div className="mt-4 bg-white rounded-xl p-4 w-fit">
                       <div className="text-center text-xs font-mono mb-2">Preview</div>
-                      <div className="text-[10px] text-slate-500 mt-2">
+                      <div className="text-[10px] text-muted-foreground mt-2">
                         receipt_number: <b>{previewReceiptNumber}</b>
                       </div>
                     </div>
@@ -1275,7 +1275,7 @@ const testThermalPrint = async () => {
             >
               {/* top bar */}
               <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-                <div className="flex items-center gap-2 text-xs font-mono bg-slate-900/60 border border-slate-800 px-3 py-2 rounded-xl w-fit">
+                <div className="flex items-center gap-2 text-xs font-mono bg-card/80 border border-border px-3 py-2 rounded-xl w-fit">
                   {isOnline ? (
                     <>
                       <Cloud className="w-4 h-4 text-emerald-400" /> Online
@@ -1285,17 +1285,17 @@ const testThermalPrint = async () => {
                       <WifiOff className="w-4 h-4 text-amber-400" /> Offline
                     </>
                   )}
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-300">
-                    Pending Sync: <b className="text-white">{pendingCount}</b>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-foreground/80">
+                    Pending Sync: <b className="text-foreground">{pendingCount}</b>
                   </span>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-300">
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-foreground/80">
                     Offline Data:{" "}
                     <b className={cn(
-                      offlineReadiness === "ready" && "text-emerald-300",
-                      offlineReadiness === "stale" && "text-amber-300",
-                      offlineReadiness === "missing" && "text-red-300"
+                      offlineReadiness === "ready" && "text-emerald-700 dark:text-emerald-300",
+                      offlineReadiness === "stale" && "text-amber-700 dark:text-amber-300",
+                      offlineReadiness === "missing" && "text-red-600 dark:text-red-300"
                     )}>
                       {offlineReadiness.toUpperCase()}
                     </b>
@@ -1304,17 +1304,17 @@ const testThermalPrint = async () => {
 
                 <div className="flex flex-col sm:flex-row gap-2 w-full">
                   <div className="relative flex-1 min-w-0 sm:min-w-[240px]">
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                     <Input
                       value={q}
                       onChange={(e) => setQ(e.target.value)}
                       placeholder="Search receipt number / customer..."
-                      className="pl-9 bg-slate-950 border-slate-800 text-white"
+                      className="pl-9 bg-card border-border text-foreground"
                       disabled={!isOnline}
                       title={!isOnline ? "Search needs internet" : undefined}
                     />
                     {q && (
-                      <button className="absolute right-2 top-2.5 text-slate-500 hover:text-white" onClick={() => setQ("")} type="button">
+                      <button className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground" onClick={() => setQ("")} type="button">
                         <X className="w-4 h-4" />
                       </button>
                     )}
@@ -1322,7 +1322,7 @@ const testThermalPrint = async () => {
 
                   <Button
                     variant="outline"
-                    className="border-slate-700 text-slate-300 hover:text-white w-full sm:w-auto"
+                    className="border-border text-foreground/80 hover:text-foreground w-full sm:w-auto"
                     onClick={() => refetch()}
                     disabled={!isOnline}
                     title={!isOnline ? "Offline" : "Refresh receipts"}
@@ -1349,26 +1349,26 @@ const testThermalPrint = async () => {
                         >
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="text-white font-mono font-bold">{rnum}</span>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200">PENDING SYNC</span>
+                              <span className="text-foreground font-mono font-bold">{rnum}</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">PENDING SYNC</span>
                             </div>
-                            <div className="text-xs text-slate-200/80">
+                            <div className="text-xs text-foreground/80">
                               {sale.customerName ? `Customer: ${sale.customerName}` : "Walk-in"} • {t ? t.toLocaleString() : "Unknown time"}
                             </div>
-                            <div className="text-xs text-slate-200/70 font-mono break-all mt-1">receipt_id: {rid}</div>
+                            <div className="text-xs text-foreground/70 font-mono break-all mt-1">receipt_id: {rid}</div>
                             {sale?.lastError && (
-                              <div className="text-[11px] text-amber-200/80 mt-1 break-words">
+                              <div className="text-[11px] text-amber-700/80 dark:text-amber-200/80 mt-1 break-words">
                                 Last error: {String(sale.lastError)}
                               </div>
                             )}
                           </div>
 
                           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full md:w-auto">
-                            <Button size="sm" variant="outline" className="border-slate-700 text-slate-200 hover:text-white w-full sm:w-auto" onClick={() => copyText(verifyUrl)}>
+                            <Button size="sm" variant="outline" className="border-border text-foreground/85 hover:text-foreground w-full sm:w-auto" onClick={() => copyText(verifyUrl)}>
                               <Copy className="w-4 h-4 mr-2" /> Copy Verify Link
                             </Button>
 
-                            <Button size="sm" className="bg-white text-slate-900 hover:bg-slate-200 w-full sm:w-auto" onClick={() => printOfflineReceipt(sale)}>
+                            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto" onClick={() => printOfflineReceipt(sale)}>
                               <Printer className="w-4 h-4 mr-2" /> Reprint
                             </Button>
 
@@ -1376,7 +1376,7 @@ const testThermalPrint = async () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-amber-500/40 text-amber-200 hover:text-white hover:bg-amber-500/10 w-full sm:w-auto"
+                                className="border-amber-500/40 text-amber-700 dark:text-amber-200 hover:text-foreground hover:bg-amber-500/10 w-full sm:w-auto"
                                 onClick={() => {
                                   const ok = window.confirm(`Remove ${rnum} from offline queue?`);
                                   if (!ok) return;
@@ -1390,7 +1390,7 @@ const testThermalPrint = async () => {
                         </div>
                       );
                     })}
-                    {pendingCount > 10 && <div className="text-xs text-slate-400 mt-2">Showing 10 of {pendingCount} pending receipts.</div>}
+                    {pendingCount > 10 && <div className="text-xs text-muted-foreground mt-2">Showing 10 of {pendingCount} pending receipts.</div>}
                   </div>
                 </SettingsCard>
               )}
@@ -1398,9 +1398,9 @@ const testThermalPrint = async () => {
               {/* ONLINE RECEIPTS */}
               <SettingsCard title={isOnline ? "Receipts History" : "Receipts History (Cached Offline)"} icon={Receipt}>
                 {receiptsLoading ? (
-                  <div className="text-sm text-slate-400">Loading receipts…</div>
+                  <div className="text-sm text-muted-foreground">Loading receipts…</div>
                 ) : onlineReceipts.length === 0 ? (
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-muted-foreground">
                     {isOnline ? "No receipts found." : "No cached receipts on this device yet. Connect once to sync history."}
                   </div>
                 ) : (
@@ -1413,53 +1413,53 @@ const testThermalPrint = async () => {
                       return (
                         <div
                           key={row.id}
-                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-950/40"
+                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-xl border border-border bg-card/40"
                         >
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-white font-mono font-bold">{row.receipt_number}</span>
+                              <span className="text-foreground font-mono font-bold">{row.receipt_number}</span>
 
                               <span
                                 className={cn(
                                   "text-[10px] px-2 py-0.5 rounded-full border",
                                   isVoided
-                                    ? "bg-red-500/10 text-red-300 border-red-500/20"
+                                    ? "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20"
                                     : status === "completed"
-                                      ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                                      : "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                                      ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20"
+                                      : "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20"
                                 )}
                               >
                                 {String(row.status || "").toUpperCase()}
                               </span>
 
-                              <span className="text-slate-500 text-xs">•</span>
-                              <span className="text-slate-300 text-xs">{String(row.payment_method || "cash").toUpperCase()}</span>
+                              <span className="text-muted-foreground text-xs">•</span>
+                              <span className="text-foreground/80 text-xs">{String(row.payment_method || "cash").toUpperCase()}</span>
                             </div>
 
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-muted-foreground">
                               {row.customer_name ? `Customer: ${row.customer_name}` : "Walk-in"} • {new Date(row.created_at).toLocaleString()}
                             </div>
 
-                            <div className="text-xs text-slate-500">
+                            <div className="text-xs text-muted-foreground">
                               Cashier: {row.profiles?.full_name || "Staff"} • Total:{" "}
-                              <b className="text-white">${num(row.total_amount).toFixed(2)}</b>
+                              <b className="text-foreground">${num(row.total_amount).toFixed(2)}</b>
                             </div>
 
-                            <div className="text-[11px] text-slate-500 font-mono break-all mt-1">receipt_id: {row.receipt_id}</div>
+                            <div className="text-[11px] text-muted-foreground font-mono break-all mt-1">receipt_id: {row.receipt_id}</div>
 
                             {isVoided && row.void_reason && (
-                              <div className="text-[11px] text-red-200/80 mt-1">
-                                Void reason: <span className="text-red-200">{row.void_reason}</span>
+                              <div className="text-[11px] text-red-700/80 dark:text-red-200/80 mt-1">
+                                Void reason: <span className="text-red-700 dark:text-red-200">{row.void_reason}</span>
                               </div>
                             )}
                           </div>
 
                           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full md:w-auto">
-                            <Button size="sm" variant="outline" className="border-slate-700 text-slate-200 hover:text-white w-full sm:w-auto" onClick={() => copyText(verifyUrl)}>
+                            <Button size="sm" variant="outline" className="border-border text-foreground/85 hover:text-foreground w-full sm:w-auto" onClick={() => copyText(verifyUrl)}>
                               <Copy className="w-4 h-4 mr-2" /> Copy Link
                             </Button>
 
-                            <Button size="sm" className="bg-white text-slate-900 hover:bg-slate-200 w-full sm:w-auto" onClick={() => printOnlineReceipt(row)}>
+                            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto" onClick={() => printOnlineReceipt(row)}>
                               <Printer className="w-4 h-4 mr-2" /> Reprint
                             </Button>
 
@@ -1467,7 +1467,7 @@ const testThermalPrint = async () => {
                               size="sm"
                               variant="outline"
                               className={cn(
-                                "border-red-500/40 text-red-200 hover:text-white hover:bg-red-500/10 w-full sm:w-auto",
+                                "border-red-500/40 text-red-700 dark:text-red-200 hover:text-foreground hover:bg-red-500/10 w-full sm:w-auto",
                                 (!canVoid || isVoided) && "opacity-50 pointer-events-none"
                               )}
                               title={!canVoid ? "Not allowed" : isVoided ? "Already voided" : "Void receipt"}
@@ -1480,7 +1480,7 @@ const testThermalPrint = async () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-slate-700 text-slate-200 hover:text-white hover:bg-slate-800/40 w-full sm:w-auto"
+                                className="border-border text-foreground/85 hover:text-foreground hover:bg-muted/30 w-full sm:w-auto"
                                 onClick={() => onDelete(row)}
                                 disabled={deleteReceiptMutation.isPending}
                                 title="Hard delete (admin)"
@@ -1497,7 +1497,7 @@ const testThermalPrint = async () => {
               </SettingsCard>
 
               {(voidReceiptMutation.isPending || deleteReceiptMutation.isPending) && (
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   Working… {voidReceiptMutation.isPending ? "Voiding receipt" : "Deleting receipt"}
                 </div>
               )}
@@ -1541,12 +1541,12 @@ const testThermalPrint = async () => {
 // ---- UI helpers ----
 
 const SettingsCard = ({ title, icon: Icon, children }: any) => (
-  <motion.div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-    <div className="px-4 py-3 md:px-6 md:py-4 border-b border-slate-800 flex items-center gap-3">
+  <motion.div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+    <div className="px-4 py-3 md:px-6 md:py-4 border-b border-border flex items-center gap-3">
       <div className="p-2 bg-blue-500/10 rounded-lg">
         <Icon className="h-5 w-5 text-blue-400" />
       </div>
-      <h3 className="font-semibold text-white">{title}</h3>
+      <h3 className="font-semibold text-foreground">{title}</h3>
     </div>
     <div className="p-4 md:p-6">{children}</div>
   </motion.div>
@@ -1557,7 +1557,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
     onClick={onClick}
     className={cn(
       "flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-      active ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+      active ? "bg-primary/15 text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
     )}
     type="button"
   >
@@ -1568,7 +1568,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }: any) => (
 
 const Field = ({ label, children, full }: { label: string; children: any; full?: boolean }) => (
   <div className={cn("space-y-2", full && "md:col-span-2")}>
-    <Label className="text-slate-300">{label}</Label>
+    <Label className="text-foreground/80">{label}</Label>
     {children}
   </div>
 );

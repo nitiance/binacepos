@@ -193,12 +193,12 @@ export const DashboardPage = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 pb-24 lg:pb-6">
+    <div className="p-3 md:p-6 space-y-4 md:space-y-6 pb-24 lg:pb-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Overview for {format(today, 'EEEE, d MMMM yyyy')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">Overview for {format(today, 'EEEE, d MMMM yyyy')}</p>
         </div>
         <div className="flex gap-2">
            <Button 

@@ -103,8 +103,8 @@ export const MobileBottomNav = () => {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/88 backdrop-blur-xl border-t border-border/80 z-50 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center justify-around h-16 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/92 backdrop-blur-2xl border-t border-border/80 z-50 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center justify-around h-[4.25rem] px-1.5">
           {primaryItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -123,14 +123,14 @@ export const MobileBottomNav = () => {
                   />
                 )}
                 <div className="relative">
-                  <item.icon className="w-6 h-6" />
+                  <item.icon className="w-5 h-5" />
                   {item.badge && cart.length > 0 && (
                     <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
                       {cart.length}
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium leading-none">{item.label}</span>
               </NavLink>
             );
           })}
@@ -150,8 +150,8 @@ export const MobileBottomNav = () => {
                   className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-primary rounded-b-full"
                 />
               )}
-              <MoreHorizontal className="w-6 h-6" />
-              <span className="text-[10px] font-medium">More</span>
+              <MoreHorizontal className="w-5 h-5" />
+              <span className="text-[10px] font-medium leading-none">More</span>
             </button>
           )}
         </div>

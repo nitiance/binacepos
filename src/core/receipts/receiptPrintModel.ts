@@ -198,7 +198,7 @@ export function buildReceiptPrintModel(input: ReceiptPrintModelInput): ReceiptPr
     },
     footer: {
       footerMessage: safeString(settings.footer_message) || undefined,
-      poweredByLine: "Powered by BinanceXI",
+      poweredByLine: BRAND.poweredByFinePrint || "Powered by BinanceXI · Naishe Labs",
     },
   };
 }

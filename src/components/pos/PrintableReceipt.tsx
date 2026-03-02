@@ -115,20 +115,21 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
         width: paperMm === 58 ? "58mm" : "80mm",
         WebkitPrintColorAdjust: "exact",
         printColorAdjust: "exact" as any,
+        fontVariantNumeric: "tabular-nums",
       }}
     >
       {/* HEADER */}
-      <div className="text-center mb-2">
-        <h2 className="font-black text-[18px] uppercase leading-none mb-0.5">
+      <div className="text-center mb-1" style={{ textAlign: "center", marginBottom: 4 }}>
+        <h2 className="font-black text-[18px] uppercase leading-none mb-1">
           {model.header.businessName}
         </h2>
 
-        {model.header.address ? <p className="text-[9px]">{model.header.address}</p> : null}
-        {model.header.phone ? <p className="text-[9px]">{model.header.phone}</p> : null}
-        {model.header.taxId ? <p className="text-[9px] font-bold mt-0.5">TAX: {model.header.taxId}</p> : null}
+        {model.header.address ? <p className="text-[10px]">{model.header.address}</p> : null}
+        {model.header.phone ? <p className="text-[10px]">{model.header.phone}</p> : null}
+        {model.header.taxId ? <p className="text-[10px] font-bold mt-0.5">TAX: {model.header.taxId}</p> : null}
 
         {model.header.logoUrl ? (
-          <div className="mt-1 mb-1 flex justify-center">
+          <div className="mt-1 mb-2 flex justify-center">
             <img
               src={model.header.logoUrl}
               alt={model.header.logoAlt}
@@ -142,11 +143,11 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
         ) : null}
       </div>
 
-      <div className="border-b border-dashed border-black my-2" />
+      <div className="border-b border-black my-2" data-receipt-rule style={{ borderTop: "1px solid #000", margin: "8px 0" }} />
 
       {/* META */}
-      <div className="text-[9px] uppercase mb-2">
-        <div className="flex justify-between">
+      <div className="text-[10px] uppercase mb-2">
+        <div className="flex justify-between" style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
             <div>{model.meta.dateLabel}</div>
             <div>{model.meta.timeLabel}</div>
@@ -157,31 +158,28 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
           </div>
         </div>
 
-        <div className="text-center font-bold border border-black py-1 mt-2">
+        <div className="text-center font-bold border border-black py-1 mt-2" style={{ textAlign: "center", border: "1px solid #000", padding: "4px", marginTop: 8 }}>
           Customer: {model.meta.customerName}
         </div>
       </div>
 
-      <div className="border-b border-dashed border-black my-2" />
+      <div className="border-b border-black my-2" data-receipt-rule style={{ borderTop: "1px solid #000", margin: "8px 0" }} />
 
       {/* ITEMS */}
       <div className="space-y-2 mb-3">
         {model.items.map((it) => (
-          <div key={it.key}>
-            {/* ✅ item name on its own line (cleaner on 58mm) */}
+          <div key={it.key} className="pb-1 border-b border-black/20 last:border-0" style={{ paddingBottom: 4, borderBottom: "1px solid rgba(0,0,0,0.2)" }}>
             <div className="text-[11px] font-bold break-words">{it.name}</div>
 
-            {/* ✅ qty x unit on left, line total on right */}
-            <div className="flex justify-between text-[10px]">
+            <div className="flex justify-between text-[10px]" style={{ display: "flex", justifyContent: "space-between" }}>
               <span>
                 {it.qty} x {fmtMoney(it.unit)}
               </span>
               <span>{fmtMoney(it.lineTotal)}</span>
             </div>
 
-            {/* ✅ item discount */}
             {it.lineDiscount > 0 ? (
-              <div className="flex justify-between text-[9px]">
+              <div className="flex justify-between text-[9px]" style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>
                   Disc{" "}
                   {it.discountType === "percentage"
@@ -194,9 +192,8 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
               </div>
             ) : null}
 
-            {/* ✅ line total after discount */}
             {it.lineDiscount > 0 ? (
-              <div className="flex justify-between text-[9px] font-bold">
+              <div className="flex justify-between text-[9px] font-bold" style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>Line Total</span>
                 <span>{fmtMoney(it.finalLine)}</span>
               </div>
@@ -207,34 +204,34 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
         ))}
       </div>
 
-      <div className="border-b border-dashed border-black my-2" />
+      <div className="border-b border-black my-2" data-receipt-rule style={{ borderTop: "1px solid #000", margin: "8px 0" }} />
 
       {/* TOTALS */}
-      <div className="space-y-1">
-        <div className="flex justify-between text-[11px]">
+      <div className="space-y-1 text-[11px]">
+        <div className="flex justify-between text-[11px]" style={{ display: "flex", justifyContent: "space-between" }}>
           <span>Subtotal</span>
           <span>{fmtMoney(model.totals.subtotal)}</span>
         </div>
 
         {model.totals.showGlobalDiscount ? (
-          <div className="flex justify-between text-[11px]">
+          <div className="flex justify-between text-[11px]" style={{ display: "flex", justifyContent: "space-between" }}>
             <span>Discount{model.totals.activeDiscountName ? ` (${model.totals.activeDiscountName})` : ""}</span>
             <span>-{fmtMoney(model.totals.discount)}</span>
           </div>
         ) : null}
 
         {model.totals.showTax ? (
-          <div className="flex justify-between text-[11px]">
+          <div className="flex justify-between text-[11px]" style={{ display: "flex", justifyContent: "space-between" }}>
             <span>Tax{typeof model.totals.taxRatePct === "number" ? ` (${model.totals.taxRatePct}%)` : ""}</span>
             <span>{fmtMoney(model.totals.tax)}</span>
           </div>
         ) : null}
 
-        <div className="border-t border-black pt-1 mt-1" />
-
-        <div className="flex justify-between font-black text-[16px]">
-          <span>TOTAL</span>
-          <span>{fmtMoney(model.totals.total)}</span>
+        <div className="mt-2 border-2 border-black px-2 py-1" style={{ marginTop: 8, border: "2px solid #000", padding: "4px 6px" }}>
+          <div className="flex justify-between font-black text-[16px]" style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>TOTAL</span>
+            <span>{fmtMoney(model.totals.total)}</span>
+          </div>
         </div>
 
         <div className="text-center text-[10px] mt-2 uppercase">
@@ -256,7 +253,7 @@ export const PrintableReceipt = forwardRef<HTMLDivElement, ReceiptProps>((props,
           <div className="text-[9px] uppercase px-1 whitespace-pre-wrap">{model.footer.footerMessage}</div>
         ) : null}
 
-        <div className="text-[7px] opacity-70 mt-2">{model.footer.poweredByLine}</div>
+        <div className="text-[8px] opacity-70 mt-2">{model.footer.poweredByLine}</div>
       </div>
     </div>
   );

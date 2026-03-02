@@ -1032,7 +1032,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
       </AnimatePresence>
 
       {/* LEFT COLUMN */}
-<div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-950/50">
+<div className="flex-1 flex flex-col min-w-0 bg-background/50">
         <div className="p-2 sm:p-3 bg-card border-b border-border flex flex-wrap items-center gap-2 sm:gap-3 shadow-sm z-10">
           <div className="w-full sm:w-auto text-xs font-mono bg-muted px-2 py-1 rounded flex items-center gap-2">
             <span
@@ -1311,7 +1311,7 @@ const [showMobileCart, setShowMobileCart] = useState(false);
               <div className="flex items-center gap-2 min-w-0">
                 <ShoppingCart className="w-4 h-4 shrink-0" />
                 <span className="font-semibold truncate">Cart</span>
-                <span className="bg-white/15 text-white text-xs rounded-full px-2 py-0.5 shrink-0">
+                <span className="bg-primary/15 text-primary text-xs rounded-full px-2 py-0.5 shrink-0">
                   {cartItemCount}
                 </span>
               </div>

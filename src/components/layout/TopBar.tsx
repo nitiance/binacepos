@@ -286,7 +286,7 @@ export const TopBar = () => {
       className={cn(
         // ✅ sticky so it stays clean while scrolling
         "sticky top-0 z-40",
-        isImpersonating ? "h-[92px] md:h-[104px]" : "h-14 md:h-16",
+        isImpersonating ? "h-[88px] md:h-[104px]" : "h-12 md:h-16",
         "border-b border-border/70",
         "bg-background/72 backdrop-blur-xl supports-[backdrop-filter]:bg-background/58"
       )}
@@ -309,14 +309,14 @@ export const TopBar = () => {
         </div>
       )}
 
-      <div className={cn("px-3 md:px-4 flex items-center justify-between gap-3", isImpersonating ? "h-14 md:h-16" : "h-full")}>
+      <div className={cn("px-2.5 md:px-4 flex items-center justify-between gap-2.5", isImpersonating ? "h-14 md:h-16" : "h-full")}>
         {/* LEFT: Status */}
         <div className="flex items-center gap-3 min-w-0">
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300",
+              "flex items-center gap-1.5 px-2 md:px-3 py-1.5 rounded-full border transition-all duration-300",
               syncDisplay.pill
             )}
           >
@@ -337,7 +337,7 @@ export const TopBar = () => {
             </span>
 
             {pendingSyncCount > 0 && (
-              <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-200 border border-amber-500/30">
+              <span className="hidden sm:inline-flex ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-200 border border-amber-500/30">
                 {pendingSyncCount} queued
               </span>
             )}
@@ -362,7 +362,7 @@ export const TopBar = () => {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="h-9 w-9 rounded-full hover:scale-[1.02] transition-transform duration-300"
+            className="h-8 w-8 md:h-9 md:w-9 rounded-full hover:scale-[1.02] transition-transform duration-300"
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -377,13 +377,13 @@ export const TopBar = () => {
               <Button
                 variant="ghost"
                 className={cn(
-                  "h-9 gap-2 pl-2 pr-3",
+                  "h-8 md:h-9 gap-2 pl-1.5 md:pl-2 pr-2.5 md:pr-3",
                   "hover:bg-muted/65",
                   "rounded-full transition-all duration-300 border border-transparent hover:border-border/65"
                 )}
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-primary/12 border border-primary/30 flex items-center justify-center">
+                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/12 border border-primary/30 flex items-center justify-center">
                   <User className="w-4 h-4 text-primary" />
                 </div>
 

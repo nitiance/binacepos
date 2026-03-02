@@ -9,7 +9,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="relative flex h-[100dvh] overflow-hidden">
+    <div className="relative flex h-[100dvh] overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 dark:to-black/30" />
       {/* Desktop Sidebar - hidden on mobile */}
       <POSSidebar />

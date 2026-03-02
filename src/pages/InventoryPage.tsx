@@ -72,8 +72,9 @@ function uuid() {
 }
 
 export const InventoryPage = () => {
-  const { currentUser, syncStatus } = usePOS();
+  const { currentUser, syncStatus, can } = usePOS();
   const isAdmin = currentUser?.role === "admin";
+  const canManageInventory = isAdmin || can("allowInventory");
 
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -137,9 +138,9 @@ export const InventoryPage = () => {
   });
 
   const visibleProducts = useMemo(() => {
-    if (!isAdmin) return (products || []).filter((p: any) => !p.is_archived);
+    if (!canManageInventory) return (products || []).filter((p: any) => !p.is_archived);
     return showArchived ? products : (products || []).filter((p: any) => !p.is_archived);
-  }, [products, isAdmin, showArchived]);
+  }, [products, canManageInventory, showArchived]);
 
   // Categories from products, plus allow "General" always
   const categories = useMemo(() => {
@@ -247,7 +248,7 @@ export const InventoryPage = () => {
 
   // ------- Image Upload (online only) -------
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isAdmin) return toast.error("No permission");
+    if (!canManageInventory) return toast.error("No permission");
     if (!navigator.onLine) return toast.error("Image upload needs internet");
     if (!e.target.files || e.target.files.length === 0) return;
 
@@ -303,7 +304,7 @@ export const InventoryPage = () => {
   // ------- Upsert (online OR offline queued) -------
   const saveProductMutation = useMutation({
     mutationFn: async () => {
-      if (!isAdmin) {
+      if (!canManageInventory) {
         toast.error("No permission");
         return;
       }
@@ -384,7 +385,7 @@ export const InventoryPage = () => {
   // ✅ ARCHIVE (instead of DELETE) -> solves FK crash forever
   const archiveMutation = useMutation({
     mutationFn: async (id: string) => {
-      if (!isAdmin) {
+      if (!canManageInventory) {
         toast.error("No permission");
         return;
       }
@@ -420,7 +421,7 @@ export const InventoryPage = () => {
 
   const adjustStockMutation = useMutation({
     mutationFn: async ({ id, newStock }: { id: string; newStock: number }) => {
-      if (!isAdmin) {
+      if (!canManageInventory) {
         toast.error("No permission");
         return;
       }
@@ -478,7 +479,7 @@ export const InventoryPage = () => {
         return;
       }
 
-      if ((e.key === "n" || e.key === "N") && isAdmin) {
+      if ((e.key === "n" || e.key === "N") && canManageInventory) {
         e.preventDefault();
         openAddDialog();
         return;
@@ -487,7 +488,7 @@ export const InventoryPage = () => {
 
     window.addEventListener("keydown", onKeyDown, { passive: false });
     return () => window.removeEventListener("keydown", onKeyDown as any);
-  }, [isAdmin, showScanner, showProductDialog]);
+  }, [canManageInventory, showScanner, showProductDialog]);
 
   const handleScanSKU = (code: string) => {
     setNewItem((prev) => ({ ...prev, sku: code }));
@@ -537,7 +538,7 @@ export const InventoryPage = () => {
           <p className="text-sm text-muted-foreground">
             {visibleProducts.length} products shown • Press{" "}
             <kbd className="bg-muted px-1 rounded">/</kbd> to search
-            {isAdmin && (
+            {canManageInventory && (
               <>
                 {" "}
                 • Press <kbd className="bg-muted px-1 rounded">N</kbd> to add
@@ -568,7 +569,7 @@ export const InventoryPage = () => {
             </Button>
           )}
 
-          {isAdmin && (
+          {canManageInventory && (
             <Button
               variant="outline"
               size="sm"
@@ -581,7 +582,7 @@ export const InventoryPage = () => {
             </Button>
           )}
 
-          {isAdmin && (
+          {canManageInventory && (
             <Button
               size="sm"
               className="gap-2 bg-primary hover:bg-blue-600 shadow-lg shadow-blue-500/20"
@@ -811,7 +812,7 @@ export const InventoryPage = () => {
                   </TableCell>
 
                   <TableCell>
-                    {isAdmin && (
+                    {canManageInventory && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -885,7 +886,7 @@ export const InventoryPage = () => {
               <div
                 className="w-24 h-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary/50 relative overflow-hidden group"
                 onClick={() => {
-                  if (!isAdmin) return toast.error("No permission");
+                  if (!canManageInventory) return toast.error("No permission");
                   if (!navigator.onLine) return toast.error("Offline: image upload needs internet");
                   fileInputRef.current?.click();
                 }}
@@ -1135,7 +1136,7 @@ export const InventoryPage = () => {
             <Button
               className="w-full h-12 text-lg font-semibold bg-primary hover:bg-blue-600"
               onClick={() => saveProductMutation.mutate()}
-              disabled={saveProductMutation.isPending || isUploading || !isAdmin}
+              disabled={saveProductMutation.isPending || isUploading || !canManageInventory}
             >
               {saveProductMutation.isPending ? (
                 <Loader2 className="animate-spin" />
