@@ -300,13 +300,13 @@ export const ReportsPage = () => {
       {
         dateMode,
         day: day.toISOString(),
-        rangeFrom: dateRange.from?.toISOString() || null,
-        rangeTo: dateRange.to?.toISOString() || null,
+        rangeFrom: dateRange?.from?.toISOString() || null,
+        rangeTo: dateRange?.to?.toISOString() || null,
         staffFilterIds: isAdmin ? staffFilterIds : staffSelfId ? [staffSelfId] : [],
       },
       { scope }
     );
-  }, [scope?.businessId, scope?.userId, dateMode, day, dateRange.from, dateRange.to, staffFilterIds, isAdmin, staffSelfId]);
+  }, [scope?.businessId, scope?.userId, dateMode, day, dateRange?.from, dateRange?.to, staffFilterIds, isAdmin, staffSelfId]);
 
   // --- P4 Widget: This month (Revenue vs Expenses) ---
   const monthRange = useMemo(() => {
@@ -423,17 +423,17 @@ export const ReportsPage = () => {
       scopeKey,
       dateMode,
       day.toISOString(),
-      dateRange.from?.toISOString() || null,
-      dateRange.to?.toISOString() || null,
+      dateRange?.from?.toISOString() || null,
+      dateRange?.to?.toISOString() || null,
       isOnline,
     ],
     queryFn: async () => {
       let start = startOfDay(day);
       let end = endOfDay(day);
 
-      if (dateMode === 'range' && dateRange.from) {
+      if (dateMode === 'range' && dateRange?.from) {
         start = startOfDay(dateRange.from);
-        end = endOfDay(dateRange.to || dateRange.from);
+        end = endOfDay(dateRange?.to || dateRange.from);
       }
 
       const queued = offlineQueueToOrders(scope).filter((o) => inRange(o.created_at, start, end));
@@ -584,8 +584,8 @@ export const ReportsPage = () => {
 
   const handleExportCSV = () => {
     const dayTag = format(day, "yyyy-MM-dd");
-    const rangeFrom = dateRange.from ? format(dateRange.from, "yyyy-MM-dd") : dayTag;
-    const rangeTo = dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : rangeFrom;
+    const rangeFrom = dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : dayTag;
+    const rangeTo = dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : rangeFrom;
     const dateTag = dateMode === "day" ? dayTag : `${rangeFrom}_to_${rangeTo}`;
     const staffTag = !isAdmin
       ? "self"
@@ -682,7 +682,13 @@ export const ReportsPage = () => {
                   mode="range"
                   defaultMonth={dateRange?.from}
                   selected={dateRange}
-                  onSelect={(range: any) => setDateRange(range)}
+                  onSelect={(range: any) => {
+                    if (!range) return;
+                    setDateRange({
+                      from: range.from,
+                      to: range.to,
+                    });
+                  }}
                   numberOfMonths={2}
                 />
               </PopoverContent>
