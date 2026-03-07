@@ -1,0 +1,5240 @@
+{
+  "tenant": {
+    "name": "Verschard Investments"
+  },
+  "master": {
+    "categories": [],
+    "products": [
+      {
+        "name": "YESS FRUTA ORANGE DRINK 430ML",
+        "sku": "0606110288538",
+        "barcode": "0606110288538",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "U-FRESH MAHEU VANILLA 500ML",
+        "sku": "0724376231508",
+        "barcode": "0724376231508",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "BLACK LABEL CANE 500ML",
+        "sku": "0793936713389",
+        "barcode": "0793936713389",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CASTLE LAGER CANE 500ML",
+        "sku": "0793936713419",
+        "barcode": "0793936713419",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "ZAMBEZI CANE 500ML",
+        "sku": "0793936713433",
+        "barcode": "0793936713433",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "gud filter z180",
+        "sku": "32423424",
+        "barcode": "32423424",
+        "category": null,
+        "type": "physical",
+        "price": 10.0,
+        "cost_price": 10.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "supra chick feed 5kg",
+        "sku": "4546700087",
+        "barcode": "4546700087",
+        "category": null,
+        "type": "physical",
+        "price": 5.0,
+        "cost_price": 5.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "543535232",
+        "sku": "543535232",
+        "barcode": "543535232",
+        "category": null,
+        "type": "physical",
+        "price": 15.0,
+        "cost_price": 15.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "COCA COLA 2LTR",
+        "sku": "5449000009067",
+        "barcode": "5449000009067",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "FANTA 2LTR",
+        "sku": "5449000010049",
+        "barcode": "5449000010049",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "STONEY GINGER BEER 2LTR",
+        "sku": "54490001660050",
+        "barcode": "54490001660050",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SCHWEPPES ORANGE 2LTR",
+        "sku": "5449000175540",
+        "barcode": "5449000175540",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SPAR LETTA CHERRY PLUM 2LTR",
+        "sku": "5449000177384",
+        "barcode": "5449000177384",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "M/MAID APPLE GRAPE 400ML",
+        "sku": "5449000188342",
+        "barcode": "5449000188342",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 1.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SPRITE 440ML",
+        "sku": "5449000256256",
+        "barcode": "5449000256256",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MINUTE MAID REFRESH ORANGE 400ML",
+        "sku": "5449000284143",
+        "barcode": "5449000284143",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0.43,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "COKE ZERO 440ML",
+        "sku": "5449000664693",
+        "barcode": "5449000664693",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "FANTA 440ML",
+        "sku": "5449000664754",
+        "barcode": "5449000664754",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SPARLETTA PINUT 440ML",
+        "sku": "5449000664860",
+        "barcode": "5449000664860",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "k2 pgs 61 5kg........",
+        "sku": "5473245378",
+        "barcode": "5473245378",
+        "category": null,
+        "type": "physical",
+        "price": 20.0,
+        "cost_price": 20.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "EXO MIX VODKA 18% VOL 250ML",
+        "sku": "5903080462957",
+        "barcode": "5903080462957",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "APPLETISER 275ML",
+        "sku": "6001048003323",
+        "barcode": "6001048003323",
+        "category": null,
+        "type": "physical",
+        "price": 1.35,
+        "cost_price": 1.35,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "NESTLE NAN#2 -400G",
+        "sku": "6001068582402",
+        "barcode": "6001068582402",
+        "category": null,
+        "type": "physical",
+        "price": 6.0,
+        "cost_price": 6.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CASCADE TROPICAL 1LTR",
+        "sku": "6004842000246",
+        "barcode": "6004842000246",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CASCADE ORANGE 1LTR",
+        "sku": "6004842000253",
+        "barcode": "6004842000253",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CASCADE ORANGE 400ML",
+        "sku": "6004842000802",
+        "barcode": "6004842000802",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "DAIRBOARD PFUKO TRADITIONAL MAHEU 500ML",
+        "sku": "6005572002203",
+        "barcode": "6005572002203",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "chimombe 1ltr",
+        "sku": "6005572002630",
+        "barcode": "6005572002630",
+        "category": null,
+        "type": "physical",
+        "price": 1.4,
+        "cost_price": 1.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "DAIRIBOARD PFUKO B/MILK 500ML",
+        "sku": "6005572992371",
+        "barcode": "6005572992371",
+        "category": null,
+        "type": "physical",
+        "price": 0.6,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "ARENEL VITA MAHEU T/D 500ML",
+        "sku": "6007038002628",
+        "barcode": "6007038002628",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "PROTON BREAD",
+        "sku": "6009602270075",
+        "barcode": "6009602270075",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 1.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "PROTON SWT BUNS",
+        "sku": "6009602270112",
+        "barcode": "6009602270112",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0.5,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "WILDCAT ENERGY DRINK 500ML",
+        "sku": "6009644991198",
+        "barcode": "6009644991198",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "sugar 10x2kg case",
+        "sku": "6009661380210",
+        "barcode": "6009661380210",
+        "category": null,
+        "type": "physical",
+        "price": 25.0,
+        "cost_price": 25.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "ENJOY MANGO DRINK 50ML",
+        "sku": "6009678590695",
+        "barcode": "6009678590695",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "DRAGON 500ML",
+        "sku": "6009694633116",
+        "barcode": "6009694633116",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "THE VICTORIA MANGO& ORANGE 1LTR",
+        "sku": "6009698813545",
+        "barcode": "6009698813545",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "shumba sorghum 500ml",
+        "sku": "6009702251233",
+        "barcode": "6009702251233",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SHUMBA BANANA 500ML",
+        "sku": "600970225138",
+        "barcode": "600970225138",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SUPERSIP ORANGE 400ML",
+        "sku": "6009702252049",
+        "barcode": "6009702252049",
+        "category": null,
+        "type": "physical",
+        "price": 0.45,
+        "cost_price": 0.45,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SUPERSIP TROPICAL 400ML",
+        "sku": "6009702252070",
+        "barcode": "6009702252070",
+        "category": null,
+        "type": "physical",
+        "price": 0.45,
+        "cost_price": 0.45,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE MAHEU BANANA 1LTR",
+        "sku": "6009705001187",
+        "barcode": "6009705001187",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE MAHEU B/MILK 1LTR",
+        "sku": "6009705001217",
+        "barcode": "6009705001217",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE ORANGE 1LTR",
+        "sku": "6009705003624",
+        "barcode": "6009705003624",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE TROPICAL 1LTR",
+        "sku": "6009705003631",
+        "barcode": "6009705003631",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE MAHEU TRADITIONAL 1LTR",
+        "sku": "6009705003907",
+        "barcode": "6009705003907",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "FRESH UP GUABANA DRINK 400ML",
+        "sku": "6009711327943",
+        "barcode": "6009711327943",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE PASSION FRUIT 1LTR",
+        "sku": "6009711461883",
+        "barcode": "6009711461883",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE PEACH&APRICOT 1LTR",
+        "sku": "6009711461906",
+        "barcode": "6009711461906",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE ORANGE 500ML",
+        "sku": "6009711462637",
+        "barcode": "6009711462637",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE PEACH & APRICOT 500ML",
+        "sku": "6009711462668",
+        "barcode": "6009711462668",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE TROPICAL 500ML",
+        "sku": "6009711462675",
+        "barcode": "6009711462675",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REVIVE MAHEU B/MILK 500ML",
+        "sku": "6009711462729",
+        "barcode": "6009711462729",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "NYATHI REGULAR 1.25LTR",
+        "sku": "6009711463269",
+        "barcode": "6009711463269",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "BROTHERS FRUITY FLAVOUR 500ML",
+        "sku": "6009713107079",
+        "barcode": "6009713107079",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "BROTHERS APPLE DRINK 500ML",
+        "sku": "6009715102492",
+        "barcode": "6009715102492",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SWITCH BLUEBERRY FLAVOUR 500ML",
+        "sku": "6009803982241",
+        "barcode": "6009803982241",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SWITCH ELEMENT 500ML",
+        "sku": "6009803982432",
+        "barcode": "6009803982432",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SWITCH DRY LEMON 500ML",
+        "sku": "6009803982449",
+        "barcode": "6009803982449",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SWITCH ROOIBOS &HONEY 500ML",
+        "sku": "6009803982531",
+        "barcode": "6009803982531",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "STING RED ENERGY DRINK 500ML",
+        "sku": "6009880793334",
+        "barcode": "6009880793334",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MAYFAIR LONDON DRY GIN 440ML",
+        "sku": "6009881127268",
+        "barcode": "6009881127268",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "STING GOLD ENERGY DRINK 500ML",
+        "sku": "6009888561089",
+        "barcode": "6009888561089",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "GOLDEN PISENER 440ML CANE",
+        "sku": "63196300100",
+        "barcode": "63196300100",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CASTLE CANE 330ML",
+        "sku": "63196300124",
+        "barcode": "63196300124",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "CHIBUKU SUPER REGULAR 1,25LTR",
+        "sku": "63196300139",
+        "barcode": "63196300139",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "zap seed 2kg",
+        "sku": "675467",
+        "barcode": "675467",
+        "category": null,
+        "type": "physical",
+        "price": 9.0,
+        "cost_price": 9.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "USD",
+        "sku": "6865844567",
+        "barcode": "6865844567",
+        "category": null,
+        "type": "physical",
+        "price": 3.0,
+        "cost_price": 30.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "limpo insecticide 600ml",
+        "sku": "6936282086019",
+        "barcode": "6936282086019",
+        "category": null,
+        "type": "physical",
+        "price": 0,
+        "cost_price": 5.5,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SEEDCO 555 10KG",
+        "sku": "694399000",
+        "barcode": "694399000",
+        "category": null,
+        "type": "physical",
+        "price": 400.0,
+        "cost_price": 400.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "76879687888",
+        "sku": "76879687888",
+        "barcode": "76879687888",
+        "category": null,
+        "type": "physical",
+        "price": 60.0,
+        "cost_price": 60.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "7790---776",
+        "sku": "7790---776",
+        "barcode": "7790---776",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 2.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "shova gumboots",
+        "sku": "854568559",
+        "barcode": "854568559",
+        "category": null,
+        "type": "physical",
+        "price": 9.0,
+        "cost_price": 9.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "garden seeeds 25g",
+        "sku": "898900-",
+        "barcode": "898900-",
+        "category": null,
+        "type": "physical",
+        "price": 5.0,
+        "cost_price": 5.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "cabbage 5g",
+        "sku": "8999987",
+        "barcode": "8999987",
+        "category": null,
+        "type": "physical",
+        "price": 9.0,
+        "cost_price": 9.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "REDBULL ENERGY DRINK 250ML",
+        "sku": "9002490100070",
+        "barcode": "9002490100070",
+        "category": null,
+        "type": "physical",
+        "price": 1.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MINUTE MAID TROPICAL 400ML",
+        "sku": "90399480",
+        "barcode": "90399480",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 1.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MINUTE MAID ORANGE DELIGHT 400ML",
+        "sku": "90399497",
+        "barcode": "90399497",
+        "category": null,
+        "type": "physical",
+        "price": 0.88,
+        "cost_price": 0.88,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MINUTE MAID ORANGE PULPY 400ML",
+        "sku": "90490224",
+        "barcode": "90490224",
+        "category": null,
+        "type": "physical",
+        "price": 0.88,
+        "cost_price": 0.88,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "castle qrts crates",
+        "sku": "908473673",
+        "barcode": "908473673",
+        "category": null,
+        "type": "physical",
+        "price": 0,
+        "cost_price": 15.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Aquaclear 24X500ml",
+        "sku": "AQ 1",
+        "barcode": "AQ 1",
+        "category": null,
+        "type": "physical",
+        "price": 3.13,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Aquaclear 15X750ml",
+        "sku": "AQ 2",
+        "barcode": "AQ 2",
+        "category": null,
+        "type": "physical",
+        "price": 3.13,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Aquaclear loose 500ml",
+        "sku": "AQ 3",
+        "barcode": "AQ 3",
+        "category": null,
+        "type": "physical",
+        "price": 0.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Aquaclear loose 750ml",
+        "sku": "AQ 4",
+        "barcode": "AQ 4",
+        "category": null,
+        "type": "physical",
+        "price": 0.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Aromatt 1x100g",
+        "sku": "ARO",
+        "barcode": "ARO",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Baby Crazy 1x500g",
+        "sku": "BAB",
+        "barcode": "BAB",
+        "category": null,
+        "type": "physical",
+        "price": 1.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Baked beans 1x410g",
+        "sku": "BAK",
+        "barcode": "BAK",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Balley House 1x2 litres",
+        "sku": "BAL",
+        "barcode": "BAL",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Bickies 12x100g",
+        "sku": "BIC",
+        "barcode": "BIC",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Big Bite 50x120g",
+        "sku": "BIG BIT",
+        "barcode": "BIG BIT",
+        "category": null,
+        "type": "physical",
+        "price": 16.52,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Big Bite 1xLoose",
+        "sku": "BIG BIT2",
+        "barcode": "BIG BIT2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Big Bites Garfunkels 50x100g",
+        "sku": "BIG BITE",
+        "barcode": "BIG BITE",
+        "category": null,
+        "type": "physical",
+        "price": 16.52,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "bIG bites Garfunkles half box",
+        "sku": "BIG BITES",
+        "barcode": "BIG BITES",
+        "category": null,
+        "type": "physical",
+        "price": 8.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Big bite Loose",
+        "sku": "BIG BITESL",
+        "barcode": "BIG BITESL",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Buttermilk 12x500ml",
+        "sku": "BUT",
+        "barcode": "BUT",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Buttercup 1x500g",
+        "sku": "BUTT",
+        "barcode": "BUTT",
+        "category": null,
+        "type": "physical",
+        "price": 1.57,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Buzz 18x100g  biscuits",
+        "sku": "BUZ1",
+        "barcode": "BUZ1",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Buzz x100g  Loose",
+        "sku": "BUZ2",
+        "barcode": "BUZ2",
+        "category": null,
+        "type": "physical",
+        "price": 0.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cascade 6x1 litre",
+        "sku": "CAS1",
+        "barcode": "CAS1",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cascade 1x1Litre loose",
+        "sku": "CAS2",
+        "barcode": "CAS2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cascade  20X400ml",
+        "sku": "CAS3",
+        "barcode": "CAS3",
+        "category": null,
+        "type": "physical",
+        "price": 7.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cascade  1x 400ml loose",
+        "sku": "CAS4",
+        "barcode": "CAS4",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cerevita 1x500g",
+        "sku": "CER1",
+        "barcode": "CER1",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Charhons Biscuits 1x500g",
+        "sku": "CHARH",
+        "barcode": "CHARH",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Charhons 1x1kg",
+        "sku": "CHARH 1",
+        "barcode": "CHARH 1",
+        "category": null,
+        "type": "physical",
+        "price": 2.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Charhons 1x2kg",
+        "sku": "CHARH 2",
+        "barcode": "CHARH 2",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cheese 1x80g",
+        "sku": "CHEESE",
+        "barcode": "CHEESE",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "SUPER 6X1,25LTR CASE",
+        "sku": "CHI 631",
+        "barcode": "CHI 631",
+        "category": null,
+        "type": "physical",
+        "price": 4.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Chilli 1x100g",
+        "sku": "CHI1",
+        "barcode": "CHI1",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Chilli 1x200g",
+        "sku": "CHI2",
+        "barcode": "CHI2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Chimombe 6x1 litre",
+        "sku": "CHIM2",
+        "barcode": "CHIM2",
+        "category": null,
+        "type": "physical",
+        "price": 7.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Chimombe Loose",
+        "sku": "CHIM3",
+        "barcode": "CHIM3",
+        "category": null,
+        "type": "physical",
+        "price": 1.2,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Citro 6x1 litre",
+        "sku": "CIT 1",
+        "barcode": "CIT 1",
+        "category": null,
+        "type": "physical",
+        "price": 4.09,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Citro Loose",
+        "sku": "CIT 2",
+        "barcode": "CIT 2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Clere 1x500ml",
+        "sku": "CLE",
+        "barcode": "CLE",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke 12x 500ml Pet",
+        "sku": "COK 1",
+        "barcode": "COK 1",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke 500ml Pet Loose",
+        "sku": "COK 2",
+        "barcode": "COK 2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke bottle 24x 300ml",
+        "sku": "COK 3",
+        "barcode": "COK 3",
+        "category": null,
+        "type": "physical",
+        "price": 6.09,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke 1x 300ml Loose",
+        "sku": "COK 4",
+        "barcode": "COK 4",
+        "category": null,
+        "type": "physical",
+        "price": 0.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke 6x2 Litre",
+        "sku": "COK9",
+        "barcode": "COK9",
+        "category": null,
+        "type": "physical",
+        "price": 7.39,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Coke 1x2 Litre Loose",
+        "sku": "COKE10",
+        "barcode": "COKE10",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Colgate 1x100ml",
+        "sku": "COL",
+        "barcode": "COL",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Colcom Pie 1x100g Loose",
+        "sku": "COLCO P",
+        "barcode": "COLCO P",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Colcom Pie 50x100g",
+        "sku": "COLCO PIE",
+        "barcode": "COLCO PIE",
+        "category": null,
+        "type": "physical",
+        "price": 18.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cornflakes Loose",
+        "sku": "CON",
+        "barcode": "CON",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cooking oil 1x2litre loose",
+        "sku": "COOK",
+        "barcode": "COOK",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cortina Dairy unit",
+        "sku": "CORTINA  DAIRY SNAC",
+        "barcode": "CORTINA  DAIRY SNAC",
+        "category": null,
+        "type": "physical",
+        "price": 0.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cortina Dairy Snack 6 Pack",
+        "sku": "CORTINA DAIRY SNACK",
+        "barcode": "CORTINA DAIRY SNACK",
+        "category": null,
+        "type": "physical",
+        "price": 1.57,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cremora 1x1kg",
+        "sku": "CRE",
+        "barcode": "CRE",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Bickies 12x100g",
+        "sku": "CREAM BELL BICKIES",
+        "barcode": "CREAM BELL BICKIES",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Bickies 1x Loose",
+        "sku": "CREAM BELL BICKIES1",
+        "barcode": "CREAM BELL BICKIES1",
+        "category": null,
+        "type": "physical",
+        "price": 0.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Buzz 18x100g",
+        "sku": "CREAM BELL BUZZ",
+        "barcode": "CREAM BELL BUZZ",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Buzz 1x Loose",
+        "sku": "CREAM BELL BUZZ1",
+        "barcode": "CREAM BELL BUZZ1",
+        "category": null,
+        "type": "physical",
+        "price": 0.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Krema Biscuits Loose",
+        "sku": "CREAM BELL KREMA1",
+        "barcode": "CREAM BELL KREMA1",
+        "category": null,
+        "type": "physical",
+        "price": 0.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Cream Bell Krema Biscuits 12x100g",
+        "sku": "CREAM BELLKREMA BIS",
+        "barcode": "CREAM BELLKREMA BIS",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Custard 1x20g",
+        "sku": "CUS",
+        "barcode": "CUS",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Delta Can 24x330ml",
+        "sku": "DELTA CAN",
+        "barcode": "DELTA CAN",
+        "category": null,
+        "type": "physical",
+        "price": 10.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Delta Can 1xLoose",
+        "sku": "DELTA CAN1",
+        "barcode": "DELTA CAN1",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Dendairy yoghurt 10x500ml",
+        "sku": "DEN",
+        "barcode": "DEN",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Dendairy full cream 24x250ml",
+        "sku": "DEN1",
+        "barcode": "DEN1",
+        "category": null,
+        "type": "physical",
+        "price": 8.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Dendairy 24x250ml",
+        "sku": "DEN2",
+        "barcode": "DEN2",
+        "category": null,
+        "type": "physical",
+        "price": 6.96,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Dendairy loose",
+        "sku": "DEN3",
+        "barcode": "DEN3",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Domestoes 1x750ml",
+        "sku": "DOM",
+        "barcode": "DOM",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Dovi 1x350g",
+        "sku": "DOV",
+        "barcode": "DOV",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "\u00c9clair pop 12x48",
+        "sku": "EC",
+        "barcode": "EC",
+        "category": null,
+        "type": "physical",
+        "price": 2.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Ellis Brown 1x1kg",
+        "sku": "ELL",
+        "barcode": "ELL",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fizzi Loose",
+        "sku": "FIZZI 2",
+        "barcode": "FIZZI 2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fizzi Drink 6x 2 litre",
+        "sku": "FIZZI DRINK",
+        "barcode": "FIZZI DRINK",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fountain 12x500ml",
+        "sku": "FO",
+        "barcode": "FO",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fun N  Fresh 6x1L itre Case",
+        "sku": "FUN FRESH",
+        "barcode": "FUN FRESH",
+        "category": null,
+        "type": "physical",
+        "price": 5.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fun N Fresh  6x 1 litre",
+        "sku": "FUN1",
+        "barcode": "FUN1",
+        "category": null,
+        "type": "physical",
+        "price": 5.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fun N Fresh  6x 1 litre",
+        "sku": "FUN2",
+        "barcode": "FUN2",
+        "category": null,
+        "type": "physical",
+        "price": 1.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Fun N Fresh  Loose",
+        "sku": "FUN3",
+        "barcode": "FUN3",
+        "category": null,
+        "type": "physical",
+        "price": 1.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Green bar 1x1kg",
+        "sku": "GREE",
+        "barcode": "GREE",
+        "category": null,
+        "type": "physical",
+        "price": 1.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Handy Andy 1x750ml",
+        "sku": "HAND",
+        "barcode": "HAND",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "HITET 120 100ML",
+        "sku": "HITET",
+        "barcode": "HITET",
+        "category": null,
+        "type": "physical",
+        "price": 8.0,
+        "cost_price": 1.35,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Ingram Lotion",
+        "sku": "ING",
+        "barcode": "ING",
+        "category": null,
+        "type": "physical",
+        "price": 2.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Test item 01",
+        "sku": "Item",
+        "barcode": "Item",
+        "category": null,
+        "type": "physical",
+        "price": 2.0,
+        "cost_price": 1.0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Jade 1x250g",
+        "sku": "JAD",
+        "barcode": "JAD",
+        "category": null,
+        "type": "physical",
+        "price": 0.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Kambucha 12x500ml",
+        "sku": "KAMB",
+        "barcode": "KAMB",
+        "category": null,
+        "type": "physical",
+        "price": 8.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Kambucha 1x400ml",
+        "sku": "KAMBU",
+        "barcode": "KAMBU",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Kefalos 10x150ml",
+        "sku": "KEFALOS",
+        "barcode": "KEFALOS",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Keffalos Yoghurt 10x150ml",
+        "sku": "KEFFALOS",
+        "barcode": "KEFFALOS",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Keffalos 1x Loose",
+        "sku": "KEFFALOS2",
+        "barcode": "KEFFALOS2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Krema bisuits  12x100g",
+        "sku": "KRE1",
+        "barcode": "KRE1",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Krema bisuits  loose",
+        "sku": "KRE2",
+        "barcode": "KRE2",
+        "category": null,
+        "type": "physical",
+        "price": 0.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Krema Bell Buzz 18x100g",
+        "sku": "KREMA  BELL BUZZ",
+        "barcode": "KREMA  BELL BUZZ",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Lacto 20x500ml",
+        "sku": "LAC1",
+        "barcode": "LAC1",
+        "category": null,
+        "type": "physical",
+        "price": 11.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Lacto  Loose",
+        "sku": "LAC2",
+        "barcode": "LAC2",
+        "category": null,
+        "type": "physical",
+        "price": 0.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Lemon Cream 1x500g",
+        "sku": "LEMO",
+        "barcode": "LEMO",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Life Milk 6x1 litre",
+        "sku": "LIF 1",
+        "barcode": "LIF 1",
+        "category": null,
+        "type": "physical",
+        "price": 7.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Life Milk Loose",
+        "sku": "LIF 2",
+        "barcode": "LIF 2",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Life steri Milk 12x500ml",
+        "sku": "LIFE STER",
+        "barcode": "LIFE STER",
+        "category": null,
+        "type": "physical",
+        "price": 8.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Life steri Milk Loose",
+        "sku": "LIFE STER1",
+        "barcode": "LIFE STER1",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Life yogurt 10x150ml",
+        "sku": "LIFE YO",
+        "barcode": "LIFE YO",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "LIMPO INSECTICIDE 600ML",
+        "sku": "LIMPO",
+        "barcode": "LIMPO",
+        "category": null,
+        "type": "physical",
+        "price": 5.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "LIMPO INSECTICIDE",
+        "sku": "LIMPO INSECTICIDE",
+        "barcode": "LIMPO INSECTICIDE",
+        "category": null,
+        "type": "physical",
+        "price": 0,
+        "cost_price": 6.0,
+        "stock_quantity": 10,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Maq 1x2kg",
+        "sku": "MA",
+        "barcode": "MA",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Maaz 10x500ml",
+        "sku": "MAA 1",
+        "barcode": "MAA 1",
+        "category": null,
+        "type": "physical",
+        "price": 5.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Masi Pro 10x500ml",
+        "sku": "MAA 2",
+        "barcode": "MAA 2",
+        "category": null,
+        "type": "physical",
+        "price": 5.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Macaroni 1x3kg",
+        "sku": "MAC",
+        "barcode": "MAC",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Maheu Kumusha 12x500ml",
+        "sku": "MAHEU KUMUSHA",
+        "barcode": "MAHEU KUMUSHA",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mama Tomato sauce",
+        "sku": "MAM",
+        "barcode": "MAM",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mauyu 12x500ml",
+        "sku": "MAU",
+        "barcode": "MAU",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mauyu Dirink 12x500ml",
+        "sku": "MAUYU",
+        "barcode": "MAUYU",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mauyu 1x500ml Loose",
+        "sku": "MAUYU2",
+        "barcode": "MAUYU2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mayonise 1x750g",
+        "sku": "MAY",
+        "barcode": "MAY",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mazoe B/bury 6x2 litre",
+        "sku": "MAZ 2",
+        "barcode": "MAZ 2",
+        "category": null,
+        "type": "physical",
+        "price": 3.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mazoe Rasbury 6x2 litre",
+        "sku": "MAZ 3",
+        "barcode": "MAZ 3",
+        "category": null,
+        "type": "physical",
+        "price": 3.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mazoe Orange1x2litre",
+        "sku": "MAZ1",
+        "barcode": "MAZ1",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Megga rice 1x2kg",
+        "sku": "MEG",
+        "barcode": "MEG",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Minute maid Delights Case",
+        "sku": "MIN1",
+        "barcode": "MIN1",
+        "category": null,
+        "type": "physical",
+        "price": 8.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Minute maid  12x500ml RTD",
+        "sku": "MIN2",
+        "barcode": "MIN2",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Minute maid  loose RTD",
+        "sku": "MIN3",
+        "barcode": "MIN3",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Minute maid Delights loose",
+        "sku": "MIN4",
+        "barcode": "MIN4",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Montis 1x410g",
+        "sku": "MO",
+        "barcode": "MO",
+        "category": null,
+        "type": "physical",
+        "price": 0.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mr rice 1x2kg",
+        "sku": "MR",
+        "barcode": "MR",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "mr rice 10x2kg case",
+        "sku": "MR RICE",
+        "barcode": "MR RICE",
+        "category": null,
+        "type": "physical",
+        "price": 17.5,
+        "cost_price": 17.5,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Natural joy 6x1 litre",
+        "sku": "NAT",
+        "barcode": "NAT",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Natural Joy 1x1Litre Loose",
+        "sku": "NATURAL JOY",
+        "barcode": "NATURAL JOY",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Nivea cream 500g",
+        "sku": "NIV",
+        "barcode": "NIV",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Nivea Cream 1x500ml",
+        "sku": "NIVE",
+        "barcode": "NIVE",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Noodles 5x50G",
+        "sku": "NOO",
+        "barcode": "NOO",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "NYATHI 6X1,25LTR CASE",
+        "sku": "NYA089",
+        "barcode": "NYA089",
+        "category": null,
+        "type": "physical",
+        "price": 4.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pads 48x1",
+        "sku": "PAD",
+        "barcode": "PAD",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi 24x500ml",
+        "sku": "PEP 2",
+        "barcode": "PEP 2",
+        "category": null,
+        "type": "physical",
+        "price": 6.96,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi 24x330ml",
+        "sku": "PEP 3",
+        "barcode": "PEP 3",
+        "category": null,
+        "type": "physical",
+        "price": 5.22,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi  330ml Loose",
+        "sku": "PEP 4",
+        "barcode": "PEP 4",
+        "category": null,
+        "type": "physical",
+        "price": 0.22,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi 750ml",
+        "sku": "PEP 5",
+        "barcode": "PEP 5",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi  12x 1 Litre",
+        "sku": "PEP I",
+        "barcode": "PEP I",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pepsi 1x1Litre Loose",
+        "sku": "PEPSI",
+        "barcode": "PEPSI",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pfuko Loose",
+        "sku": "PFU",
+        "barcode": "PFU",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pfuko Butter Milk 12x500ml Case",
+        "sku": "PFUKO BUTTER",
+        "barcode": "PFUKO BUTTER",
+        "category": null,
+        "type": "physical",
+        "price": 4.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pfuko Traditional 12x500ml Case",
+        "sku": "PFUKO TRADI",
+        "barcode": "PFUKO TRADI",
+        "category": null,
+        "type": "physical",
+        "price": 4.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Polony 10x115g",
+        "sku": "POL 1",
+        "barcode": "POL 1",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Polony 9x10x250g",
+        "sku": "POL 2",
+        "barcode": "POL 2",
+        "category": null,
+        "type": "physical",
+        "price": 6.52,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Polony 115g Loose",
+        "sku": "POLO",
+        "barcode": "POLO",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Polony 250g Loose",
+        "sku": "POLO11",
+        "barcode": "POLO11",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Polony Garfunkels 10x250g",
+        "sku": "POLONY 11",
+        "barcode": "POLONY 11",
+        "category": null,
+        "type": "physical",
+        "price": 5.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Pro Steri Life Milk 12x500ml",
+        "sku": "PRO STERI LIFE",
+        "barcode": "PRO STERI LIFE",
+        "category": null,
+        "type": "physical",
+        "price": 8.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Quickbrew 1x50g",
+        "sku": "QU",
+        "barcode": "QU",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Quench 6x2Litre Case",
+        "sku": "QUENCH",
+        "barcode": "QUENCH",
+        "category": null,
+        "type": "physical",
+        "price": 14.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Quench 1x2Litre Loose",
+        "sku": "QUENCH2",
+        "barcode": "QUENCH2",
+        "category": null,
+        "type": "physical",
+        "price": 2.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive  Juice 6x1 Litre",
+        "sku": "REV  JUICE",
+        "barcode": "REV  JUICE",
+        "category": null,
+        "type": "physical",
+        "price": 4.26,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive pet  12x500ml",
+        "sku": "REV JU1",
+        "barcode": "REV JU1",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Juice 500ml Loose",
+        "sku": "REV JU2",
+        "barcode": "REV JU2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Juice 1 Litre Loose",
+        "sku": "REV JUICE1",
+        "barcode": "REV JUICE1",
+        "category": null,
+        "type": "physical",
+        "price": 1.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Maheu 1 L case",
+        "sku": "REV MAH",
+        "barcode": "REV MAH",
+        "category": null,
+        "type": "physical",
+        "price": 5.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Straw Juice 24x250ml",
+        "sku": "REV STRA1",
+        "barcode": "REV STRA1",
+        "category": null,
+        "type": "physical",
+        "price": 5.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive 6x1 litre",
+        "sku": "REV1",
+        "barcode": "REV1",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Juice 500ml loose",
+        "sku": "REV10",
+        "barcode": "REV10",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive juice staw 1x250ml",
+        "sku": "REV12",
+        "barcode": "REV12",
+        "category": null,
+        "type": "physical",
+        "price": 0.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive 1L Loose",
+        "sku": "REV2",
+        "barcode": "REV2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive  Maheu 6x1 litre",
+        "sku": "REV3",
+        "barcode": "REV3",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Maheu 1L Loose",
+        "sku": "REV4",
+        "barcode": "REV4",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Maheu  12x500ml",
+        "sku": "REV5",
+        "barcode": "REV5",
+        "category": null,
+        "type": "physical",
+        "price": 4.35,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive Maheu 500g Loose",
+        "sku": "REV6",
+        "barcode": "REV6",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive satchet 24x250ml",
+        "sku": "REV7",
+        "barcode": "REV7",
+        "category": null,
+        "type": "physical",
+        "price": 3.48,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive satchet 1x250ml",
+        "sku": "REV8",
+        "barcode": "REV8",
+        "category": null,
+        "type": "physical",
+        "price": 0.22,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Revive  Pet Juice 12x500ml",
+        "sku": "REV9",
+        "barcode": "REV9",
+        "category": null,
+        "type": "physical",
+        "price": 4.78,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Ricoffy 6x100g",
+        "sku": "RIC",
+        "barcode": "RIC",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Romi Margarine 1x1kg",
+        "sku": "ROMI",
+        "barcode": "ROMI",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Salt 1x1kg",
+        "sku": "SAL 1",
+        "barcode": "SAL 1",
+        "category": null,
+        "type": "physical",
+        "price": 0.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Salt 1x2kg",
+        "sku": "SAL 2",
+        "barcode": "SAL 2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Satskin 6x2 litre",
+        "sku": "SAT",
+        "barcode": "SAT",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Satchet pfuko 20x500ml",
+        "sku": "SATC",
+        "barcode": "SATC",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Shumba Maheu 12x500ml",
+        "sku": "SHU1",
+        "barcode": "SHU1",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0.44,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Shumba Maheu Loose",
+        "sku": "SHU2",
+        "barcode": "SHU2",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Shumba Maheu ades 123x500ml",
+        "sku": "SHUMBA MAH",
+        "barcode": "SHUMBA MAH",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Shumba Maheu Ades 1x500ml Loose",
+        "sku": "SHUMBA MAH2",
+        "barcode": "SHUMBA MAH2",
+        "category": null,
+        "type": "physical",
+        "price": 5.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Spaghetti 1x400g",
+        "sku": "SP",
+        "barcode": "SP",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "10kg sugar",
+        "sku": "ss10",
+        "barcode": "ss10",
+        "category": null,
+        "type": "physical",
+        "price": 0.04,
+        "cost_price": 0.02,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Stasoft 1x2 Litres",
+        "sku": "STA",
+        "barcode": "STA",
+        "category": null,
+        "type": "physical",
+        "price": 3.04,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Stamboo Pack",
+        "sku": "STAM1",
+        "barcode": "STAM1",
+        "category": null,
+        "type": "physical",
+        "price": 2.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Stamboo Loose",
+        "sku": "STAM2",
+        "barcode": "STAM2",
+        "category": null,
+        "type": "physical",
+        "price": 0.09,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Stella tea 4x250g",
+        "sku": "STE",
+        "barcode": "STE",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sterilised Milk DRZ 12x500ml",
+        "sku": "STER",
+        "barcode": "STER",
+        "category": null,
+        "type": "physical",
+        "price": 8.5,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sting 24x500ml",
+        "sku": "STIN",
+        "barcode": "STIN",
+        "category": null,
+        "type": "physical",
+        "price": 7.65,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sugar 1x2kg",
+        "sku": "SU",
+        "barcode": "SU",
+        "category": null,
+        "type": "physical",
+        "price": 3.0,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sun Jam 1x900g",
+        "sku": "SU1",
+        "barcode": "SU1",
+        "category": null,
+        "type": "physical",
+        "price": 2.17,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sun Jam 1x500g",
+        "sku": "SU2",
+        "barcode": "SU2",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Sunlight 1x750g",
+        "sku": "SUN",
+        "barcode": "SUN",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Super milk 6x1 litre",
+        "sku": "SUP",
+        "barcode": "SUP",
+        "category": null,
+        "type": "physical",
+        "price": 7.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Tinned fish 400G",
+        "sku": "TIN1",
+        "barcode": "TIN1",
+        "category": null,
+        "type": "physical",
+        "price": 1.74,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Tinned fish 155G",
+        "sku": "TIN2",
+        "barcode": "TIN2",
+        "category": null,
+        "type": "physical",
+        "price": 0.87,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Tissue 12x4 ply",
+        "sku": "TIS",
+        "barcode": "TIS",
+        "category": null,
+        "type": "physical",
+        "price": 6.09,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Tomato sauce 1x375ml",
+        "sku": "TOM",
+        "barcode": "TOM",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Traditional Pfuko 12X500ML",
+        "sku": "TRAD",
+        "barcode": "TRAD",
+        "category": null,
+        "type": "physical",
+        "price": 4.61,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Mamoyo 1x10Kg",
+        "sku": "UPFU",
+        "barcode": "UPFU",
+        "category": null,
+        "type": "physical",
+        "price": 5.7,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Yoggie 40x250ml",
+        "sku": "YOG",
+        "barcode": "YOG",
+        "category": null,
+        "type": "physical",
+        "price": 15.22,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Yummy Yoghurt 10x150ml",
+        "sku": "YUM",
+        "barcode": "YUM",
+        "category": null,
+        "type": "physical",
+        "price": 3.91,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Yummy Yoghurt 10x150ml",
+        "sku": "YUMMY",
+        "barcode": "YUMMY",
+        "category": null,
+        "type": "physical",
+        "price": 0.43,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "Zimgold Margarine 1x500g",
+        "sku": "ZIM",
+        "barcode": "ZIM",
+        "category": null,
+        "type": "physical",
+        "price": 1.3,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      },
+      {
+        "name": "MINUTE MAID REFRESH LEMON 400ML",
+        "sku": "5449000284105",
+        "barcode": "5449000284105",
+        "category": null,
+        "type": "physical",
+        "price": 0.44,
+        "cost_price": 0,
+        "stock_quantity": 0,
+        "low_stock_threshold": 5
+      }
+    ],
+    "customers": [],
+    "suppliers": []
+  },
+  "opening": {
+    "stock": [
+      {
+        "sku": "0606110288538",
+        "barcode": "0606110288538",
+        "name": "YESS FRUTA ORANGE DRINK 430ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "0724376231508",
+        "barcode": "0724376231508",
+        "name": "U-FRESH MAHEU VANILLA 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "0793936713389",
+        "barcode": "0793936713389",
+        "name": "BLACK LABEL CANE 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "0793936713419",
+        "barcode": "0793936713419",
+        "name": "CASTLE LAGER CANE 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "0793936713433",
+        "barcode": "0793936713433",
+        "name": "ZAMBEZI CANE 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "32423424",
+        "barcode": "32423424",
+        "name": "gud filter z180",
+        "quantity": 0,
+        "cost_price": 10.0,
+        "price": 10.0
+      },
+      {
+        "sku": "4546700087",
+        "barcode": "4546700087",
+        "name": "supra chick feed 5kg",
+        "quantity": 0,
+        "cost_price": 5.0,
+        "price": 5.0
+      },
+      {
+        "sku": "543535232",
+        "barcode": "543535232",
+        "name": "543535232",
+        "quantity": 0,
+        "cost_price": 15.0,
+        "price": 15.0
+      },
+      {
+        "sku": "5449000009067",
+        "barcode": "5449000009067",
+        "name": "COCA COLA 2LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "5449000010049",
+        "barcode": "5449000010049",
+        "name": "FANTA 2LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "54490001660050",
+        "barcode": "54490001660050",
+        "name": "STONEY GINGER BEER 2LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "5449000175540",
+        "barcode": "5449000175540",
+        "name": "SCHWEPPES ORANGE 2LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "5449000177384",
+        "barcode": "5449000177384",
+        "name": "SPAR LETTA CHERRY PLUM 2LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "5449000188342",
+        "barcode": "5449000188342",
+        "name": "M/MAID APPLE GRAPE 400ML",
+        "quantity": 0,
+        "cost_price": 1.0,
+        "price": 1.0
+      },
+      {
+        "sku": "5449000256256",
+        "barcode": "5449000256256",
+        "name": "SPRITE 440ML",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "5449000284143",
+        "barcode": "5449000284143",
+        "name": "MINUTE MAID REFRESH ORANGE 400ML",
+        "quantity": 0,
+        "cost_price": 0.43,
+        "price": 0.43
+      },
+      {
+        "sku": "5449000664693",
+        "barcode": "5449000664693",
+        "name": "COKE ZERO 440ML",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "5449000664754",
+        "barcode": "5449000664754",
+        "name": "FANTA 440ML",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "5449000664860",
+        "barcode": "5449000664860",
+        "name": "SPARLETTA PINUT 440ML",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "5473245378",
+        "barcode": "5473245378",
+        "name": "k2 pgs 61 5kg........",
+        "quantity": 0,
+        "cost_price": 20.0,
+        "price": 20.0
+      },
+      {
+        "sku": "5903080462957",
+        "barcode": "5903080462957",
+        "name": "EXO MIX VODKA 18% VOL 250ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "6001048003323",
+        "barcode": "6001048003323",
+        "name": "APPLETISER 275ML",
+        "quantity": 0,
+        "cost_price": 1.35,
+        "price": 1.35
+      },
+      {
+        "sku": "6001068582402",
+        "barcode": "6001068582402",
+        "name": "NESTLE NAN#2 -400G",
+        "quantity": 0,
+        "cost_price": 6.0,
+        "price": 6.0
+      },
+      {
+        "sku": "6004842000246",
+        "barcode": "6004842000246",
+        "name": "CASCADE TROPICAL 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "6004842000253",
+        "barcode": "6004842000253",
+        "name": "CASCADE ORANGE 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "6004842000802",
+        "barcode": "6004842000802",
+        "name": "CASCADE ORANGE 400ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6005572002203",
+        "barcode": "6005572002203",
+        "name": "DAIRBOARD PFUKO TRADITIONAL MAHEU 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6005572002630",
+        "barcode": "6005572002630",
+        "name": "chimombe 1ltr",
+        "quantity": 0,
+        "cost_price": 1.0,
+        "price": 1.4
+      },
+      {
+        "sku": "6005572992371",
+        "barcode": "6005572992371",
+        "name": "DAIRIBOARD PFUKO B/MILK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.6
+      },
+      {
+        "sku": "6007038002628",
+        "barcode": "6007038002628",
+        "name": "ARENEL VITA MAHEU T/D 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009602270075",
+        "barcode": "6009602270075",
+        "name": "PROTON BREAD",
+        "quantity": 0,
+        "cost_price": 1.0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009602270112",
+        "barcode": "6009602270112",
+        "name": "PROTON SWT BUNS",
+        "quantity": 0,
+        "cost_price": 0.5,
+        "price": 0.5
+      },
+      {
+        "sku": "6009644991198",
+        "barcode": "6009644991198",
+        "name": "WILDCAT ENERGY DRINK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009661380210",
+        "barcode": "6009661380210",
+        "name": "sugar 10x2kg case",
+        "quantity": 0,
+        "cost_price": 25.0,
+        "price": 25.0
+      },
+      {
+        "sku": "6009678590695",
+        "barcode": "6009678590695",
+        "name": "ENJOY MANGO DRINK 50ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009694633116",
+        "barcode": "6009694633116",
+        "name": "DRAGON 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009698813545",
+        "barcode": "6009698813545",
+        "name": "THE VICTORIA MANGO& ORANGE 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.0
+      },
+      {
+        "sku": "6009702251233",
+        "barcode": "6009702251233",
+        "name": "shumba sorghum 500ml",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "600970225138",
+        "barcode": "600970225138",
+        "name": "SHUMBA BANANA 500ML",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "6009702252049",
+        "barcode": "6009702252049",
+        "name": "SUPERSIP ORANGE 400ML",
+        "quantity": 0,
+        "cost_price": 0.45,
+        "price": 0.45
+      },
+      {
+        "sku": "6009702252070",
+        "barcode": "6009702252070",
+        "name": "SUPERSIP TROPICAL 400ML",
+        "quantity": 0,
+        "cost_price": 0.45,
+        "price": 0.45
+      },
+      {
+        "sku": "6009705001187",
+        "barcode": "6009705001187",
+        "name": "REVIVE MAHEU BANANA 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009705001217",
+        "barcode": "6009705001217",
+        "name": "REVIVE MAHEU B/MILK 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009705003624",
+        "barcode": "6009705003624",
+        "name": "REVIVE ORANGE 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009705003631",
+        "barcode": "6009705003631",
+        "name": "REVIVE TROPICAL 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009705003907",
+        "barcode": "6009705003907",
+        "name": "REVIVE MAHEU TRADITIONAL 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009711327943",
+        "barcode": "6009711327943",
+        "name": "FRESH UP GUABANA DRINK 400ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009711461883",
+        "barcode": "6009711461883",
+        "name": "REVIVE PASSION FRUIT 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009711461906",
+        "barcode": "6009711461906",
+        "name": "REVIVE PEACH&APRICOT 1LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009711462637",
+        "barcode": "6009711462637",
+        "name": "REVIVE ORANGE 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009711462668",
+        "barcode": "6009711462668",
+        "name": "REVIVE PEACH & APRICOT 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009711462675",
+        "barcode": "6009711462675",
+        "name": "REVIVE TROPICAL 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009711462729",
+        "barcode": "6009711462729",
+        "name": "REVIVE MAHEU B/MILK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009711463269",
+        "barcode": "6009711463269",
+        "name": "NYATHI REGULAR 1.25LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009713107079",
+        "barcode": "6009713107079",
+        "name": "BROTHERS FRUITY FLAVOUR 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009715102492",
+        "barcode": "6009715102492",
+        "name": "BROTHERS APPLE DRINK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009803982241",
+        "barcode": "6009803982241",
+        "name": "SWITCH BLUEBERRY FLAVOUR 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009803982432",
+        "barcode": "6009803982432",
+        "name": "SWITCH ELEMENT 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009803982449",
+        "barcode": "6009803982449",
+        "name": "SWITCH DRY LEMON 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009803982531",
+        "barcode": "6009803982531",
+        "name": "SWITCH ROOIBOS &HONEY 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "6009880793334",
+        "barcode": "6009880793334",
+        "name": "STING RED ENERGY DRINK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "6009881127268",
+        "barcode": "6009881127268",
+        "name": "MAYFAIR LONDON DRY GIN 440ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "6009888561089",
+        "barcode": "6009888561089",
+        "name": "STING GOLD ENERGY DRINK 500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "63196300100",
+        "barcode": "63196300100",
+        "name": "GOLDEN PISENER 440ML CANE",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "63196300124",
+        "barcode": "63196300124",
+        "name": "CASTLE CANE 330ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "63196300139",
+        "barcode": "63196300139",
+        "name": "CHIBUKU SUPER REGULAR 1,25LTR",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "675467",
+        "barcode": "675467",
+        "name": "zap seed 2kg",
+        "quantity": 0,
+        "cost_price": 9.0,
+        "price": 9.0
+      },
+      {
+        "sku": "6865844567",
+        "barcode": "6865844567",
+        "name": "USD",
+        "quantity": 0,
+        "cost_price": 30.0,
+        "price": 3.0
+      },
+      {
+        "sku": "6936282086019",
+        "barcode": "6936282086019",
+        "name": "limpo insecticide 600ml",
+        "quantity": 0,
+        "cost_price": 5.5,
+        "price": 0
+      },
+      {
+        "sku": "694399000",
+        "barcode": "694399000",
+        "name": "SEEDCO 555 10KG",
+        "quantity": 0,
+        "cost_price": 400.0,
+        "price": 400.0
+      },
+      {
+        "sku": "76879687888",
+        "barcode": "76879687888",
+        "name": "76879687888",
+        "quantity": 0,
+        "cost_price": 60.0,
+        "price": 60.0
+      },
+      {
+        "sku": "7790---776",
+        "barcode": "7790---776",
+        "name": "7790---776",
+        "quantity": 0,
+        "cost_price": 2.0,
+        "price": 2.0
+      },
+      {
+        "sku": "854568559",
+        "barcode": "854568559",
+        "name": "shova gumboots",
+        "quantity": 0,
+        "cost_price": 9.0,
+        "price": 9.0
+      },
+      {
+        "sku": "898900-",
+        "barcode": "898900-",
+        "name": "garden seeeds 25g",
+        "quantity": 0,
+        "cost_price": 5.0,
+        "price": 5.0
+      },
+      {
+        "sku": "8999987",
+        "barcode": "8999987",
+        "name": "cabbage 5g",
+        "quantity": 0,
+        "cost_price": 9.0,
+        "price": 9.0
+      },
+      {
+        "sku": "9002490100070",
+        "barcode": "9002490100070",
+        "name": "REDBULL ENERGY DRINK 250ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.5
+      },
+      {
+        "sku": "90399480",
+        "barcode": "90399480",
+        "name": "MINUTE MAID TROPICAL 400ML",
+        "quantity": 0,
+        "cost_price": 1.0,
+        "price": 1.0
+      },
+      {
+        "sku": "90399497",
+        "barcode": "90399497",
+        "name": "MINUTE MAID ORANGE DELIGHT 400ML",
+        "quantity": 0,
+        "cost_price": 0.88,
+        "price": 0.88
+      },
+      {
+        "sku": "90490224",
+        "barcode": "90490224",
+        "name": "MINUTE MAID ORANGE PULPY 400ML",
+        "quantity": 0,
+        "cost_price": 0.88,
+        "price": 0.88
+      },
+      {
+        "sku": "908473673",
+        "barcode": "908473673",
+        "name": "castle qrts crates",
+        "quantity": 0,
+        "cost_price": 15.0,
+        "price": 0
+      },
+      {
+        "sku": "AQ 1",
+        "barcode": "AQ 1",
+        "name": "Aquaclear 24X500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.13
+      },
+      {
+        "sku": "AQ 2",
+        "barcode": "AQ 2",
+        "name": "Aquaclear 15X750ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.13
+      },
+      {
+        "sku": "AQ 3",
+        "barcode": "AQ 3",
+        "name": "Aquaclear loose 500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.26
+      },
+      {
+        "sku": "AQ 4",
+        "barcode": "AQ 4",
+        "name": "Aquaclear loose 750ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.26
+      },
+      {
+        "sku": "ARO",
+        "barcode": "ARO",
+        "name": "Aromatt 1x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "BAB",
+        "barcode": "BAB",
+        "name": "Baby Crazy 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.48
+      },
+      {
+        "sku": "BAK",
+        "barcode": "BAK",
+        "name": "Baked beans 1x410g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "BAL",
+        "barcode": "BAL",
+        "name": "Balley House 1x2 litres",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "BIC",
+        "barcode": "BIC",
+        "name": "Bickies 12x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "BIG BIT",
+        "barcode": "BIG BIT",
+        "name": "Big Bite 50x120g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 16.52
+      },
+      {
+        "sku": "BIG BIT2",
+        "barcode": "BIG BIT2",
+        "name": "Big Bite 1xLoose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "BIG BITE",
+        "barcode": "BIG BITE",
+        "name": "Big Bites Garfunkels 50x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 16.52
+      },
+      {
+        "sku": "BIG BITES",
+        "barcode": "BIG BITES",
+        "name": "bIG bites Garfunkles half box",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.7
+      },
+      {
+        "sku": "BIG BITESL",
+        "barcode": "BIG BITESL",
+        "name": "Big bite Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "BUT",
+        "barcode": "BUT",
+        "name": "Buttermilk 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "BUTT",
+        "barcode": "BUTT",
+        "name": "Buttercup 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.57
+      },
+      {
+        "sku": "BUZ1",
+        "barcode": "BUZ1",
+        "name": "Buzz 18x100g  biscuits",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "BUZ2",
+        "barcode": "BUZ2",
+        "name": "Buzz x100g  Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.35
+      },
+      {
+        "sku": "CAS1",
+        "barcode": "CAS1",
+        "name": "Cascade 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "CAS2",
+        "barcode": "CAS2",
+        "name": "Cascade 1x1Litre loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "CAS3",
+        "barcode": "CAS3",
+        "name": "Cascade  20X400ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.65
+      },
+      {
+        "sku": "CAS4",
+        "barcode": "CAS4",
+        "name": "Cascade  1x 400ml loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "CER1",
+        "barcode": "CER1",
+        "name": "Cerevita 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "CHARH",
+        "barcode": "CHARH",
+        "name": "Charhons Biscuits 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "CHARH 1",
+        "barcode": "CHARH 1",
+        "name": "Charhons 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.61
+      },
+      {
+        "sku": "CHARH 2",
+        "barcode": "CHARH 2",
+        "name": "Charhons 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "CHEESE",
+        "barcode": "CHEESE",
+        "name": "Cheese 1x80g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "CHI 631",
+        "barcode": "CHI 631",
+        "name": "SUPER 6X1,25LTR CASE",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.5
+      },
+      {
+        "sku": "CHI1",
+        "barcode": "CHI1",
+        "name": "Chilli 1x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "CHI2",
+        "barcode": "CHI2",
+        "name": "Chilli 1x200g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "CHIM2",
+        "barcode": "CHIM2",
+        "name": "Chimombe 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.0
+      },
+      {
+        "sku": "CHIM3",
+        "barcode": "CHIM3",
+        "name": "Chimombe Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.2
+      },
+      {
+        "sku": "CIT 1",
+        "barcode": "CIT 1",
+        "name": "Citro 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.09
+      },
+      {
+        "sku": "CIT 2",
+        "barcode": "CIT 2",
+        "name": "Citro Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "CLE",
+        "barcode": "CLE",
+        "name": "Clere 1x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "COK 1",
+        "barcode": "COK 1",
+        "name": "Coke 12x 500ml Pet",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "COK 2",
+        "barcode": "COK 2",
+        "name": "Coke 500ml Pet Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "COK 3",
+        "barcode": "COK 3",
+        "name": "Coke bottle 24x 300ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 6.09
+      },
+      {
+        "sku": "COK 4",
+        "barcode": "COK 4",
+        "name": "Coke 1x 300ml Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.3
+      },
+      {
+        "sku": "COK9",
+        "barcode": "COK9",
+        "name": "Coke 6x2 Litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.39
+      },
+      {
+        "sku": "COKE10",
+        "barcode": "COKE10",
+        "name": "Coke 1x2 Litre Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "COL",
+        "barcode": "COL",
+        "name": "Colgate 1x100ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "COLCO P",
+        "barcode": "COLCO P",
+        "name": "Colcom Pie 1x100g Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "COLCO PIE",
+        "barcode": "COLCO PIE",
+        "name": "Colcom Pie 50x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 18.26
+      },
+      {
+        "sku": "CON",
+        "barcode": "CON",
+        "name": "Cornflakes Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "COOK",
+        "barcode": "COOK",
+        "name": "Cooking oil 1x2litre loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "CORTINA  DAIRY SNAC",
+        "barcode": "CORTINA  DAIRY SNAC",
+        "name": "Cortina Dairy unit",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.26
+      },
+      {
+        "sku": "CORTINA DAIRY SNACK",
+        "barcode": "CORTINA DAIRY SNACK",
+        "name": "Cortina Dairy Snack 6 Pack",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.57
+      },
+      {
+        "sku": "CRE",
+        "barcode": "CRE",
+        "name": "Cremora 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "CREAM BELL BICKIES",
+        "barcode": "CREAM BELL BICKIES",
+        "name": "Cream Bell Bickies 12x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "CREAM BELL BICKIES1",
+        "barcode": "CREAM BELL BICKIES1",
+        "name": "Cream Bell Bickies 1x Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.26
+      },
+      {
+        "sku": "CREAM BELL BUZZ",
+        "barcode": "CREAM BELL BUZZ",
+        "name": "Cream Bell Buzz 18x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "CREAM BELL BUZZ1",
+        "barcode": "CREAM BELL BUZZ1",
+        "name": "Cream Bell Buzz 1x Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.35
+      },
+      {
+        "sku": "CREAM BELL KREMA1",
+        "barcode": "CREAM BELL KREMA1",
+        "name": "Cream Bell Krema Biscuits Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.35
+      },
+      {
+        "sku": "CREAM BELLKREMA BIS",
+        "barcode": "CREAM BELLKREMA BIS",
+        "name": "Cream Bell Krema Biscuits 12x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "CUS",
+        "barcode": "CUS",
+        "name": "Custard 1x20g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "DELTA CAN",
+        "barcode": "DELTA CAN",
+        "name": "Delta Can 24x330ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 10.0
+      },
+      {
+        "sku": "DELTA CAN1",
+        "barcode": "DELTA CAN1",
+        "name": "Delta Can 1xLoose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "DEN",
+        "barcode": "DEN",
+        "name": "Dendairy yoghurt 10x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "DEN1",
+        "barcode": "DEN1",
+        "name": "Dendairy full cream 24x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.0
+      },
+      {
+        "sku": "DEN2",
+        "barcode": "DEN2",
+        "name": "Dendairy 24x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 6.96
+      },
+      {
+        "sku": "DEN3",
+        "barcode": "DEN3",
+        "name": "Dendairy loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "DOM",
+        "barcode": "DOM",
+        "name": "Domestoes 1x750ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "DOV",
+        "barcode": "DOV",
+        "name": "Dovi 1x350g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "EC",
+        "barcode": "EC",
+        "name": "\u00c9clair pop 12x48",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.61
+      },
+      {
+        "sku": "ELL",
+        "barcode": "ELL",
+        "name": "Ellis Brown 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "FIZZI 2",
+        "barcode": "FIZZI 2",
+        "name": "Fizzi Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "FIZZI DRINK",
+        "barcode": "FIZZI DRINK",
+        "name": "Fizzi Drink 6x 2 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "FO",
+        "barcode": "FO",
+        "name": "Fountain 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "FUN FRESH",
+        "barcode": "FUN FRESH",
+        "name": "Fun N  Fresh 6x1L itre Case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.65
+      },
+      {
+        "sku": "FUN1",
+        "barcode": "FUN1",
+        "name": "Fun N Fresh  6x 1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.65
+      },
+      {
+        "sku": "FUN2",
+        "barcode": "FUN2",
+        "name": "Fun N Fresh  6x 1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.04
+      },
+      {
+        "sku": "FUN3",
+        "barcode": "FUN3",
+        "name": "Fun N Fresh  Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.04
+      },
+      {
+        "sku": "GREE",
+        "barcode": "GREE",
+        "name": "Green bar 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.04
+      },
+      {
+        "sku": "HAND",
+        "barcode": "HAND",
+        "name": "Handy Andy 1x750ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "HITET",
+        "barcode": "HITET",
+        "name": "HITET 120 100ML",
+        "quantity": 0,
+        "cost_price": 1.35,
+        "price": 8.0
+      },
+      {
+        "sku": "ING",
+        "barcode": "ING",
+        "name": "Ingram Lotion",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.61
+      },
+      {
+        "sku": "Item",
+        "barcode": "Item",
+        "name": "Test item 01",
+        "quantity": 0,
+        "cost_price": 1.0,
+        "price": 2.0
+      },
+      {
+        "sku": "JAD",
+        "barcode": "JAD",
+        "name": "Jade 1x250g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.7
+      },
+      {
+        "sku": "KAMB",
+        "barcode": "KAMB",
+        "name": "Kambucha 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.26
+      },
+      {
+        "sku": "KAMBU",
+        "barcode": "KAMBU",
+        "name": "Kambucha 1x400ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "KEFALOS",
+        "barcode": "KEFALOS",
+        "name": "Kefalos 10x150ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "KEFFALOS",
+        "barcode": "KEFFALOS",
+        "name": "Keffalos Yoghurt 10x150ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "KEFFALOS2",
+        "barcode": "KEFFALOS2",
+        "name": "Keffalos 1x Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "KRE1",
+        "barcode": "KRE1",
+        "name": "Krema bisuits  12x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "KRE2",
+        "barcode": "KRE2",
+        "name": "Krema bisuits  loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.35
+      },
+      {
+        "sku": "KREMA  BELL BUZZ",
+        "barcode": "KREMA  BELL BUZZ",
+        "name": "Krema Bell Buzz 18x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "LAC1",
+        "barcode": "LAC1",
+        "name": "Lacto 20x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 11.0
+      },
+      {
+        "sku": "LAC2",
+        "barcode": "LAC2",
+        "name": "Lacto  Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.7
+      },
+      {
+        "sku": "LEMO",
+        "barcode": "LEMO",
+        "name": "Lemon Cream 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "LIF 1",
+        "barcode": "LIF 1",
+        "name": "Life Milk 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.3
+      },
+      {
+        "sku": "LIF 2",
+        "barcode": "LIF 2",
+        "name": "Life Milk Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "LIFE STER",
+        "barcode": "LIFE STER",
+        "name": "Life steri Milk 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.0
+      },
+      {
+        "sku": "LIFE STER1",
+        "barcode": "LIFE STER1",
+        "name": "Life steri Milk Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "LIFE YO",
+        "barcode": "LIFE YO",
+        "name": "Life yogurt 10x150ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "LIMPO",
+        "barcode": "LIMPO",
+        "name": "LIMPO INSECTICIDE 600ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.5
+      },
+      {
+        "sku": "LIMPO INSECTICIDE",
+        "barcode": "LIMPO INSECTICIDE",
+        "name": "LIMPO INSECTICIDE",
+        "quantity": 10,
+        "cost_price": 6.0,
+        "price": 0
+      },
+      {
+        "sku": "MA",
+        "barcode": "MA",
+        "name": "Maq 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "MAA 1",
+        "barcode": "MAA 1",
+        "name": "Maaz 10x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.5
+      },
+      {
+        "sku": "MAA 2",
+        "barcode": "MAA 2",
+        "name": "Masi Pro 10x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.5
+      },
+      {
+        "sku": "MAC",
+        "barcode": "MAC",
+        "name": "Macaroni 1x3kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "MAHEU KUMUSHA",
+        "barcode": "MAHEU KUMUSHA",
+        "name": "Maheu Kumusha 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "MAM",
+        "barcode": "MAM",
+        "name": "Mama Tomato sauce",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "MAU",
+        "barcode": "MAU",
+        "name": "Mauyu 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "MAUYU",
+        "barcode": "MAUYU",
+        "name": "Mauyu Dirink 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "MAUYU2",
+        "barcode": "MAUYU2",
+        "name": "Mauyu 1x500ml Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "MAY",
+        "barcode": "MAY",
+        "name": "Mayonise 1x750g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "MAZ 2",
+        "barcode": "MAZ 2",
+        "name": "Mazoe B/bury 6x2 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.74
+      },
+      {
+        "sku": "MAZ 3",
+        "barcode": "MAZ 3",
+        "name": "Mazoe Rasbury 6x2 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.65
+      },
+      {
+        "sku": "MAZ1",
+        "barcode": "MAZ1",
+        "name": "Mazoe Orange1x2litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "MEG",
+        "barcode": "MEG",
+        "name": "Megga rice 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "MIN1",
+        "barcode": "MIN1",
+        "name": "Minute maid Delights Case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.26
+      },
+      {
+        "sku": "MIN2",
+        "barcode": "MIN2",
+        "name": "Minute maid  12x500ml RTD",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "MIN3",
+        "barcode": "MIN3",
+        "name": "Minute maid  loose RTD",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "MIN4",
+        "barcode": "MIN4",
+        "name": "Minute maid Delights loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "MO",
+        "barcode": "MO",
+        "name": "Montis 1x410g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.7
+      },
+      {
+        "sku": "MR",
+        "barcode": "MR",
+        "name": "Mr rice 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "MR RICE",
+        "barcode": "MR RICE",
+        "name": "mr rice 10x2kg case",
+        "quantity": 0,
+        "cost_price": 17.5,
+        "price": 17.5
+      },
+      {
+        "sku": "NAT",
+        "barcode": "NAT",
+        "name": "Natural joy 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "NATURAL JOY",
+        "barcode": "NATURAL JOY",
+        "name": "Natural Joy 1x1Litre Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "NIV",
+        "barcode": "NIV",
+        "name": "Nivea cream 500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "NIVE",
+        "barcode": "NIVE",
+        "name": "Nivea Cream 1x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "NOO",
+        "barcode": "NOO",
+        "name": "Noodles 5x50G",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "NYA089",
+        "barcode": "NYA089",
+        "name": "NYATHI 6X1,25LTR CASE",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.5
+      },
+      {
+        "sku": "PAD",
+        "barcode": "PAD",
+        "name": "Pads 48x1",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "PEP 2",
+        "barcode": "PEP 2",
+        "name": "Pepsi 24x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 6.96
+      },
+      {
+        "sku": "PEP 3",
+        "barcode": "PEP 3",
+        "name": "Pepsi 24x330ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.22
+      },
+      {
+        "sku": "PEP 4",
+        "barcode": "PEP 4",
+        "name": "Pepsi  330ml Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.22
+      },
+      {
+        "sku": "PEP 5",
+        "barcode": "PEP 5",
+        "name": "Pepsi 750ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "PEP I",
+        "barcode": "PEP I",
+        "name": "Pepsi  12x 1 Litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "PEPSI",
+        "barcode": "PEPSI",
+        "name": "Pepsi 1x1Litre Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "PFU",
+        "barcode": "PFU",
+        "name": "Pfuko Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "PFUKO BUTTER",
+        "barcode": "PFUKO BUTTER",
+        "name": "Pfuko Butter Milk 12x500ml Case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.7
+      },
+      {
+        "sku": "PFUKO TRADI",
+        "barcode": "PFUKO TRADI",
+        "name": "Pfuko Traditional 12x500ml Case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.61
+      },
+      {
+        "sku": "POL 1",
+        "barcode": "POL 1",
+        "name": "Polony 10x115g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "POL 2",
+        "barcode": "POL 2",
+        "name": "Polony 9x10x250g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 6.52
+      },
+      {
+        "sku": "POLO",
+        "barcode": "POLO",
+        "name": "Polony 115g Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "POLO11",
+        "barcode": "POLO11",
+        "name": "Polony 250g Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "POLONY 11",
+        "barcode": "POLONY 11",
+        "name": "Polony Garfunkels 10x250g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.65
+      },
+      {
+        "sku": "PRO STERI LIFE",
+        "barcode": "PRO STERI LIFE",
+        "name": "Pro Steri Life Milk 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.0
+      },
+      {
+        "sku": "QU",
+        "barcode": "QU",
+        "name": "Quickbrew 1x50g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "QUENCH",
+        "barcode": "QUENCH",
+        "name": "Quench 6x2Litre Case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 14.35
+      },
+      {
+        "sku": "QUENCH2",
+        "barcode": "QUENCH2",
+        "name": "Quench 1x2Litre Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.61
+      },
+      {
+        "sku": "REV  JUICE",
+        "barcode": "REV  JUICE",
+        "name": "Revive  Juice 6x1 Litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.26
+      },
+      {
+        "sku": "REV JU1",
+        "barcode": "REV JU1",
+        "name": "Revive pet  12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "REV JU2",
+        "barcode": "REV JU2",
+        "name": "Revive Juice 500ml Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "REV JUICE1",
+        "barcode": "REV JUICE1",
+        "name": "Revive Juice 1 Litre Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.0
+      },
+      {
+        "sku": "REV MAH",
+        "barcode": "REV MAH",
+        "name": "Revive Maheu 1 L case",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.0
+      },
+      {
+        "sku": "REV STRA1",
+        "barcode": "REV STRA1",
+        "name": "Revive Straw Juice 24x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.65
+      },
+      {
+        "sku": "REV1",
+        "barcode": "REV1",
+        "name": "Revive 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "REV10",
+        "barcode": "REV10",
+        "name": "Revive Juice 500ml loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "REV12",
+        "barcode": "REV12",
+        "name": "Revive juice staw 1x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.3
+      },
+      {
+        "sku": "REV2",
+        "barcode": "REV2",
+        "name": "Revive 1L Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "REV3",
+        "barcode": "REV3",
+        "name": "Revive  Maheu 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "REV4",
+        "barcode": "REV4",
+        "name": "Revive Maheu 1L Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "REV5",
+        "barcode": "REV5",
+        "name": "Revive Maheu  12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.35
+      },
+      {
+        "sku": "REV6",
+        "barcode": "REV6",
+        "name": "Revive Maheu 500g Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "REV7",
+        "barcode": "REV7",
+        "name": "Revive satchet 24x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.48
+      },
+      {
+        "sku": "REV8",
+        "barcode": "REV8",
+        "name": "Revive satchet 1x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.22
+      },
+      {
+        "sku": "REV9",
+        "barcode": "REV9",
+        "name": "Revive  Pet Juice 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.78
+      },
+      {
+        "sku": "RIC",
+        "barcode": "RIC",
+        "name": "Ricoffy 6x100g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "ROMI",
+        "barcode": "ROMI",
+        "name": "Romi Margarine 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "SAL 1",
+        "barcode": "SAL 1",
+        "name": "Salt 1x1kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.5
+      },
+      {
+        "sku": "SAL 2",
+        "barcode": "SAL 2",
+        "name": "Salt 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "SAT",
+        "barcode": "SAT",
+        "name": "Satskin 6x2 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "SATC",
+        "barcode": "SATC",
+        "name": "Satchet pfuko 20x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "SHU1",
+        "barcode": "SHU1",
+        "name": "Shumba Maheu 12x500ml",
+        "quantity": 0,
+        "cost_price": 0.44,
+        "price": 0.44
+      },
+      {
+        "sku": "SHU2",
+        "barcode": "SHU2",
+        "name": "Shumba Maheu Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "SHUMBA MAH",
+        "barcode": "SHUMBA MAH",
+        "name": "Shumba Maheu ades 123x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "SHUMBA MAH2",
+        "barcode": "SHUMBA MAH2",
+        "name": "Shumba Maheu Ades 1x500ml Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.5
+      },
+      {
+        "sku": "SP",
+        "barcode": "SP",
+        "name": "Spaghetti 1x400g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "ss10",
+        "barcode": "ss10",
+        "name": "10kg sugar",
+        "quantity": 0,
+        "cost_price": 0.02,
+        "price": 0.04
+      },
+      {
+        "sku": "STA",
+        "barcode": "STA",
+        "name": "Stasoft 1x2 Litres",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.04
+      },
+      {
+        "sku": "STAM1",
+        "barcode": "STAM1",
+        "name": "Stamboo Pack",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.61
+      },
+      {
+        "sku": "STAM2",
+        "barcode": "STAM2",
+        "name": "Stamboo Loose",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.09
+      },
+      {
+        "sku": "STE",
+        "barcode": "STE",
+        "name": "Stella tea 4x250g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "STER",
+        "barcode": "STER",
+        "name": "Sterilised Milk DRZ 12x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 8.5
+      },
+      {
+        "sku": "STIN",
+        "barcode": "STIN",
+        "name": "Sting 24x500ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.65
+      },
+      {
+        "sku": "SU",
+        "barcode": "SU",
+        "name": "Sugar 1x2kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.0
+      },
+      {
+        "sku": "SU1",
+        "barcode": "SU1",
+        "name": "Sun Jam 1x900g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 2.17
+      },
+      {
+        "sku": "SU2",
+        "barcode": "SU2",
+        "name": "Sun Jam 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "SUN",
+        "barcode": "SUN",
+        "name": "Sunlight 1x750g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "SUP",
+        "barcode": "SUP",
+        "name": "Super milk 6x1 litre",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 7.3
+      },
+      {
+        "sku": "TIN1",
+        "barcode": "TIN1",
+        "name": "Tinned fish 400G",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.74
+      },
+      {
+        "sku": "TIN2",
+        "barcode": "TIN2",
+        "name": "Tinned fish 155G",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.87
+      },
+      {
+        "sku": "TIS",
+        "barcode": "TIS",
+        "name": "Tissue 12x4 ply",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 6.09
+      },
+      {
+        "sku": "TOM",
+        "barcode": "TOM",
+        "name": "Tomato sauce 1x375ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "TRAD",
+        "barcode": "TRAD",
+        "name": "Traditional Pfuko 12X500ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 4.61
+      },
+      {
+        "sku": "UPFU",
+        "barcode": "UPFU",
+        "name": "Mamoyo 1x10Kg",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 5.7
+      },
+      {
+        "sku": "YOG",
+        "barcode": "YOG",
+        "name": "Yoggie 40x250ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 15.22
+      },
+      {
+        "sku": "YUM",
+        "barcode": "YUM",
+        "name": "Yummy Yoghurt 10x150ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 3.91
+      },
+      {
+        "sku": "YUMMY",
+        "barcode": "YUMMY",
+        "name": "Yummy Yoghurt 10x150ml",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.43
+      },
+      {
+        "sku": "ZIM",
+        "barcode": "ZIM",
+        "name": "Zimgold Margarine 1x500g",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 1.3
+      },
+      {
+        "sku": "5449000284105",
+        "barcode": "5449000284105",
+        "name": "MINUTE MAID REFRESH LEMON 400ML",
+        "quantity": 0,
+        "cost_price": 0,
+        "price": 0.44
+      }
+    ],
+    "balances": []
+  },
+  "metadata": {
+    "source": "verschard db.CSV",
+    "skipped_rows": [
+      {
+        "item": "6001934",
+        "type": "Subtotal"
+      },
+      {
+        "item": "Tax on purchases",
+        "type": "Sales Tax Item"
+      },
+      {
+        "item": "Tax on sales",
+        "type": "Sales Tax Item"
+      }
+    ]
+  }
+}
